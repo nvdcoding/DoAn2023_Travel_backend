@@ -1,4 +1,3 @@
-import { UserStatus } from 'src/shares/enum/user.enum';
 import {
   BaseEntity,
   Column,
@@ -6,15 +5,11 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinColumn,
   ManyToMany,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { TourGuide } from './tourguide.entity';
-import { Wallet } from './wallet.entity';
 
 @Entity({ name: 'provinces' })
 export class Province extends BaseEntity {

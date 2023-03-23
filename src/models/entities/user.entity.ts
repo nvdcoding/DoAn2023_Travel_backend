@@ -15,6 +15,7 @@ import {
 import { Comment } from './comment.entity';
 import { Post } from './post.entity';
 import { Report } from './report.entity';
+import { UserVoucher } from './user_voucher.entity';
 import { Wallet } from './wallet.entity';
 
 @Entity({ name: 'users' })
@@ -53,6 +54,7 @@ export class User extends BaseEntity {
   })
   availableBalance: string;
 
+  //TODO: add link here
   @Column({
     nullable: false,
     default: 'default-avartar-url',
@@ -88,6 +90,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @OneToMany(() => UserVoucher, (userVoucher) => userVoucher.user)
+  userVouchers: UserVoucher[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

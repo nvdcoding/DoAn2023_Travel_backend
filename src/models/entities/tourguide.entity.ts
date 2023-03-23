@@ -18,6 +18,8 @@ import { Comment } from './comment.entity';
 import { Post } from './post.entity';
 import { Province } from './province.entity';
 import { Report } from './report.entity';
+import { Tour } from './tour.entity';
+import { Voucher } from './voucher.entity';
 import { Wallet } from './wallet.entity';
 
 @Entity({ name: 'tour_guides' })
@@ -81,13 +83,16 @@ export class TourGuide extends BaseEntity {
 
   @Column({
     nullable: true,
-    name: 'isSetup',
+    name: 'available',
     type: 'boolean',
   })
-  isSetup: boolean;
+  available: boolean;
 
   @Column({ name: 'num_of_favorites', default: 0, type: 'integer' })
   numOfFavorites: number;
+
+  @Column({ name: 'dob', type: 'date', nullable: false })
+  dob: Date;
 
   @ManyToMany(() => Province, (province) => province.tourGuides)
   provinces: Province[];
@@ -103,6 +108,13 @@ export class TourGuide extends BaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.tourGuide)
   comments: Comment[];
+
+  @OneToMany(() => Voucher, (vourcher) => vourcher.tourGuideCreated)
+  vourchers: Voucher[];
+
+  @OneToMany(() => Tour, (tour) => tour.tourGuides)
+  tours: Tour[];
+  // Task cho anh Hảo: 1 HDV có thể hoạt động ở nhiều tỉnh
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

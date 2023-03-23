@@ -54,6 +54,13 @@ export class Post extends BaseEntity {
   image: string;
 
   @Column({
+    type: 'int',
+    nullable: false,
+    name: 'like',
+  })
+  like: number;
+
+  @Column({
     nullable: false,
     name: 'topics',
     type: 'enum',

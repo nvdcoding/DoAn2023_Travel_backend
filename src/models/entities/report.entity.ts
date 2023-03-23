@@ -13,12 +13,12 @@ import { Post } from './post.entity';
 import { TourGuide } from './tourguide.entity';
 import { User } from './user.entity';
 
-@Entity()
+@Entity({ name: 'reports' })
 export class Report {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // report to:
+  // report:
   @ManyToOne(() => Post, (post) => post.reports)
   @JoinColumn({ name: 'post_id' })
   post: Post;
