@@ -1,3 +1,4 @@
+import { UserFavorite } from './user_favorite.entity';
 import {
   BaseEntity,
   Column,
@@ -6,6 +7,7 @@ import {
   Entity,
   Index,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,6 +27,9 @@ export class Province extends BaseEntity {
 
   @ManyToMany(() => TourGuide, (tourGuide) => tourGuide.provinces)
   tourGuides: TourGuide[];
+
+  @ManyToMany(() => UserFavorite, (userFavorite) => userFavorite.province)
+  userFavorites: UserFavorite[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

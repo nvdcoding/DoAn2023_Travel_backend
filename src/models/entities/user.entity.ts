@@ -1,3 +1,4 @@
+import { UserFavorite } from './user_favorite.entity';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import {
   BaseEntity,
@@ -93,6 +94,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserVoucher, (userVoucher) => userVoucher.user)
   userVouchers: UserVoucher[];
+
+  @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.user)
+  userFavorites: UserFavorite[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
