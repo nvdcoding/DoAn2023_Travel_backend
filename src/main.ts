@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -21,7 +23,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('learnit', app, document);
-  await app.listen(3000);
+  SwaggerModule.setup('ktravel', app, document);
+  await app.listen(4000);
 }
 bootstrap();
