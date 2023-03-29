@@ -1,6 +1,4 @@
-import { UserFavorite } from './user_favorite.entity';
 import { PostStatus, Topics } from 'src/shares/enum/post.enum';
-import { UserStatus } from 'src/shares/enum/user.enum';
 import {
   BaseEntity,
   Column,
@@ -9,10 +7,8 @@ import {
   Entity,
   Index,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,6 +16,7 @@ import { Comment } from './comment.entity';
 import { Report } from './report.entity';
 import { TourGuide } from './tourguide.entity';
 import { User } from './user.entity';
+import { UserFavorite } from './user_favorite.entity';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity {
@@ -79,7 +76,7 @@ export class Post extends BaseEntity {
   })
   status: PostStatus;
 
-  @ManyToMany(() => UserFavorite, (userFavorite) => userFavorite.post)
+  @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.post)
   userFavorites: UserFavorite[];
 
   @CreateDateColumn({ name: 'created_at' })

@@ -28,7 +28,7 @@ export class Province extends BaseEntity {
   @ManyToMany(() => TourGuide, (tourGuide) => tourGuide.provinces)
   tourGuides: TourGuide[];
 
-  @ManyToMany(() => UserFavorite, (userFavorite) => userFavorite.province)
+  @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.province)
   userFavorites: UserFavorite[];
 
   @CreateDateColumn({ name: 'created_at' })
