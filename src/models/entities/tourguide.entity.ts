@@ -1,3 +1,4 @@
+import { UserFavorite } from './user_favorite.entity';
 import { Gender, TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import {
@@ -115,6 +116,9 @@ export class TourGuide extends BaseEntity {
   @OneToMany(() => Tour, (tour) => tour.tourGuides)
   tours: Tour[];
   // Task cho anh Hảo: 1 HDV có thể hoạt động ở nhiều tỉnh
+
+  @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.tourGuide)
+  userFavorites: UserFavorite[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

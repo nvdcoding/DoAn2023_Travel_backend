@@ -1,3 +1,4 @@
+import { UserFavorite } from './user_favorite.entity';
 import {
   BaseEntity,
   Column,
@@ -5,6 +6,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -50,6 +52,9 @@ export class Tour extends BaseEntity {
   //many to one
   @ManyToOne(() => TourGuide, (tourGuide) => tourGuide.tours)
   tourGuides: TourGuide;
+
+  @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.tour)
+  userFavorites: UserFavorite[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
