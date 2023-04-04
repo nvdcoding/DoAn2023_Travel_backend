@@ -20,6 +20,8 @@ import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from './interfaces/payload.interface';
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { SendOtpForgotPasswordDto } from "./dto/send-otp-forgot-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -201,5 +203,64 @@ export class AuthService {
         ...payload,
       },
     };
+  }
+
+  async sendOtpForgotPassword(body: SendOtpForgotPasswordDto) {
+    const { email } = body;
+    const userExisted = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'verifyStatus', 'password'],
+    });
+
+    if (!userExisted) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+    }
+    if ([UserStatus.INACTIVE, UserStatus.LOCKED].includes((userExisted.verifyStatus))) {
+      throw new HttpException(httpErrors.USER_NOT_ACTIVE, HttpStatus.BAD_REQUEST);
+    }
+    const newToken = this.genToken();
+    await Promise.all([
+      await this.cacheManager.set(`register-${email}`, newToken, {
+        ttl: emailConfig.registerTTL,
+      }),
+      await this.mailService.sendRegisterMail({
+        email: body.email,
+        username: userExisted.username,
+        token: `${newToken}`,
+      }),
+    ]);
+    return httpResponse.REGISTER_SEND_MAIL;
+  }
+
+  async forgotPassword(body: ForgotPasswordDto) {
+    const { email, password, newPassword, otp } = body;
+    const checkOTP = await this.cacheManager.get(`register-${email}`)
+    // validate
+    if (password === newPassword) {
+      throw new HttpException(httpErrors.FORGOT_PASSWORD_DIFFERENCE_PASSWORD, HttpStatus.BAD_REQUEST);
+    }
+    if (!checkOTP) {
+      throw new HttpException(
+        httpErrors.FORGOT_PASSWORD_OTP_NOT_MATCH,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (otp != checkOTP) {
+      throw new HttpException(
+        httpErrors.FORGOT_PASSWORD_OTP_NOT_MATCH,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // update data
+    const passwordHash = await bcrypt.hash(newPassword, +authConfig.salt);
+    await Promise.all([
+      this.userRepository.update(
+        { email: email },
+        { password: passwordHash },
+      ),
+      this.cacheManager.del(`register-${email}`),
+    ]);
+    return httpResponse.FORGOT_PASSWORD_SUCCESS;
   }
 }

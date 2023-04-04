@@ -32,4 +32,13 @@ export const httpErrors = {
     message: `Register token not match`,
     code: `ERR_REGISTER_002`,
   },
+  //FORGOT PASSWORD
+  FORGOT_PASSWORD_DIFFERENCE_PASSWORD: {
+    message: 'New password must difference password',
+    code: 'ERR_FORGOT_PASSWORD_001'
+  },
+  FORGOT_PASSWORD_OTP_NOT_MATCH: {
+    message: 'Otp not match',
+    code: 'ERR_FORGOT_PASSWORD_002'
+  },
 };
