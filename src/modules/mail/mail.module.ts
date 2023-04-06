@@ -4,7 +4,6 @@ import { BullModule } from '@nestjs/bull';
 import { BullModuleOptions } from '@nestjs/bull/dist/interfaces/bull-module-options.interface';
 import { CacheModule, Logger, Module, Provider } from '@nestjs/common';
 import * as redisStore from 'cache-manager-redis-store';
-import { join } from 'path';
 import { TransportType } from '@nestjs-modules/mailer/dist/interfaces/mailer-options.interface';
 import { MailProcessor } from './mail.processor';
 import { emailConfig } from 'src/configs/email.config';

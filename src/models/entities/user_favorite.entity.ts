@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -9,6 +10,7 @@ import { Province } from './province.entity';
 import { Tour } from './tour.entity';
 import { TourGuide } from './tourguide.entity';
 import { User } from './user.entity';
+@Entity({ name: 'user_favorite' })
 export class UserFavorite extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
