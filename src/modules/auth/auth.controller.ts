@@ -14,6 +14,8 @@ import { ActiveUserDto } from './dto/active-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { SendOtpForgotPasswordDto } from "./dto/send-otp-forgot-password.dto";
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -44,5 +46,15 @@ export class AuthController {
   @Post('/login')
   async login(@Body() body: LoginDto): Promise<Response> {
     return this.authService.userLogin(body);
+  }
+
+  @Post('/send-otp-forgot-password')
+  async sendOtpForgotPassword(@Body() body: SendOtpForgotPasswordDto): Promise<Response> {
+    return this.authService.sendOtpForgotPassword(body);
+  }
+
+  @Post('/forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<Response> {
+    return this.authService.forgotPassword(body);
   }
 }

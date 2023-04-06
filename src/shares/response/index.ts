@@ -11,4 +11,8 @@ export const httpResponse = {
     message: 'Login success',
     code: 'USER_003',
   },
+  FORGOT_PASSWORD_SUCCESS: {
+    message: 'Change password success',
+    code: 'USER_004',
+  },
 };
