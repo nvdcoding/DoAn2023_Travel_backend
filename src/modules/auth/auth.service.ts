@@ -205,6 +205,25 @@ export class AuthService {
     };
   }
 
+  async sendOtpForgotPasswordToMail(email: string) {
+    const newToken = this.genToken();
+    const userExisted = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'verifyStatus', 'password'],
+    });
+    await Promise.all([
+      this.cacheManager.set(`forgotPassword-${email}`, newToken, {
+        ttl: emailConfig.registerTTL,
+      }),
+      this.mailService.sendForgotPasswordMail({
+        email: email,
+        username: userExisted.username,
+        token: `${newToken}`,
+      }),
+    ]);
+    return httpResponse.REGISTER_SEND_MAIL;
+  }
+
   async sendOtpForgotPassword(body: SendOtpForgotPasswordDto) {
     const { email } = body;
     const userExisted = await this.userRepository.findOne({
@@ -218,48 +237,45 @@ export class AuthService {
     if ([UserStatus.INACTIVE, UserStatus.LOCKED].includes((userExisted.verifyStatus))) {
       throw new HttpException(httpErrors.USER_NOT_ACTIVE, HttpStatus.BAD_REQUEST);
     }
-    const newToken = this.genToken();
-    await Promise.all([
-      await this.cacheManager.set(`register-${email}`, newToken, {
-        ttl: emailConfig.registerTTL,
-      }),
-      await this.mailService.sendRegisterMail({
-        email: body.email,
-        username: userExisted.username,
-        token: `${newToken}`,
-      }),
-    ]);
-    return httpResponse.REGISTER_SEND_MAIL;
+    return this.sendOtpForgotPasswordToMail(email);
   }
 
   async forgotPassword(body: ForgotPasswordDto) {
-    const { email, password, newPassword, otp } = body;
-    const checkOTP = await this.cacheManager.get(`register-${email}`)
+    const { email, password, otp } = body;
+    const [checkOTP, user] = await Promise.all([
+      this.cacheManager.get(`forgotPassword-${email}`),
+      this.userRepository.findOne({
+        where: {
+          email,
+          verifyStatus: UserStatus.ACTIVE,
+        },
+      }),
+    ]);
     // validate
-    if (password === newPassword) {
-      throw new HttpException(httpErrors.FORGOT_PASSWORD_DIFFERENCE_PASSWORD, HttpStatus.BAD_REQUEST);
-    }
-    if (!checkOTP) {
+    if (!checkOTP || otp != checkOTP) {
       throw new HttpException(
         httpErrors.FORGOT_PASSWORD_OTP_NOT_MATCH,
         HttpStatus.NOT_FOUND,
       );
     }
-    if (otp != checkOTP) {
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const comparePassword = bcrypt.compare(user.password, password);
+    if (!comparePassword) {
       throw new HttpException(
-        httpErrors.FORGOT_PASSWORD_OTP_NOT_MATCH,
+        httpErrors.FORGOT_PASSWORD_DIFFERENCE_PASSWORD,
         HttpStatus.BAD_REQUEST,
       );
     }
-
     // update data
-    const passwordHash = await bcrypt.hash(newPassword, +authConfig.salt);
+    const passwordHash = await bcrypt.hash(password, +authConfig.salt);
     await Promise.all([
       this.userRepository.update(
         { email: email },
         { password: passwordHash },
       ),
-      this.cacheManager.del(`register-${email}`),
+      this.cacheManager.del(`forgotPassword-${email}`),
     ]);
     return httpResponse.FORGOT_PASSWORD_SUCCESS;
   }
