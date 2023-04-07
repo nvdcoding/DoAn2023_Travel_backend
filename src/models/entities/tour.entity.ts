@@ -18,6 +18,8 @@ import { Province } from './province.entity';
 import { Rate } from './rate.entity';
 import { TourGuide } from './tourguide.entity';
 import { TourSchedule } from './tour_schedule.entity';
+import { TourStatus } from 'src/shares/enum/tour.enum';
+import { TourImage } from './tour-image.entity';
 
 @Entity({ name: 'tours' })
 export class Tour extends BaseEntity {
@@ -36,6 +38,15 @@ export class Tour extends BaseEntity {
   @Column({ name: 'max_price', default: 0, type: 'bigint', nullable: false })
   maxPrice: number;
 
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enum: TourStatus,
+    default: TourStatus.INACTIVE,
+    nullable: false,
+  })
+  status: TourStatus;
+
   @OneToOne(() => Province)
   @JoinColumn()
   provice: Province;
@@ -43,15 +54,20 @@ export class Tour extends BaseEntity {
   @OneToMany(() => Rate, (rate) => rate.tour)
   rates: Rate[];
 
-  @OneToMany(() => TourSchedule, (tourSchedule) => tourSchedule.tour)
+  @OneToMany(() => TourSchedule, (tourSchedule) => tourSchedule.tour, {
+    cascade: true,
+  })
   tourSchedule: TourSchedule[];
 
   @OneToMany(() => Order, (order) => order.tours)
   orders: Order[];
 
+  @OneToMany(() => TourImage, (tourImage) => tourImage.tour, { cascade: true })
+  images: TourImage[];
+
   //many to one
   @ManyToOne(() => TourGuide, (tourGuide) => tourGuide.tours)
-  tourGuides: TourGuide;
+  tourGuide: TourGuide;
 
   @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.tour)
   userFavorites: UserFavorite[];

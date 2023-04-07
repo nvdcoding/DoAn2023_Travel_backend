@@ -1,27 +1,24 @@
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Tour } from './tour.entity';
-@Entity({ name: 'tour_schedule' })
-export class TourSchedule extends BaseEntity {
+
+@Entity()
+export class TourImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false, name: 'content' })
-  content: string;
+  @Column()
+  url: string;
 
-  @ManyToOne(() => Tour, (tour) => tour.tourSchedule, {
+  @ManyToOne(() => Tour, (tour) => tour.images, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'tour_id' })
   tour: Tour;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -29,7 +26,4 @@ export class TourSchedule extends BaseEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date;
 }

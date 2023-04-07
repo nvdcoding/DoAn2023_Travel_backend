@@ -35,10 +35,21 @@ export const httpErrors = {
   //FORGOT PASSWORD
   FORGOT_PASSWORD_DIFFERENCE_PASSWORD: {
     message: 'New password must difference password',
-    code: 'ERR_FORGOT_PASSWORD_001'
+    code: 'ERR_FORGOT_PASSWORD_001',
   },
   FORGOT_PASSWORD_OTP_NOT_MATCH: {
     message: 'Otp not match',
-    code: 'ERR_FORGOT_PASSWORD_002'
+    code: 'ERR_FORGOT_PASSWORD_002',
+  },
+
+  //TOUR
+  TOUR_EXIST: {
+    message: 'Tour existed',
+    code: 'ERR_TOUR_001',
+  },
+  //TOUR GUIDE
+  TOUR_GUIDE_NOT_FOUND: {
+    message: 'Tour guide not found',
+    code: 'ERR_TOUR_GUIDE_001',
   },
 };

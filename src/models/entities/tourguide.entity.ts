@@ -113,7 +113,7 @@ export class TourGuide extends BaseEntity {
   @OneToMany(() => Voucher, (vourcher) => vourcher.tourGuideCreated)
   vourchers: Voucher[];
 
-  @OneToMany(() => Tour, (tour) => tour.tourGuides)
+  @OneToMany(() => Tour, (tour) => tour.tourGuide)
   tours: Tour[];
   // Task cho anh Hảo: 1 HDV có thể hoạt động ở nhiều tỉnh
 

@@ -15,4 +15,9 @@ export const httpResponse = {
     message: 'Change password success',
     code: 'USER_004',
   },
+  // TOUR
+  CREATE_TOUR_SUCCESS: {
+    message: 'Tour has ben created, please wait admin review',
+    code: 'TOUR_001',
+  },
 };
