@@ -22,6 +22,13 @@ export class Province extends BaseEntity {
   @Column({ nullable: false, name: 'name' })
   name: string;
 
+  @Index()
+  @Column({ nullable: false, name: 'slug' })
+  slug: string;
+
+  @Column({ nullable: false, name: 'description', type: 'text' })
+  description: string;
+
   @Column({ name: 'num_of_favorites', default: 0, type: 'integer' })
   numOfFavorites: number;
 

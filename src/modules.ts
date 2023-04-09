@@ -6,16 +6,14 @@ import * as redisStore from 'cache-manager-redis-store';
 import { ConsoleModule } from 'nestjs-console';
 import { DatabaseCommonModule } from 'src/models/database-common';
 import { redisConfig } from './configs/redis.config';
-import { Admin } from './models/entities/admin.entity';
-import { Comment } from './models/entities/comment.entity';
-import { Order } from './models/entities/orders.entity';
-import { OrderSchedule } from './models/entities/order_schedule.entity';
-import { Province } from './models/entities/province.entity';
-import { User } from './models/entities/user.entity';
-import { UserFavorite } from './models/entities/user_favorite.entity';
+import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { GenDataModule } from './modules/gen-data/gen-data.modules';
 import { MailModule } from './modules/mail/mail.module';
+import { OrderModule } from './modules/orders/order.module';
+import { ProvinceModule } from './modules/province/province.module';
 import { TourModule } from './modules/tour/tour.module';
+import { UserModule } from './modules/user/user.module';
 
 const Modules = [
   Logger,
@@ -34,5 +32,10 @@ const Modules = [
   ConsoleModule,
   AuthModule,
   TourModule,
+  GenDataModule,
+  AdminModule,
+  UserModule,
+  ProvinceModule,
+  OrderModule,
 ];
 export default Modules;

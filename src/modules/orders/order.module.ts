@@ -3,8 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { MailModule } from '../mail/mail.module';
 import { UserModule } from '../user/user.module';
-import { TourController } from './tour.controller';
-import { TourService } from './tour.service';
+import { OrderController } from './order.controller';
+import { OrderService } from './order.service';
 
 @Module({
   imports: [
@@ -19,10 +19,10 @@ import { TourService } from './tour.service';
           },
         } as JwtModuleOptions),
       inject: [ConfigService],
-    })
+    }),
   ],
-  providers: [TourService],
-  controllers: [TourController],
+  providers: [OrderService],
+  controllers: [OrderController],
   exports: [],
 })
-export class TourModule {}
+export class OrderModule {}

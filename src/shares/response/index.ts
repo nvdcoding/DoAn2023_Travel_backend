@@ -20,4 +20,9 @@ export const httpResponse = {
     message: 'Tour has ben created, please wait admin review',
     code: 'TOUR_001',
   },
+  // PROVINCE
+  GET_PROVINCE_SUCCESS: {
+    message: 'Get province success',
+    code: 'TOUR_002',
+  },
 };

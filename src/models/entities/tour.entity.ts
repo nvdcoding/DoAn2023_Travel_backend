@@ -38,6 +38,25 @@ export class Tour extends BaseEntity {
   @Column({ name: 'max_price', default: 0, type: 'bigint', nullable: false })
   maxPrice: number;
 
+  @Column({ name: 'max_member', default: 0, type: 'bigint', nullable: false })
+  maxMember: number;
+
+  @Column({
+    name: 'num_of_free_member',
+    default: 0,
+    type: 'int',
+    nullable: false,
+  })
+  numOfFreeMember: number;
+
+  @Column({
+    name: 'fee_per_member',
+    default: 0,
+    type: 'bigint',
+    nullable: false,
+  })
+  feePerMember: number;
+
   @Column({
     name: 'status',
     type: 'enum',

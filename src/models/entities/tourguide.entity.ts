@@ -22,6 +22,7 @@ import { Report } from './report.entity';
 import { Tour } from './tour.entity';
 import { Voucher } from './voucher.entity';
 import { Wallet } from './wallet.entity';
+import { Order } from './orders.entity';
 
 @Entity({ name: 'tour_guides' })
 export class TourGuide extends BaseEntity {
@@ -112,6 +113,9 @@ export class TourGuide extends BaseEntity {
 
   @OneToMany(() => Voucher, (vourcher) => vourcher.tourGuideCreated)
   vourchers: Voucher[];
+
+  @OneToMany(() => Order, (order) => order.tourGuide)
+  orders: Order[];
 
   @OneToMany(() => Tour, (tour) => tour.tourGuide)
   tours: Tour[];

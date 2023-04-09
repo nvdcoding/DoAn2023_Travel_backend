@@ -9,7 +9,7 @@ import { TourStatus } from 'src/shares/enum/tour.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { Between, IsNull, LessThanOrEqual, MoreThanOrEqual, Not } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Not } from 'typeorm';
 import { CreateTourDto } from './dtos/create-tour.dto';
 import { GetTourDto } from './dtos/get-tour-dto';
 
@@ -43,11 +43,17 @@ export class TourService {
       );
     }
 
+    if (!province) {
+      throw new HttpException(
+        httpErrors.PROVINCE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const [tourSchedulesData, imagesData] = await Promise.all([
       this.tourScheduleRepository.save([...body.tourSchedules]),
       this.tourImageRepository.save([...body.tourImages]),
     ]);
-    console.log({ imagesData, tourSchedulesData });
 
     await this.tourRepository.save({
       name,
@@ -82,7 +88,11 @@ export class TourService {
       where[`basePrice`] = LessThanOrEqual(maxPrice);
     }
     const data = await this.tourRepository.findAndCount({
-      where,
+      where: {
+        ...where,
+        status: TourStatus.ACTIVE,
+      },
+      relations: ['images', 'rates'],
     });
     return BasePaginationResponseDto.convertToPaginationWithTotalPages(
       data,

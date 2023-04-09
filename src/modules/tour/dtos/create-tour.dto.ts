@@ -37,6 +37,16 @@ export class CreateTourDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
+  maxMember: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  feePerMember: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
   provinceId: number;
 
   @ApiProperty({ type: [TourScheduleDto] })

@@ -1,6 +1,11 @@
 import { emailConfig } from 'src/configs/email.config';
 
 export const httpErrors = {
+  //AUTH
+  UNAUTHORIZED: {
+    message: 'Unauthorized',
+    code: 'ERR_AUTH_001',
+  },
   // User
   USER_EXIST: {
     message: 'User exist',
@@ -41,15 +46,28 @@ export const httpErrors = {
     message: 'Otp not match',
     code: 'ERR_FORGOT_PASSWORD_002',
   },
-
+  // PROVINCE
+  PROVINCE_NOT_FOUND: {
+    message: 'Province not found',
+    code: 'ERR_PROVINCE_001',
+  },
   //TOUR
   TOUR_EXIST: {
     message: 'Tour existed',
     code: 'ERR_TOUR_001',
   },
+  TOUR_NOT_FOUND: {
+    message: 'Tour not found',
+    code: 'ERR_TOUR_002',
+  },
   //TOUR GUIDE
   TOUR_GUIDE_NOT_FOUND: {
     message: 'Tour guide not found',
     code: 'ERR_TOUR_GUIDE_001',
+  },
+  // ORDER
+  NUM_OF_MEMBER_INVALID: {
+    message: 'Number of member is not valid',
+    code: 'ERR_ORDER_001',
   },
 };
