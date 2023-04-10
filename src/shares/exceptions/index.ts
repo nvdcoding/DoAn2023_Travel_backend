@@ -70,4 +70,8 @@ export const httpErrors = {
     message: 'Number of member is not valid',
     code: 'ERR_ORDER_001',
   },
+  ORDER_NOT_FOUND: {
+    message: 'Order not found',
+    code: 'ERR_ORDER_002',
+  },
 };

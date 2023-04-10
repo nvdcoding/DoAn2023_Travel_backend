@@ -13,6 +13,7 @@ export class ProvinceService {
     const keyword = query.keyword?.replace(/(%)/g, '\\$1');
     const provinces = await this.provinceRepository.find({
       where: { name: keyword ? Like(`%${keyword}%`) : Not(IsNull()) },
+      relations: ['tours'],
     });
     return {
       ...httpResponse.GET_PROVINCE_SUCCESS,

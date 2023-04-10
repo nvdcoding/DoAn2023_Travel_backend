@@ -15,6 +15,7 @@ import {
 import { OrderSchedule } from './order_schedule.entity';
 import { Tour } from './tour.entity';
 import { TourGuide } from './tourguide.entity';
+import { User } from './user.entity';
 import { UserVoucher } from './user_voucher.entity';
 
 @Entity({ name: 'orders' })
@@ -55,8 +56,11 @@ export class Order extends BaseEntity {
   @JoinColumn()
   userVoucher: UserVoucher;
 
-  @ManyToOne(() => Tour, (tour) => tour)
+  @ManyToOne(() => Tour, (tour) => tour.orders)
   tours: Tour;
+
+  @ManyToOne(() => User, (user) => user.orders)
+  user: User;
 
   @OneToMany(() => OrderSchedule, (orderSchedule) => orderSchedule.order)
   orderSchedule: OrderSchedule[];

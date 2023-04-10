@@ -66,9 +66,9 @@ export class Tour extends BaseEntity {
   })
   status: TourStatus;
 
-  @OneToOne(() => Province)
-  @JoinColumn()
-  provice: Province;
+  @ManyToOne(() => Province, (province) => province.tours)
+  @JoinColumn({ name: 'province_id' })
+  province: Province;
 
   @OneToMany(() => Rate, (rate) => rate.tour)
   rates: Rate[];

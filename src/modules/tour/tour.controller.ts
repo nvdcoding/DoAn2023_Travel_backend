@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
@@ -27,9 +36,8 @@ export class TourController {
     return this.tourService.getTours(options);
   }
 
-  @Post('/orders')
-  @UseGuards(UserAuthGuard)
-  async orderTours(@UserID() userId: number, body) {
-    console.log(userId);
+  @Get('/:id')
+  async getOneTour(@Param('id') id: number) {
+    return this.tourService.getTour(id);
   }
 }

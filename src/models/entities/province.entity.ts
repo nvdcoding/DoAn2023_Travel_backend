@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { TourGuide } from './tourguide.entity';
+import { Tour } from './tour.entity';
 
 @Entity({ name: 'provinces' })
 export class Province extends BaseEntity {
@@ -32,11 +33,22 @@ export class Province extends BaseEntity {
   @Column({ name: 'num_of_favorites', default: 0, type: 'integer' })
   numOfFavorites: number;
 
+  @Column({
+    name: 'images',
+    default:
+      'https://vcdn1-dulich.vnecdn.net/2022/09/15/7-1663171465-1663175328.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=OV0imVDRO8xJKWGk7TRIJQ',
+    type: 'varchar',
+  })
+  images: string;
+
   @ManyToMany(() => TourGuide, (tourGuide) => tourGuide.provinces)
   tourGuides: TourGuide[];
 
   @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.province)
   userFavorites: UserFavorite[];
+
+  @OneToMany(() => Tour, (tour) => tour.province)
+  tours: Tour[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

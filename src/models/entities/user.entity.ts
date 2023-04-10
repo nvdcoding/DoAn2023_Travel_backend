@@ -18,6 +18,7 @@ import { Post } from './post.entity';
 import { Report } from './report.entity';
 import { UserVoucher } from './user_voucher.entity';
 import { Wallet } from './wallet.entity';
+import { Order } from './orders.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -97,6 +98,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.user)
   userFavorites: UserFavorite[];
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

@@ -4,12 +4,12 @@ import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 
 export class GetTourDto extends BasePaginationRequestDto {
   @ApiProperty({ required: false })
-  @IsNumber()
+  @IsString()
   @IsOptional()
   provinceId: number;
 
   @ApiProperty({ required: false })
-  @IsNumber()
+  @IsString()
   @IsOptional()
   tourGuideId: number;
 

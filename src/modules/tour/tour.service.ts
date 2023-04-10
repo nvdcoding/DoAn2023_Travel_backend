@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { of } from 'rxjs';
 import { ProvinceRepository } from 'src/models/repositories/province.repository';
 import { TourImageRepository } from 'src/models/repositories/tour-image.repository';
 import { TourScheduleRepository } from 'src/models/repositories/tour-schedule.repository';
@@ -29,7 +30,9 @@ export class TourService {
   ): Promise<Response> {
     const { name, description, basePrice, maxPrice, provinceId } = body;
     const [tour, tourGuide, province] = await Promise.all([
-      this.tourRepository.findOne({ where: { name } }),
+      this.tourRepository.findOne({
+        where: { name },
+      }),
       this.tourGuideRepository.findOne({ where: { id: tourGuideId } }),
       this.provinceRepository.findOne(provinceId),
     ]);
@@ -63,7 +66,8 @@ export class TourService {
       tourGuide,
       images: imagesData,
       tourSchedule: tourSchedulesData,
-      status: TourStatus.INACTIVE,
+      status: TourStatus.ACTIVE,
+      province,
     });
     return httpResponse.CREATE_TOUR_SUCCESS;
   }
@@ -73,10 +77,10 @@ export class TourService {
     const { provinceId, tourGuideId, minPrice, maxPrice } = options;
     const where = {};
     if (provinceId) {
-      where[`provinceId`] = provinceId;
+      where[`province`] = provinceId;
     }
     if (tourGuideId) {
-      where[`tourGuideId`] = tourGuideId;
+      where[`tourGuide`] = tourGuideId;
     }
     if (minPrice && maxPrice) {
       where[`basePrice`] = Between(minPrice, maxPrice);
@@ -92,12 +96,40 @@ export class TourService {
         ...where,
         status: TourStatus.ACTIVE,
       },
-      relations: ['images', 'rates'],
+      relations: [
+        'images',
+        'rates',
+        'tourGuide',
+        'userFavorites',
+        'tourSchedule',
+        'province',
+      ],
     });
     return BasePaginationResponseDto.convertToPaginationWithTotalPages(
       data,
       options.page || 1,
       options.limit || 10,
     );
+  }
+
+  async getTour(id: number) {
+    const tour = await this.tourRepository.findOne({
+      where: { id, status: TourStatus.ACTIVE },
+      relations: [
+        'images',
+        'rates',
+        'tourGuide',
+        'userFavorites',
+        'tourSchedule',
+        'province',
+      ],
+    });
+    if (!tour) {
+      throw new HttpException(httpErrors.TOUR_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return {
+      ...httpResponse.GET_PROVINCE_SUCCESS,
+      data: tour,
+    };
   }
 }

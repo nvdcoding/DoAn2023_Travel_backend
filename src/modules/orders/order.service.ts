@@ -12,6 +12,8 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import * as moment from 'moment';
+import { Order } from 'src/models/entities/orders.entity';
+import { OrderStatus } from 'src/shares/enum/order.enum';
 
 @Injectable()
 export class OrderService {
@@ -77,13 +79,30 @@ export class OrderService {
     );
     await this.orderRepository.save({
       startDate,
-      endDate: moment(new Date(startDate)).add(scheduleContent.length, 'days'),
+      endDate: moment(new Date(startDate))
+        .add(scheduleContent.length, 'days')
+        .toString(),
       price: orderPrice,
       paid: 0,
       numberOfMember,
       tourGuide,
       tour,
+      user,
       orderSchedule,
+      status: OrderStatus.WAITING,
     });
+  }
+
+  async getOpenOrder(userId: number) {
+    const orders = await this.orderRepository.find({
+      where: {
+        status: OrderStatus.WAITING,
+        userId,
+      },
+    });
+    if (!orders) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return orders;
   }
 }
