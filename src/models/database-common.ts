@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminRepository } from './repositories/admin.repository';
 import { OrderScheduleRepository } from './repositories/order-schedule.repository';
 import { OrderRepository } from './repositories/order.repository';
 import { ProvinceRepository } from './repositories/province.repository';
@@ -18,6 +19,7 @@ const commonRepositories = [
   ProvinceRepository,
   OrderRepository,
   OrderScheduleRepository,
+  AdminRepository,
 ];
 
 @Global()

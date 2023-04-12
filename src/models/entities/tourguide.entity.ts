@@ -105,6 +105,9 @@ export class TourGuide extends BaseEntity {
   @OneToMany(() => Report, (Report) => Report.tourGuide)
   reports: Report[];
 
+  @OneToMany(() => Order, (order) => order.tourGuide)
+  orders: Order[];
+
   @OneToMany(() => Post, (post) => post.tourGuide)
   posts: Post[];
 
@@ -113,9 +116,6 @@ export class TourGuide extends BaseEntity {
 
   @OneToMany(() => Voucher, (vourcher) => vourcher.tourGuideCreated)
   vourchers: Voucher[];
-
-  @OneToMany(() => Order, (order) => order.tourGuide)
-  orders: Order[];
 
   @OneToMany(() => Tour, (tour) => tour.tourGuide)
   tours: Tour[];

@@ -78,7 +78,7 @@ export class Tour extends BaseEntity {
   })
   tourSchedule: TourSchedule[];
 
-  @OneToMany(() => Order, (order) => order.tours)
+  @OneToMany(() => Order, (order) => order.tour)
   orders: Order[];
 
   @OneToMany(() => TourImage, (tourImage) => tourImage.tour, { cascade: true })

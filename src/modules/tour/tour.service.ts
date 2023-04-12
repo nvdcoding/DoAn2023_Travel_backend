@@ -1,16 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { of } from 'rxjs';
 import { ProvinceRepository } from 'src/models/repositories/province.repository';
 import { TourImageRepository } from 'src/models/repositories/tour-image.repository';
 import { TourScheduleRepository } from 'src/models/repositories/tour-schedule.repository';
 import { TourRepository } from 'src/models/repositories/tour.repository';
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
-import { TourStatus } from 'src/shares/enum/tour.enum';
+import { AdminApproveAction, TourStatus } from 'src/shares/enum/tour.enum';
+import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Not } from 'typeorm';
+import { ApproveTourDto } from './dtos/approve-tour.dto';
 import { CreateTourDto } from './dtos/create-tour.dto';
 import { GetTourDto } from './dtos/get-tour-dto';
 
@@ -28,7 +29,8 @@ export class TourService {
     body: CreateTourDto,
     tourGuideId: number,
   ): Promise<Response> {
-    const { name, description, basePrice, maxPrice, provinceId } = body;
+    const { name, description, basePrice, maxPrice, provinceId, maxMember } =
+      body;
     const [tour, tourGuide, province] = await Promise.all([
       this.tourRepository.findOne({
         where: { name },
@@ -68,6 +70,8 @@ export class TourService {
       tourSchedule: tourSchedulesData,
       status: TourStatus.ACTIVE,
       province,
+      maxMember,
+      tour,
     });
     return httpResponse.CREATE_TOUR_SUCCESS;
   }
@@ -131,5 +135,40 @@ export class TourService {
       ...httpResponse.GET_PROVINCE_SUCCESS,
       data: tour,
     };
+  }
+
+  async approveTour(body: ApproveTourDto): Promise<Response> {
+    const { tourId, action } = body;
+    const tour = await this.tourRepository.findOne({
+      where: {
+        id: tourId,
+        status: TourStatus.WAITING,
+      },
+      relations: ['tourGuide'],
+    });
+    if (!tour) {
+      throw new HttpException(httpErrors.TOUR_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (tour.tourGuide.verifyStatus !== TourguideStatus.ACTIVE) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_ACTIVE,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    let status: TourStatus;
+    switch (action) {
+      case AdminApproveAction.APPROVE:
+        status = TourStatus.ACTIVE;
+        break;
+      case AdminApproveAction.REJECT:
+        status = TourStatus.REJECTED;
+        break;
+      default:
+        break;
+    }
+    await this.tourRepository.update(tourId, {
+      status,
+    });
+    return httpResponse.CREATE_TOUR_SUCCESS;
   }
 }

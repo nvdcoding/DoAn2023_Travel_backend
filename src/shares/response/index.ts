@@ -25,6 +25,11 @@ export const httpResponse = {
     code: 'TOUR_001',
     statusCode: 200,
   },
+  APPROVE_TOUR_SUCCESS: {
+    message: 'Tour have been actived',
+    code: 'TOUR_002',
+    statusCode: 200,
+  },
   GET_TOUR_SUCCESS: {
     message: 'Get tour success',
     code: 'TOUR_002',

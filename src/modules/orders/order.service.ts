@@ -13,7 +13,9 @@ import { httpErrors } from 'src/shares/exceptions';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import * as moment from 'moment';
 import { Order } from 'src/models/entities/orders.entity';
-import { OrderStatus } from 'src/shares/enum/order.enum';
+import { GetTourOptions, OrderStatus } from 'src/shares/enum/order.enum';
+import { GetOrdersDto } from './dtos/get-orders.dto';
+import { In } from 'typeorm';
 
 @Injectable()
 export class OrderService {
@@ -77,26 +79,69 @@ export class OrderService {
         }),
       ),
     );
+
     await this.orderRepository.save({
       startDate,
       endDate: moment(new Date(startDate))
         .add(scheduleContent.length, 'days')
-        .toString(),
+        .toISOString()
+        .split('T')[0],
       price: orderPrice,
       paid: 0,
-      numberOfMember,
+      size: numberOfMember,
       tourGuide,
       tour,
       user,
       orderSchedule,
-      status: OrderStatus.WAITING,
+      status: OrderStatus.WAITING_TOUR_GUIDE,
     });
   }
 
-  async getOpenOrder(userId: number) {
+  async getOrdersByStatus(userId: number, options: GetOrdersDto) {
+    const { type } = options;
+    let orderStatus = [];
+    switch (type) {
+      case GetTourOptions.ALL:
+        orderStatus = [
+          ...OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_TOUR_GUIDE,
+          OrderStatus.WAITING_START,
+          OrderStatus.PROCESSING,
+          OrderStatus.DONE,
+          OrderStatus.REJECTED,
+        ];
+        break;
+      case GetTourOptions.WAITING:
+        orderStatus = [
+          ...OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_TOUR_GUIDE,
+        ];
+        break;
+      case GetTourOptions.PROCESSING:
+        orderStatus = [...OrderStatus.WAITING_START, OrderStatus.PROCESSING];
+        break;
+      case GetTourOptions.END:
+        orderStatus = [...OrderStatus.DONE, OrderStatus.REJECTED];
+        break;
+      default:
+        break;
+    }
     const orders = await this.orderRepository.find({
       where: {
-        status: OrderStatus.WAITING,
+        status: In(orderStatus),
+        userId,
+      },
+    });
+    if (!orders) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return orders;
+  }
+
+  async getOneOrder(userId: number, orderId: number) {
+    const orders = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
         userId,
       },
     });

@@ -28,7 +28,7 @@ export class Order extends BaseEntity {
     type: 'enum',
     enum: OrderStatus,
     nullable: false,
-    default: OrderStatus.WAITING,
+    default: OrderStatus.WAITING_TOUR_GUIDE,
   })
   status: OrderStatus;
 
@@ -48,7 +48,7 @@ export class Order extends BaseEntity {
   @Column({ name: 'size', type: 'int', nullable: false })
   size: number;
 
-  @OneToOne(() => TourGuide)
+  @ManyToOne(() => TourGuide, (tourGuide) => tourGuide.orders)
   @JoinColumn()
   tourGuide: TourGuide;
 
@@ -57,7 +57,7 @@ export class Order extends BaseEntity {
   userVoucher: UserVoucher;
 
   @ManyToOne(() => Tour, (tour) => tour.orders)
-  tours: Tour;
+  tour: Tour;
 
   @ManyToOne(() => User, (user) => user.orders)
   user: User;

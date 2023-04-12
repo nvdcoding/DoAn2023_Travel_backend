@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { emailConfig } from 'src/configs/email.config';
 import { RegisterEmailDto } from './dto/register-email.dto';
-import { ForgotPasswordEmailDto } from "./dto/forgot-password-email.dto";
+import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
 //import * as moment from 'moment';
 
 @Processor('mail')
@@ -44,7 +44,9 @@ export class MailProcessor {
   }
 
   @Process('sendForgotPasswordMail')
-  async sendForgotPasswordMail({ data }: Job<ForgotPasswordEmailDto>): Promise<number> {
+  async sendForgotPasswordMail({
+    data,
+  }: Job<ForgotPasswordEmailDto>): Promise<number> {
     this.logger.log(
       `Start job: sendUpdateEmail user ${data.username} email ${data.email}`,
     );
@@ -69,4 +71,7 @@ export class MailProcessor {
     );
     return 1;
   }
+
+  // @Process('sendApproveTourMail')
+  // async sendApproveTourMail() {}
 }

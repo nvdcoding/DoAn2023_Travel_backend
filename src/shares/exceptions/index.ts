@@ -65,6 +65,10 @@ export const httpErrors = {
     message: 'Tour guide not found',
     code: 'ERR_TOUR_GUIDE_001',
   },
+  TOUR_GUIDE_NOT_ACTIVE: {
+    message: 'Tour guide not active',
+    code: 'ERR_TOUR_GUIDE_002',
+  },
   // ORDER
   NUM_OF_MEMBER_INVALID: {
     message: 'Number of member is not valid',
