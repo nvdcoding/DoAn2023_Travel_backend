@@ -14,6 +14,7 @@ import { OrderModule } from './modules/orders/order.module';
 import { ProvinceModule } from './modules/province/province.module';
 import { TourModule } from './modules/tour/tour.module';
 import { UserModule } from './modules/user/user.module';
+import { VoucherModule } from './modules/voucher/voucher.module';
 
 const Modules = [
   Logger,
@@ -37,5 +38,6 @@ const Modules = [
   UserModule,
   ProvinceModule,
   OrderModule,
+  VoucherModule,
 ];
 export default Modules;
