@@ -14,4 +14,6 @@ export class VoucherService {
     private readonly orderRepository: OrderRepository,
     private readonly orderScheduleRepository: OrderScheduleRepository,
   ) {}
+
+  async createVoucher(body) {}
 }

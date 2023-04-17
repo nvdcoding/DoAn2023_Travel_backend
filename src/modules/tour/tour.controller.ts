@@ -9,11 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserID } from 'src/shares/decorators/get-user-id.decorator';
-import { AdminApproveAction } from 'src/shares/enum/tour.enum';
 import { Response } from 'src/shares/response/response.interface';
-import { AdminModAuthGuard } from '../auth/guards/admin-auth.guard';
-import { UserAuthGuard } from '../auth/guards/user-auth.guard';
+import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { ApproveTourDto } from './dtos/approve-tour.dto';
 import { CreateTourDto } from './dtos/create-tour.dto';
 import { GetTourDto } from './dtos/get-tour-dto';
@@ -42,6 +39,12 @@ export class TourController {
   @Get('/:id')
   async getOneTour(@Param('id') id: number) {
     return this.tourService.getTour(id);
+  }
+
+  @Get('/approve-list')
+  @UseGuards(AdminModAuthGuard)
+  async getApproveList(@Query() options: GetTourDto) {
+    return this.tourService.getApproveList(options);
   }
 
   @Put('/')

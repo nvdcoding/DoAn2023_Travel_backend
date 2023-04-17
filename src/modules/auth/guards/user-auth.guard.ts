@@ -33,18 +33,11 @@ export class UserAuthGuard extends AuthGuard('jwt') {
     }
 
     const userJwt = await this.jtwSv.verify(token[1]);
-    const user = await this.userService.getUserById(
-      userJwt.id,
-    );
+    const user = await this.userService.getUserById(userJwt.id);
     if (!user) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
 
-    const result = super.canActivate(context);
-    if (isObservable(result)) {
-      return firstValueFrom(result);
-    } else {
-      return result;
-    }
+    return true;
   }
 }

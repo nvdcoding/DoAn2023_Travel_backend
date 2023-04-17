@@ -12,7 +12,7 @@ import { httpErrors } from 'src/shares/exceptions';
 import { Connection } from 'typeorm';
 
 @Injectable()
-export class AdminAuthGuard extends AuthGuard('jwt') {
+export class AdminModAuthGuard extends AuthGuard('jwt') {
   constructor(
     private readonly connection: Connection,
     private readonly adminService: AdminService,
@@ -33,7 +33,7 @@ export class AdminAuthGuard extends AuthGuard('jwt') {
     }
 
     const adminJwt = await this.jtwSv.verify(token[1]);
-    const admin = await this.adminService.getAdminByIdAndUsername(
+    const admin = await this.adminService.getAdminOrModByIdAndUsername(
       adminJwt.id,
       adminJwt.username,
     );

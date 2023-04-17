@@ -137,6 +137,20 @@ export class TourService {
     };
   }
 
+  async getApproveList(options: GetTourDto) {
+    const data = await this.tourRepository.findAndCount({
+      where: {
+        status: TourStatus.WAITING,
+      },
+      relations: ['images', 'rates', 'tourGuide', 'tourSchedule', 'province'],
+    });
+    return BasePaginationResponseDto.convertToPaginationWithTotalPages(
+      data,
+      options.page || 1,
+      options.limit || 10,
+    );
+  }
+
   async approveTour(body: ApproveTourDto): Promise<Response> {
     const { tourId, action } = body;
     const tour = await this.tourRepository.findOne({
