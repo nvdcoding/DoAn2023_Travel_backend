@@ -133,6 +133,7 @@ export class OrderService {
         status: In(orderStatus),
         user,
       },
+      relations: ['tour'],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
