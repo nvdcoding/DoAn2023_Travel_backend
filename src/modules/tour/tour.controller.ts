@@ -32,7 +32,7 @@ export class TourController {
   // @UseGuards()
 
   @Get('/')
-  async getTour(@Query() options: GetTourDto) {
+  async getTour(@Query() options: GetTourDto): Promise<Response> {
     return this.tourService.getTours(options);
   }
 

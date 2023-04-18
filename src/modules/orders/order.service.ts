@@ -1,10 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { OrderSchedule } from 'src/models/entities/order_schedule.entity';
 import { OrderScheduleRepository } from 'src/models/repositories/order-schedule.repository';
 import { OrderRepository } from 'src/models/repositories/order.repository';
-import { ProvinceRepository } from 'src/models/repositories/province.repository';
-import { TourImageRepository } from 'src/models/repositories/tour-image.repository';
-import { TourScheduleRepository } from 'src/models/repositories/tour-schedule.repository';
 import { TourRepository } from 'src/models/repositories/tour.repository';
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
@@ -12,10 +8,11 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import * as moment from 'moment';
-import { Order } from 'src/models/entities/orders.entity';
 import { GetTourOptions, OrderStatus } from 'src/shares/enum/order.enum';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { In } from 'typeorm';
+import { httpResponse } from 'src/shares/response';
+import { Response } from 'src/shares/response/response.interface';
 
 @Injectable()
 export class OrderService {
@@ -27,7 +24,7 @@ export class OrderService {
     private readonly orderScheduleRepository: OrderScheduleRepository,
   ) {}
 
-  async orderTour(userId: number, body: OrderTourDto) {
+  async orderTour(userId: number, body: OrderTourDto): Promise<Response> {
     const { startDate, tourId, price, numberOfMember } = body;
     const [tour, user] = await Promise.all([
       this.tourRepository.findOne({
@@ -95,9 +92,13 @@ export class OrderService {
       orderSchedule,
       status: OrderStatus.WAITING_TOUR_GUIDE,
     });
+    return httpResponse.GET_ORDER_SUCCESS;
   }
 
-  async getOrdersByStatus(userId: number, options: GetOrdersDto) {
+  async getOrdersByStatus(
+    userId: number,
+    options: GetOrdersDto,
+  ): Promise<Response> {
     const { type } = options;
     let orderStatus = [];
     switch (type) {
@@ -126,19 +127,20 @@ export class OrderService {
       default:
         break;
     }
+    const user = await this.userRepository.findOne(userId);
     const orders = await this.orderRepository.find({
       where: {
         status: In(orderStatus),
-        userId,
+        user,
       },
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return orders;
+    return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
   }
 
-  async getOneOrder(userId: number, orderId: number) {
+  async getOneOrder(userId: number, orderId: number): Promise<Response> {
     const orders = await this.orderRepository.findOne({
       where: {
         id: orderId,
@@ -148,6 +150,6 @@ export class OrderService {
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return orders;
+    return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
   }
 }

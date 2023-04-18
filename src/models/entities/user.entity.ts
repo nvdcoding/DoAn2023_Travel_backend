@@ -56,6 +56,13 @@ export class User extends BaseEntity {
   })
   availableBalance: string;
 
+  @Column({
+    type: 'int',
+    default: 0,
+    name: 'voucher_point',
+  })
+  voucherPoint: number;
+
   //TODO: add link here
   @Column({
     nullable: false,

@@ -1,8 +1,3 @@
-export enum VoucherType {
-  CREATED_BY_ADMIN = '0',
-  CREATED_BY_TOURGUIDE = '1',
-}
-
 export enum DiscountType {
   RATE = '0',
   FIX = '1',

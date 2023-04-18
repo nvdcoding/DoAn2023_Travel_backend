@@ -41,4 +41,23 @@ export const httpResponse = {
     code: 'TOUR_002',
     statusCode: 200,
   },
+  // VOUCHER
+  CREATE_VOUCHER_SUCCESS: {
+    message: 'Create voucher success',
+    code: 'VOUCHER_001',
+    statusCode: 200,
+  },
+
+  CLAIM_VOUCHER_SUCCESS: {
+    message: 'claim voucher success',
+    code: 'VOUCHER_002',
+    statusCode: 200,
+  },
+
+  // ORDER
+  GET_ORDER_SUCCESS: {
+    message: 'Get orders success',
+    code: 'ORDER_001',
+    statusCode: 200,
+  },
 };

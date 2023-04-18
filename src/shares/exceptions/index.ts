@@ -78,4 +78,25 @@ export const httpErrors = {
     message: 'Order not found',
     code: 'ERR_ORDER_002',
   },
+  // VOUCHER
+  VOUCHER_EXIST: {
+    message: 'Voucher exist',
+    code: 'ERR_VOUCHER_001',
+  },
+  VOUCHER_NOT_FOUND: {
+    message: 'Voucher not found',
+    code: 'ERR_VOUCHER_002',
+  },
+  VOUCHER_QUANTITY_NOT_VALID: {
+    message: 'Its all been taken',
+    code: 'ERR_VOUCHER_003',
+  },
+  VOUCHER_EXPIRED: {
+    message: 'Voucher has expired',
+    code: 'ERR_VOUCHER_004',
+  },
+  NOT_ENOUGHT_VOUCHER_POINT: {
+    message: 'Not have enough point to claim',
+    code: 'ERR_VOUCHER_005',
+  },
 };

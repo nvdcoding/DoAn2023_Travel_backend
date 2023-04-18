@@ -76,7 +76,7 @@ export class TourService {
     return httpResponse.CREATE_TOUR_SUCCESS;
   }
 
-  async getTours(options: GetTourDto) {
+  async getTours(options: GetTourDto): Promise<Response> {
     // const tours = await this.tourRepository.fin
     const { provinceId, tourGuideId, minPrice, maxPrice } = options;
     const where = {};
@@ -109,11 +109,14 @@ export class TourService {
         'province',
       ],
     });
-    return BasePaginationResponseDto.convertToPaginationWithTotalPages(
-      data,
-      options.page || 1,
-      options.limit || 10,
-    );
+    return {
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        data,
+        options.page || 1,
+        options.limit || 10,
+      ),
+      ...httpResponse.GET_TOUR_SUCCESS,
+    };
   }
 
   async getTour(id: number) {

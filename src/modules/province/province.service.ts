@@ -17,7 +17,7 @@ export class ProvinceService {
     });
     return {
       ...httpResponse.GET_PROVINCE_SUCCESS,
-      data: provinces,
+      returnValue: provinces,
     };
   }
 }

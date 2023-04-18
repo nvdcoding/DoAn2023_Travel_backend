@@ -1,19 +1,13 @@
-import { ReportStatus } from 'src/shares/enum/report.enum';
-import { DiscountType, VoucherType } from 'src/shares/enum/voucher.enum';
+import { DiscountType } from 'src/shares/enum/voucher.enum';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Post } from './post.entity';
-import { TourGuide } from './tourguide.entity';
-import { User } from './user.entity';
 import { UserVoucher } from './user_voucher.entity';
 
 @Entity({ name: 'vouchers' })
@@ -22,18 +16,22 @@ export class Voucher {
   id: number;
 
   @Column({
+    name: 'name',
+    type: 'varchar',
+  })
+  name: string;
+
+  @Column({
+    name: 'description',
+    type: 'varchar',
+  })
+  description: string;
+
+  @Column({
     name: 'code',
     type: 'varchar',
   })
   code: string;
-
-  @Column({
-    name: 'type',
-    type: 'enum',
-    enum: VoucherType,
-    nullable: false,
-  })
-  type: VoucherType;
 
   @Column({
     name: 'discount_type',
@@ -44,16 +42,26 @@ export class Voucher {
   discountType: DiscountType;
 
   @Column({
-    name: 'requirement_price',
+    name: 'value',
+    type: 'int',
+    nullable: false,
+  })
+  value: number;
+
+  @Column({
+    name: 'value',
+    type: 'int',
+    nullable: false,
+  })
+  quantity: number;
+
+  @Column({
+    name: 'requirement_point',
     type: 'bigint',
     default: 0,
     nullable: false,
   })
-  requirementPrice: number;
-
-  @ManyToOne(() => TourGuide, (tourGuide) => tourGuide.vourchers)
-  @JoinColumn({ name: 'tuor_guide_created' })
-  tourGuideCreated: TourGuide;
+  requirementPoint: number;
 
   @OneToMany(() => UserVoucher, (userVoucher) => userVoucher.voucher)
   userVouchers: UserVoucher[];
@@ -63,15 +71,6 @@ export class Voucher {
 
   @Column({ name: 'end_date', type: 'date', nullable: false })
   endDate: Date;
-
-  @Column({
-    type: 'enum',
-    name: 'status',
-    nullable: false,
-    enum: ReportStatus,
-    default: ReportStatus.PENDING,
-  })
-  status: ReportStatus;
 
   @CreateDateColumn()
   createdAt: Date;

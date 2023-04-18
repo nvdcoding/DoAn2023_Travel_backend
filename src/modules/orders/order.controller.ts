@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { Response } from 'src/shares/response/response.interface';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
-import { GetTourDto } from '../tour/dtos/get-tour-dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import { OrderService } from './order.service';
@@ -22,7 +22,10 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
   @Post('/')
   @UseGuards(UserAuthGuard)
-  async orderTours(@UserID() userId: number, @Body() body: OrderTourDto) {
+  async orderTours(
+    @UserID() userId: number,
+    @Body() body: OrderTourDto,
+  ): Promise<Response> {
     return this.orderService.orderTour(userId, body);
   }
 
@@ -31,13 +34,16 @@ export class OrderController {
   async getOrdersByStatus(
     @UserID() userId: number,
     @Query() options: GetOrdersDto,
-  ) {
+  ): Promise<Response> {
     return this.orderService.getOrdersByStatus(userId, options);
   }
 
   @Get('/:id')
   @UseGuards(UserAuthGuard)
-  async getOneOrder(@UserID() userId: number, @Param('id') orderId: number) {
+  async getOneOrder(
+    @UserID() userId: number,
+    @Param('id') orderId: number,
+  ): Promise<Response> {
     return this.orderService.getOneOrder(userId, orderId);
   }
 }

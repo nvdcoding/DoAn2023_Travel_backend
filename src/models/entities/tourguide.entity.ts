@@ -114,12 +114,8 @@ export class TourGuide extends BaseEntity {
   @OneToMany(() => Comment, (comment) => comment.tourGuide)
   comments: Comment[];
 
-  @OneToMany(() => Voucher, (vourcher) => vourcher.tourGuideCreated)
-  vourchers: Voucher[];
-
   @OneToMany(() => Tour, (tour) => tour.tourGuide)
   tours: Tour[];
-  // Task cho anh Hảo: 1 HDV có thể hoạt động ở nhiều tỉnh
 
   @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.tourGuide)
   userFavorites: UserFavorite[];

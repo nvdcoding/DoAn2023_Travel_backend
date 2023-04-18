@@ -8,6 +8,7 @@ import { TourImageRepository } from './repositories/tour-image.repository';
 import { TourScheduleRepository } from './repositories/tour-schedule.repository';
 import { TourRepository } from './repositories/tour.repository';
 import { TourGuideRepository } from './repositories/tourguide.repository';
+import { UserVoucherRepository } from './repositories/user-voucher.repository';
 import { UserRepository } from './repositories/user.repository';
 import { VoucherRepository } from './repositories/voucher.repository';
 
@@ -22,6 +23,7 @@ const commonRepositories = [
   OrderScheduleRepository,
   AdminRepository,
   VoucherRepository,
+  UserVoucherRepository,
 ];
 
 @Global()
