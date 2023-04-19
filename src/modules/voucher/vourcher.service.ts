@@ -86,7 +86,6 @@ export class VoucherService {
       }),
       this.voucherRepository.findOne(voucherId),
     ]);
-    // Check if the voucher is still valid
     const currentDate = new Date();
     if (currentDate > voucher.endDate) {
       throw new HttpException(
@@ -134,5 +133,25 @@ export class VoucherService {
     ]);
 
     return httpResponse.CLAIM_VOUCHER_SUCCESS;
+  }
+
+  async getAllAvailableVouchersForUser(userId: number): Promise<Response> {
+    // Retrieve the user from the database
+    const user = await this.userRepository.findOne(userId);
+
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    // Retrieve all user vouchers with status 'AVAILABLE' for the user
+    const userVouchers = await this.userVoucherRepository.find({
+      where: { user, status: UserVoucherStatus.AVAILABLE },
+      relations: ['voucher'],
+    });
+
+    // Extract the vouchers from the user vouchers
+    const vouchers = userVouchers.map((userVoucher) => userVoucher.voucher);
+
+    return { returnValue: vouchers, ...httpResponse.GET_VOUCHER_SUCCESS };
   }
 }

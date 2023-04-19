@@ -1,5 +1,15 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
@@ -22,5 +32,20 @@ export class VoucherController {
   @UseGuards(UserAuthGuard)
   async getAllVoucher(@Query() options: GetVoucherDto): Promise<Response> {
     return this.voucherService.getAllVoucher(options);
+  }
+
+  @Put('/:voucherId')
+  @UseGuards(UserAuthGuard)
+  async claimVoucher(
+    @UserID() userId: number,
+    @Param('voucherId') voucherId: number,
+  ): Promise<Response> {
+    return this.voucherService.claimVoucher(voucherId, userId);
+  }
+
+  @Get('/available')
+  @UseGuards(UserAuthGuard)
+  async getAvailableVoucher(@UserID() userId: number): Promise<Response> {
+    return this.voucherService.getAllAvailableVouchersForUser(userId);
   }
 }

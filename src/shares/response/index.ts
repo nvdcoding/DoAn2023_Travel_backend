@@ -54,6 +54,12 @@ export const httpResponse = {
     statusCode: 200,
   },
 
+  GET_VOUCHER_SUCCESS: {
+    message: 'Get voucher success',
+    code: 'VOUCHER_003',
+    statusCode: 200,
+  },
+
   // ORDER
   GET_ORDER_SUCCESS: {
     message: 'Get orders success',
