@@ -49,7 +49,7 @@ export class Voucher {
   value: number;
 
   @Column({
-    name: 'value',
+    name: 'quantity',
     type: 'int',
     nullable: false,
   })

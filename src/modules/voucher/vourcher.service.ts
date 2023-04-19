@@ -84,7 +84,9 @@ export class VoucherService {
           verifyStatus: UserStatus.ACTIVE,
         },
       }),
-      this.voucherRepository.findOne(voucherId),
+      this.voucherRepository.findOne(voucherId, {
+        relations: ['userVouchers'],
+      }),
     ]);
     const currentDate = new Date();
     if (currentDate > voucher.endDate) {
@@ -105,6 +107,12 @@ export class VoucherService {
     if (+user.voucherPoint < +voucher.requirementPoint) {
       throw new HttpException(
         httpErrors.NOT_ENOUGHT_VOUCHER_POINT,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (+voucher.userVouchers.length >= +voucher.quantity) {
+      throw new HttpException(
+        httpErrors.VOUCHER_NOT_ENOUGH,
         HttpStatus.BAD_REQUEST,
       );
     }

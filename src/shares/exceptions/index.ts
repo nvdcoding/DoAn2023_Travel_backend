@@ -99,4 +99,8 @@ export const httpErrors = {
     message: 'Not have enough point to claim',
     code: 'ERR_VOUCHER_005',
   },
+  VOUCHER_NOT_ENOUGH: {
+    message: 'Quantity voucher not enough',
+    code: 'ERR_VOUCHER_006',
+  },
 };
