@@ -33,10 +33,14 @@ export class AdminModAuthGuard extends AuthGuard('jwt') {
     }
 
     const adminJwt = await this.jtwSv.verify(token[1]);
+    if (Date.now() >= adminJwt.exp * 1000) {
+      throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const admin = await this.adminService.getAdminOrModByIdAndUsername(
       adminJwt.id,
       adminJwt.username,
     );
+
     if (!admin) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }

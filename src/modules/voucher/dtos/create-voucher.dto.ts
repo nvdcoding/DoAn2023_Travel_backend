@@ -2,9 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsPositive,
   IsString,
+  Min,
 } from 'class-validator';
 import { DiscountType } from 'src/shares/enum/voucher.enum';
 
@@ -30,7 +32,8 @@ export class CreateVoucherDto {
   discountType: DiscountType;
 
   @ApiProperty()
-  @IsPositive()
+  @IsInt()
+  @Min(0)
   @IsNotEmpty()
   requirementPoint: number;
 

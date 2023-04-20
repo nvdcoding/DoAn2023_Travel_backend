@@ -60,6 +60,8 @@ export class AuthController {
     return this.authService.forgotPassword(body);
   }
 
-  // @Post('/create-admin-account')
-  // @UseGuards(Admin)
+  @Post('/login-admin')
+  async adminLogin(@Body() body: LoginDto): Promise<Response> {
+    return this.authService.adminLogin(body);
+  }
 }

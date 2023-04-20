@@ -121,7 +121,10 @@ export class VoucherService {
       where: { user, voucher },
     });
     if (existingUserVoucher) {
-      throw new Error('User has already claimed the voucher');
+      throw new HttpException(
+        httpErrors.VOUCHER_ALREADY_CLAIM,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Create a new user voucher

@@ -25,7 +25,7 @@ import { UserModule } from '../user/user.module';
       inject: [ConfigService],
     }),
     UserModule,
-    AdminModule
+    AdminModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

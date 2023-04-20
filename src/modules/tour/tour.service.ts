@@ -119,7 +119,7 @@ export class TourService {
     };
   }
 
-  async getTour(id: number) {
+  async getTour(id: number): Promise<Response> {
     const tour = await this.tourRepository.findOne({
       where: { id, status: TourStatus.ACTIVE },
       relations: [
@@ -136,7 +136,7 @@ export class TourService {
     }
     return {
       ...httpResponse.GET_PROVINCE_SUCCESS,
-      data: tour,
+      returnValue: tour,
     };
   }
 

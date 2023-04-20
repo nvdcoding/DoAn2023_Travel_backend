@@ -19,9 +19,11 @@ import { authConfig } from 'src/configs/auth.config';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtPayload } from './interfaces/payload.interface';
+import { IJwtAdminPayload, IJwtPayload } from './interfaces/payload.interface';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
+import { AdminRepository } from 'src/models/repositories/admin.repository';
+import { AdminStatus } from 'src/shares/enum/admin.enum';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +31,7 @@ export class AuthService {
 
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly adminRepository: AdminRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
@@ -197,7 +200,61 @@ export class AuthService {
     });
     return {
       ...httpResponse.LOGIN_SUCCESS,
-      data: {
+      returnValue: {
+        accessToken,
+        refreshToken,
+        ...payload,
+      },
+    };
+  }
+
+  async adminLogin(body: LoginDto): Promise<Response> {
+    const { email, password } = body;
+
+    const adminExisted = await this.adminRepository.findOne({
+      where: { email },
+    });
+
+    if (!adminExisted)
+      throw new HttpException(
+        httpErrors.USER_LOGIN_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if (adminExisted.status === AdminStatus.INACTIVE)
+      throw new HttpException(
+        httpErrors.USER_NOT_ACTIVE,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const comparePassword = await bcrypt.compare(
+      password,
+      adminExisted.password,
+    );
+
+    if (!comparePassword)
+      throw new HttpException(
+        httpErrors.USER_LOGIN_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const { refreshJwt } = authConfig;
+    const payload = {
+      id: adminExisted.id,
+      email,
+      status: adminExisted.status,
+      role: adminExisted.role,
+      username: adminExisted.username,
+    } as IJwtAdminPayload;
+
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: refreshJwt,
+      expiresIn: '7d',
+    });
+    return {
+      ...httpResponse.LOGIN_SUCCESS,
+      returnValue: {
         accessToken,
         refreshToken,
         ...payload,

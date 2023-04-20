@@ -33,6 +33,9 @@ export class UserAuthGuard extends AuthGuard('jwt') {
     }
 
     const userJwt = await this.jtwSv.verify(token[1]);
+    if (Date.now() >= userJwt.exp * 1000) {
+      throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const user = await this.userService.getUserById(userJwt.id);
     if (!user) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);

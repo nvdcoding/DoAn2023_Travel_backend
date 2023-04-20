@@ -23,6 +23,11 @@ export const httpErrors = {
     message: 'Email or password not match',
     code: 'ERR_USER_004',
   },
+  // Admin
+  ADMIN_EXIST: {
+    message: 'Admin existed',
+    code: 'ERR_ADMIN_001',
+  },
   // Email
   WAIT_TO_RESEND: {
     message: `Please wait for ${emailConfig.registerTTL} seconds to resend`,
@@ -102,5 +107,9 @@ export const httpErrors = {
   VOUCHER_NOT_ENOUGH: {
     message: 'Quantity voucher not enough',
     code: 'ERR_VOUCHER_006',
+  },
+  VOUCHER_ALREADY_CLAIM: {
+    message: 'Voucher already claimed',
+    code: 'ERR_VOUCHER_007',
   },
 };
