@@ -147,11 +147,14 @@ export class TourService {
       },
       relations: ['images', 'rates', 'tourGuide', 'tourSchedule', 'province'],
     });
-    return BasePaginationResponseDto.convertToPaginationWithTotalPages(
-      data,
-      options.page || 1,
-      options.limit || 10,
-    );
+    return {
+      ...httpResponse.GET_TOUR_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        data,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
   }
 
   async approveTour(body: ApproveTourDto): Promise<Response> {

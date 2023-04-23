@@ -66,4 +66,10 @@ export const httpResponse = {
     code: 'ORDER_001',
     statusCode: 200,
   },
+  //GET ME
+  GET_ME_SUCCESS: {
+    message: 'get orders success',
+    code: 'ME_001',
+    statusCode: 200,
+  },
 };

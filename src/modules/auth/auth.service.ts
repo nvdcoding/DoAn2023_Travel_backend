@@ -343,4 +343,11 @@ export class AuthService {
     ]);
     return httpResponse.FORGOT_PASSWORD_SUCCESS;
   }
+
+  async getMe(userId: number) {
+    const me = await this.userRepository.findOne(userId, {
+      relations: ['userVouchers', 'userFavorites', 'orders'],
+    });
+    return { ...httpResponse.GET_ME_SUCCESS, returnValue: me };
+  }
 }

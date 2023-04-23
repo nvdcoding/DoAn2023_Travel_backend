@@ -43,7 +43,7 @@ export class TourController {
 
   @Get('/approve-list')
   @UseGuards(AdminModAuthGuard)
-  async getApproveList(@Query() options: GetTourDto) {
+  async getApproveList(@Query() options: GetTourDto): Promise<Response> {
     return this.tourService.getApproveList(options);
   }
 

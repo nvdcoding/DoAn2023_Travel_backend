@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   Put,
@@ -16,6 +17,8 @@ import { RegisterDto } from './dto/register.dto';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
+import { UserAuthGuard } from './guards/user-auth.guard';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -63,5 +66,11 @@ export class AuthController {
   @Post('/login-admin')
   async adminLogin(@Body() body: LoginDto): Promise<Response> {
     return this.authService.adminLogin(body);
+  }
+
+  @Get('/me')
+  @UseGuards(UserAuthGuard)
+  async getMe(@UserID() userId: number): Promise<Response> {
+    return this.authService.getMe(userId);
   }
 }
