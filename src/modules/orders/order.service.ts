@@ -192,10 +192,16 @@ export class OrderService {
   }
 
   async getOneOrder(userId: number, orderId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
     const orders = await this.orderRepository.findOne({
       where: {
         id: orderId,
-        userId,
+        user,
       },
     });
     if (!orders) {
