@@ -11,10 +11,9 @@ import { httpErrors } from 'src/shares/exceptions';
 import { Connection } from 'typeorm';
 
 @Injectable()
-export class AdminModAuthGuard extends AuthGuard('jwt') {
+export class IsLoginGuard extends AuthGuard('jwt') {
   constructor(
     private readonly connection: Connection,
-    private readonly adminService: AdminService,
     private jtwSv: JwtService,
   ) {
     super();
@@ -31,20 +30,8 @@ export class AdminModAuthGuard extends AuthGuard('jwt') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     try {
-      const adminJwt = await this.jtwSv.verify(token[1]);
-      const admin = await this.adminService.getAdminOrModByIdAndUsername(
-        adminJwt.id,
-        adminJwt.username,
-      );
-
-      if (!admin) {
-        throw new HttpException(
-          httpErrors.UNAUTHORIZED,
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-
-      return adminJwt;
+      const jwt = await this.jtwSv.verify(token[1]);
+      return jwt;
     } catch (error) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }

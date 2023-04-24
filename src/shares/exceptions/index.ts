@@ -28,6 +28,10 @@ export const httpErrors = {
     message: 'Admin existed',
     code: 'ERR_ADMIN_001',
   },
+  ADMIN_NOT_FOUND: {
+    message: 'Admin not found',
+    code: 'ERR_ADMIN_002',
+  },
   // Email
   WAIT_TO_RESEND: {
     message: `Please wait for ${emailConfig.registerTTL} seconds to resend`,

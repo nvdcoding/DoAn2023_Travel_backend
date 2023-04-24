@@ -34,6 +34,7 @@ import { TourGuideRepository } from 'src/models/repositories/tourguide.repositor
 import { ProvinceRepository } from 'src/models/repositories/province.repository';
 import { In, Not } from 'typeorm';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
+import { ActorRole } from 'src/shares/enum/auth.enum';
 
 @Injectable()
 export class AuthService {
@@ -244,6 +245,7 @@ export class AuthService {
       id: userExisted.id,
       email,
       verifyStatus: userExisted.verifyStatus,
+      role: ActorRole.USER,
     } as IJwtPayload;
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
@@ -289,7 +291,7 @@ export class AuthService {
       id: tourguideExisted.id,
       email,
       status: tourguideExisted.verifyStatus,
-      role: 'TOUR_GUIDE',
+      role: ActorRole.TOURGUIDE,
       username: tourguideExisted.username,
     } as IJwtTourguidePayload;
 
@@ -343,7 +345,7 @@ export class AuthService {
       id: adminExisted.id,
       email,
       status: adminExisted.status,
-      role: adminExisted.role,
+      role: ActorRole.ADMIN,
       username: adminExisted.username,
     } as IJwtAdminPayload;
 
@@ -444,10 +446,53 @@ export class AuthService {
     return httpResponse.FORGOT_PASSWORD_SUCCESS;
   }
 
-  async getMe(userId: number) {
-    const me = await this.userRepository.findOne(userId, {
-      relations: ['userVouchers', 'userFavorites', 'orders'],
-    });
-    return { ...httpResponse.GET_ME_SUCCESS, returnValue: me };
+  async getMe(id: number, actorRole: ActorRole) {
+    let me;
+    switch (actorRole) {
+      case ActorRole.USER:
+        me = await this.userRepository.findOne({
+          where: {
+            id,
+            verifyStatus: UserStatus.ACTIVE,
+          },
+          relations: ['userVouchers', 'userFavorites', 'orders'],
+        });
+        break;
+      case ActorRole.ADMIN:
+        me = await this.adminRepository.findOne({
+          where: { id, status: AdminStatus.ACTIVE },
+        });
+        break;
+      case ActorRole.TOURGUIDE:
+        me = await this.tourGuideRepository.findOne({
+          id,
+          verifyStatus: TourguideStatus.ACTIVE,
+        });
+        break;
+      default:
+        break;
+    }
+    if (!me) {
+      if (actorRole === ActorRole.ADMIN) {
+        throw new HttpException(
+          httpErrors.ADMIN_NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
+      } else if (actorRole === ActorRole.TOURGUIDE) {
+        throw new HttpException(
+          httpErrors.TOUR_GUIDE_NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        throw new HttpException(
+          httpErrors.USER_NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+    }
+    return {
+      ...httpResponse.GET_ME_SUCCESS,
+      returnValue: { ...me, role: actorRole },
+    };
   }
 }

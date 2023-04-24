@@ -20,6 +20,9 @@ import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
 import { UserAuthGuard } from './guards/user-auth.guard';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { RegisterTourguideDto } from './dto/register-tourguide.dto';
+import { IsLoginGuard } from './guards/is-login.guard';
+import { ActorRoleDecorator } from 'src/shares/decorators/get-role.decorator';
+import { ActorRole } from 'src/shares/enum/auth.enum';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -82,8 +85,11 @@ export class AuthController {
   }
 
   @Get('/me')
-  @UseGuards(UserAuthGuard)
-  async getMe(@ActorID() userId: number): Promise<Response> {
-    return this.authService.getMe(userId);
+  @UseGuards(IsLoginGuard)
+  async getMe(
+    @ActorID() userId: number,
+    @ActorRoleDecorator() actorRole: ActorRole,
+  ): Promise<Response> {
+    return this.authService.getMe(userId, actorRole);
   }
 }
