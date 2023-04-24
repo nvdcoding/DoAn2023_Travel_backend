@@ -18,7 +18,8 @@ import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
 import { UserAuthGuard } from './guards/user-auth.guard';
-import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
+import { RegisterTourguideDto } from './dto/register-tourguide.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -29,6 +30,13 @@ export class AuthController {
   @Post('/register')
   async register(@Body() body: RegisterDto): Promise<Response> {
     return this.authService.register(body);
+  }
+
+  @Post('/register-tourguide')
+  async registerTourguide(
+    @Body() body: RegisterTourguideDto,
+  ): Promise<Response> {
+    return this.authService.registerTourguide(body);
   }
 
   @Post('/resend-confirmation-email')
@@ -68,9 +76,14 @@ export class AuthController {
     return this.authService.adminLogin(body);
   }
 
+  @Post('/login-tourguide')
+  async tourGuideLogin(@Body() body: LoginDto): Promise<Response> {
+    return this.authService.tourGuideLogin(body);
+  }
+
   @Get('/me')
   @UseGuards(UserAuthGuard)
-  async getMe(@UserID() userId: number): Promise<Response> {
+  async getMe(@ActorID() userId: number): Promise<Response> {
     return this.authService.getMe(userId);
   }
 }

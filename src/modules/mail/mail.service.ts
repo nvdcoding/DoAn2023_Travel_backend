@@ -6,6 +6,7 @@ import { RegisterDto } from '../auth/dto/register.dto';
 import { RegisterEmailDto } from './dto/register-email.dto';
 import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
 import { ApproveTourEmailDto } from './dto/approve-tour-email.dto';
+import { ApproveOrderEmailDto } from './dto/approve-order-email.dto';
 
 @Injectable()
 export class MailService {
@@ -32,4 +33,23 @@ export class MailService {
       ...approveTourEmailDto,
     });
   }
+
+  // async
+
+  async sendAcceptOrderMail(
+    aproveOrderEmailDto: ApproveOrderEmailDto,
+  ): Promise<void> {
+    await this.emailQueue.add('sendAcceptOrderMail', {
+      ...aproveOrderEmailDto,
+    });
+  }
+  async sendRejectOrderMail(
+    aproveOrderEmailDto: ApproveOrderEmailDto,
+  ): Promise<void> {
+    await this.emailQueue.add('sendRejectOrderMail', {
+      ...aproveOrderEmailDto,
+    });
+  }
+
+  async sendAcceptTourguideMail() {}
 }

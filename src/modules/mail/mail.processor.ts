@@ -5,6 +5,8 @@ import { Job } from 'bull';
 import { emailConfig } from 'src/configs/email.config';
 import { RegisterEmailDto } from './dto/register-email.dto';
 import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
+import { ApproveOrderEmailDto } from './dto/approve-order-email.dto';
+import { ActionApproveOrder } from 'src/shares/enum/order.enum';
 //import * as moment from 'moment';
 
 @Processor('mail')
@@ -68,6 +70,61 @@ export class MailProcessor {
     }
     this.logger.log(
       `Done job: sendUpdateEmail ${data.email} email ${data.username}`,
+    );
+    return 1;
+  }
+
+  @Process('sendAcceptOrderMail')
+  async sendAcceptOrderMail({
+    data,
+  }: Job<ApproveOrderEmailDto>): Promise<number> {
+    this.logger.log(
+      `Start job: sendAcceptOrderMail user ${data.username} email ${data.email}`,
+    );
+    const context = {
+      email: data.email,
+      tourGuideName: data.tourGuideName,
+    };
+    try {
+      await this.mailerService.sendMail({
+        from: emailConfig.from,
+        to: data.email,
+        subject: `Hướng dẫn viên đã xác nhận Order của bạn.`,
+        template: `src/modules/mail/templates/accept-order.template.hbs`,
+        context: context,
+      });
+    } catch (e) {
+      this.logger.debug(e);
+    }
+    this.logger.log(
+      `Done job: sendAcceptOrderMail ${data.email} email ${data.username}`,
+    );
+    return 1;
+  }
+  @Process('sendRejectOrderMail')
+  async sendRejectOrderMail({
+    data,
+  }: Job<ApproveOrderEmailDto>): Promise<number> {
+    this.logger.log(
+      `Start job: sendRejectOrderMail user ${data.username} email ${data.email}`,
+    );
+    const context = {
+      email: data.email,
+      tourGuideName: data.tourGuideName,
+    };
+    try {
+      await this.mailerService.sendMail({
+        from: emailConfig.from,
+        to: data.email,
+        subject: `Order của bạn đã bị từ chối.`,
+        template: `src/modules/mail/templates/reject-order.template.hbs`,
+        context: context,
+      });
+    } catch (e) {
+      this.logger.debug(e);
+    }
+    this.logger.log(
+      `Done job: sendRejectOrderMail ${data.email} email ${data.username}`,
     );
     return 1;
   }

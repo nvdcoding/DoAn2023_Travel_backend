@@ -60,10 +60,27 @@ export const httpResponse = {
     statusCode: 200,
   },
 
+  //TOUR GUIDE
+  GET_TOURGUIDE_SUCCESS: {
+    message: 'Get tour guide success',
+    code: 'TOUR_GUIDE_001',
+    statusCode: 200,
+  },
+  RESPONSE_SUCCESS: {
+    message: 'Response success',
+    code: 'TOUR_GUIDE_002',
+    statusCode: 200,
+  },
+
   // ORDER
   GET_ORDER_SUCCESS: {
     message: 'Get orders success',
     code: 'ORDER_001',
+    statusCode: 200,
+  },
+  APPROVE_ORDER_SUCCESS: {
+    message: 'Approve order success',
+    code: 'ORDER_002',
     statusCode: 200,
   },
   //GET ME

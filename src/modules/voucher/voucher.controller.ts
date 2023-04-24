@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
@@ -37,7 +37,7 @@ export class VoucherController {
   @Put('/:voucherId')
   @UseGuards(UserAuthGuard)
   async claimVoucher(
-    @UserID() userId: number,
+    @ActorID() userId: number,
     @Param('voucherId') voucherId: number,
   ): Promise<Response> {
     return this.voucherService.claimVoucher(voucherId, userId);
@@ -45,7 +45,7 @@ export class VoucherController {
 
   @Get('/available')
   @UseGuards(UserAuthGuard)
-  async getAvailableVoucher(@UserID() userId: number): Promise<Response> {
+  async getAvailableVoucher(@ActorID() userId: number): Promise<Response> {
     return this.voucherService.getAllAvailableVouchersForUser(userId);
   }
 }

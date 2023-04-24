@@ -74,6 +74,14 @@ export const httpErrors = {
     message: 'Tour guide not active',
     code: 'ERR_TOUR_GUIDE_002',
   },
+  TOUR_GUIDE_EXIST: {
+    message: 'Tour guide existed',
+    code: 'ERR_TOUR_GUIDE_003',
+  },
+  INTERVIEW_DATE_NOT_VALID: {
+    message: 'Interview date is not valid',
+    code: 'ERR_TOUR_GUIDE_004',
+  },
   // ORDER
   NUM_OF_MEMBER_INVALID: {
     message: 'Number of member is not valid',

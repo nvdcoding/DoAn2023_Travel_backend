@@ -13,3 +13,8 @@ export enum GetTourOptions {
   PROCESSING = 'processing',
   END = 'end',
 }
+
+export enum ActionApproveOrder {
+  ACCEPT = 'accept',
+  REJECT = 'reject',
+}

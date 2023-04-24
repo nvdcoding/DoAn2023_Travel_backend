@@ -4,13 +4,16 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
+import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
+import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import { OrderService } from './order.service';
@@ -23,7 +26,7 @@ export class OrderController {
   @Post('/')
   @UseGuards(UserAuthGuard)
   async orderTours(
-    @UserID() userId: number,
+    @ActorID() userId: number,
     @Body() body: OrderTourDto,
   ): Promise<Response> {
     return this.orderService.orderTour(userId, body);
@@ -32,7 +35,7 @@ export class OrderController {
   @Get('/')
   @UseGuards(UserAuthGuard)
   async getOrdersByStatus(
-    @UserID() userId: number,
+    @ActorID() userId: number,
     @Query() options: GetOrdersDto,
   ): Promise<Response> {
     return this.orderService.getOrdersByStatus(userId, options);
@@ -41,9 +44,30 @@ export class OrderController {
   @Get('/:id')
   @UseGuards(UserAuthGuard)
   async getOneOrder(
-    @UserID() userId: number,
+    @ActorID() userId: number,
     @Param('id') orderId: number,
   ): Promise<Response> {
     return this.orderService.getOneOrder(userId, orderId);
   }
+
+  @Get('/')
+  @UseGuards(TourGuideAuthGuard)
+  async tourGuidGetOrdersByStatus(
+    @ActorID() tourGuideId: number,
+    @Query() options: GetOrdersDto,
+  ): Promise<Response> {
+    return this.orderService.tourGuideGetOrderByStatus(tourGuideId, options);
+  }
+
+  @Put('/tour-guide/approve-order')
+  @UseGuards()
+  async approveOrder(
+    @Body() body: ApproveOrderDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.orderService.approveOrder(body, tourGuideId);
+  }
+  @Put('/paid')
+  @UseGuards(UserAuthGuard)
+  async payOrder() {}
 }

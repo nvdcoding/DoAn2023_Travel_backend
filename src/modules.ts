@@ -13,6 +13,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { OrderModule } from './modules/orders/order.module';
 import { ProvinceModule } from './modules/province/province.module';
 import { TourModule } from './modules/tour/tour.module';
+import { TourGuideModule } from './modules/tourguide/tour-guide.module';
 import { UserModule } from './modules/user/user.module';
 import { VoucherModule } from './modules/voucher/voucher.module';
 
@@ -39,5 +40,6 @@ const Modules = [
   ProvinceModule,
   OrderModule,
   VoucherModule,
+  TourGuideModule,
 ];
 export default Modules;

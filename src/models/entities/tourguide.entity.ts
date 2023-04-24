@@ -9,6 +9,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   OneToMany,
   OneToOne,
@@ -35,6 +36,10 @@ export class TourGuide extends BaseEntity {
   @Index()
   @Column({ nullable: false, name: 'email' })
   email: string;
+
+  @Index()
+  @Column({ nullable: false, name: 'name' })
+  name: string;
 
   @Index()
   @Column({ nullable: false, name: 'username' })
@@ -96,7 +101,11 @@ export class TourGuide extends BaseEntity {
   @Column({ name: 'dob', type: 'date', nullable: false })
   dob: Date;
 
+  @Column({ name: 'interview_date', type: 'date', nullable: true })
+  interviewDate: Date;
+
   @ManyToMany(() => Province, (province) => province.tourGuides)
+  @JoinTable()
   provinces: Province[];
 
   @OneToMany(() => Wallet, (wallet) => wallet.user)

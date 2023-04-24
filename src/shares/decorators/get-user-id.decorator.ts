@@ -8,7 +8,7 @@ import jwtDecode from 'jwt-decode';
 import { IJwtPayload } from 'src/modules/auth/interfaces/payload.interface';
 import { httpErrors } from 'src/shares/exceptions';
 
-export const UserID = createParamDecorator(
+export const ActorID = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     try {

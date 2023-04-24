@@ -1,4 +1,5 @@
 import {
+  Body,
   CACHE_MANAGER,
   HttpException,
   HttpStatus,
@@ -19,11 +20,20 @@ import { authConfig } from 'src/configs/auth.config';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtAdminPayload, IJwtPayload } from './interfaces/payload.interface';
+import {
+  IJwtAdminPayload,
+  IJwtPayload,
+  IJwtTourguidePayload,
+} from './interfaces/payload.interface';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
 import { AdminRepository } from 'src/models/repositories/admin.repository';
 import { AdminStatus } from 'src/shares/enum/admin.enum';
+import { RegisterTourguideDto } from './dto/register-tourguide.dto';
+import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
+import { ProvinceRepository } from 'src/models/repositories/province.repository';
+import { In, Not } from 'typeorm';
+import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +42,8 @@ export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly adminRepository: AdminRepository,
+    private readonly tourGuideRepository: TourGuideRepository,
+    private readonly provinceRepository: ProvinceRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
@@ -80,6 +92,47 @@ export class AuthService {
       }),
     ]);
     return httpResponse.REGISTER_SEND_MAIL;
+  }
+
+  async registerTourguide(body: RegisterTourguideDto): Promise<Response> {
+    const { name, username, email, password, phone, dob, gender, provinces } =
+      body;
+    const [provincesDb, tourguide] = await Promise.all([
+      this.provinceRepository.find({
+        where: {
+          id: In(provinces),
+        },
+      }),
+      this.tourGuideRepository.findOne({
+        where: [
+          { username, verifyStatus: Not(TourguideStatus.REJECT) },
+          { email, verifyStatus: Not(TourguideStatus.REJECT) },
+        ],
+      }),
+    ]);
+
+    if (tourguide) {
+      throw new HttpException(httpErrors.TOUR_GUIDE_EXIST, HttpStatus.FOUND);
+    }
+    if (provincesDb.length < provinces.length) {
+      throw new HttpException(
+        httpErrors.PROVINCE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const passwordHash = await bcrypt.hash(password, +authConfig.salt);
+    await this.tourGuideRepository.save({
+      name,
+      username,
+      email,
+      password: passwordHash,
+      phone,
+      dob,
+      gender,
+      provinces: provincesDb,
+      interviewDate: null,
+    });
+    return httpResponse.REGISTER_SUCCESS;
   }
 
   async resendRegisterEmail(body: ResendEmailRegisterDto): Promise<Response> {
@@ -192,6 +245,53 @@ export class AuthService {
       email,
       verifyStatus: userExisted.verifyStatus,
     } as IJwtPayload;
+
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: refreshJwt,
+      expiresIn: '7d',
+    });
+    return {
+      ...httpResponse.LOGIN_SUCCESS,
+      returnValue: {
+        accessToken,
+        refreshToken,
+        ...payload,
+      },
+    };
+  }
+
+  async tourGuideLogin(@Body() body: LoginDto): Promise<Response> {
+    const { email, password } = body;
+    const tourguideExisted = await this.tourGuideRepository.findOne({
+      where: { email, verifyStatus: TourguideStatus.ACTIVE },
+    });
+
+    if (!tourguideExisted)
+      throw new HttpException(
+        httpErrors.USER_LOGIN_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const comparePassword = await bcrypt.compare(
+      password,
+      tourguideExisted.password,
+    );
+
+    if (!comparePassword)
+      throw new HttpException(
+        httpErrors.USER_LOGIN_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const { refreshJwt } = authConfig;
+    const payload = {
+      id: tourguideExisted.id,
+      email,
+      status: tourguideExisted.verifyStatus,
+      role: 'TOUR_GUIDE',
+      username: tourguideExisted.username,
+    } as IJwtTourguidePayload;
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, {

@@ -8,11 +8,17 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import * as moment from 'moment';
-import { GetTourOptions, OrderStatus } from 'src/shares/enum/order.enum';
+import {
+  ActionApproveOrder,
+  GetTourOptions,
+  OrderStatus,
+} from 'src/shares/enum/order.enum';
 import { GetOrdersDto } from './dtos/get-orders.dto';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
+import { ApproveOrderDto } from './dtos/approve-order.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class OrderService {
@@ -22,6 +28,7 @@ export class OrderService {
     private readonly tourGuideRepository: TourGuideRepository,
     private readonly orderRepository: OrderRepository,
     private readonly orderScheduleRepository: OrderScheduleRepository,
+    private readonly mailService: MailService,
   ) {}
 
   async orderTour(userId: number, body: OrderTourDto): Promise<Response> {
@@ -141,6 +148,49 @@ export class OrderService {
     return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
   }
 
+  async tourGuideGetOrderByStatus(tourGuideId: number, options: GetOrdersDto) {
+    const { type } = options;
+    let orderStatus = [];
+    switch (type) {
+      case GetTourOptions.ALL:
+        orderStatus = [
+          ...OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_TOUR_GUIDE,
+          OrderStatus.WAITING_START,
+          OrderStatus.PROCESSING,
+          OrderStatus.DONE,
+          OrderStatus.REJECTED,
+        ];
+        break;
+      case GetTourOptions.WAITING:
+        orderStatus = [
+          ...OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_TOUR_GUIDE,
+        ];
+        break;
+      case GetTourOptions.PROCESSING:
+        orderStatus = [...OrderStatus.WAITING_START, OrderStatus.PROCESSING];
+        break;
+      case GetTourOptions.END:
+        orderStatus = [...OrderStatus.DONE, OrderStatus.REJECTED];
+        break;
+      default:
+        break;
+    }
+    const tourGuide = await this.tourGuideRepository.findOne(tourGuideId);
+    const orders = await this.orderRepository.find({
+      where: {
+        status: In(orderStatus),
+        tourGuide,
+      },
+      relations: ['tour', 'orderSchedule', 'tourGuide'],
+    });
+    if (!orders) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
+  }
+
   async getOneOrder(userId: number, orderId: number): Promise<Response> {
     const orders = await this.orderRepository.findOne({
       where: {
@@ -152,5 +202,85 @@ export class OrderService {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
+  }
+
+  async approveOrder(body: ApproveOrderDto, tourguideId: number) {
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: body.orderId,
+        status: OrderStatus.WAITING_TOUR_GUIDE,
+      },
+      relations: ['user', 'tourGuide'],
+    });
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this.checkTourguideAvailable(
+      tourguideId,
+      order.startDate.toDateString(),
+      order.endDate.toDateString(),
+    );
+    const task =
+      body.action === ActionApproveOrder.ACCEPT
+        ? this.mailService.sendAcceptOrderMail({
+            email: order.user.email,
+            tourGuideName: order.tourGuide.name,
+            username: order.user.username,
+            action: body.action,
+          })
+        : this.mailService.sendRejectOrderMail({
+            email: order.user.email,
+            tourGuideName: order.tourGuide.name,
+            username: order.user.username,
+            action: body.action,
+          });
+    await Promise.all([
+      this.orderRepository.update(body.orderId, {
+        status:
+          body.action === ActionApproveOrder.ACCEPT
+            ? OrderStatus.WAITING_PURCHASE
+            : OrderStatus.REJECTED,
+      }),
+      task,
+    ]);
+    return httpResponse.APPROVE_TOUR_SUCCESS;
+  }
+
+  private async checkTourguideAvailable(
+    tourGuideId: number,
+    startDateString: string,
+    endDateString: string,
+  ) {
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+
+    const orders = await this.orderRepository.find({
+      where: {
+        tourGuide: { id: tourGuideId },
+        status: In([
+          OrderStatus.PROCESSING,
+          OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_START,
+        ]),
+      },
+    });
+
+    for (const order of orders) {
+      const orderStartDate = new Date(order.startDate);
+      const orderEndDate = new Date(order.endDate);
+
+      if (
+        (startDate >= orderStartDate && startDate <= orderEndDate) ||
+        (endDate >= orderStartDate && endDate <= orderEndDate)
+      ) {
+        throw new HttpException(
+          {
+            message: `Tour guide is not available from ${startDateString} to ${endDateString}`,
+            code: `ERR_ORDER_003`,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
   }
 }

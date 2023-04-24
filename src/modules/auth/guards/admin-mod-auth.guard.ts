@@ -21,7 +21,7 @@ export class AdminModAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const { headers } = request;
     if (!headers?.authorization) {
@@ -31,20 +31,23 @@ export class AdminModAuthGuard extends AuthGuard('jwt') {
     if (token.length < 2 || token[0] != 'Bearer') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
+    try {
+      const adminJwt = await this.jtwSv.verify(token[1]);
+      const admin = await this.adminService.getAdminOrModByIdAndUsername(
+        adminJwt.id,
+        adminJwt.username,
+      );
 
-    const adminJwt = await this.jtwSv.verify(token[1]);
-    if (Date.now() >= adminJwt.exp * 1000) {
+      if (!admin) {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      return adminJwt;
+    } catch (error) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    const admin = await this.adminService.getAdminOrModByIdAndUsername(
-      adminJwt.id,
-      adminJwt.username,
-    );
-
-    if (!admin) {
-      throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-    }
-
-    return true;
   }
 }

@@ -6,16 +6,15 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { firstValueFrom, isObservable } from 'rxjs';
-import { UserService } from 'src/modules/user/user.service';
+import { TourGuideService } from 'src/modules/tourguide/tour-guide.service';
 import { httpErrors } from 'src/shares/exceptions';
 import { Connection } from 'typeorm';
 
 @Injectable()
-export class UserAuthGuard extends AuthGuard('jwt') {
+export class TourGuideAuthGuard extends AuthGuard('jwt') {
   constructor(
     private readonly connection: Connection,
-    private readonly userService: UserService,
+    private readonly tourGuideService: TourGuideService,
     private jtwSv: JwtService,
   ) {
     super();
@@ -32,15 +31,19 @@ export class UserAuthGuard extends AuthGuard('jwt') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     try {
-      const userJwt = await this.jtwSv.verify(token[1]);
-      const user = await this.userService.getUserById(userJwt.id);
-      if (!user) {
+      const tourGuideJwt = await this.jtwSv.verify(token[1]);
+      const tourGuide = await this.tourGuideService.getTourguide(
+        tourGuideJwt.id,
+        tourGuideJwt.username,
+        tourGuideJwt.email,
+      );
+      if (!tourGuide) {
         throw new HttpException(
           httpErrors.UNAUTHORIZED,
           HttpStatus.UNAUTHORIZED,
         );
       }
-      return userJwt;
+      return tourGuideJwt;
     } catch (error) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
