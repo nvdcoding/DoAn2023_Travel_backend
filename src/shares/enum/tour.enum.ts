@@ -14,3 +14,13 @@ export enum AdminApproveAction {
   APPROVE = 'APPROVE',
   REJECT = 'REJECT',
 }
+
+export enum TourTypes {
+  ECO_TOURISM = 'Ecotourism',
+  CULTURAL = 'Cultural',
+  RESORT = 'Resort',
+  ENTERTAINMENT = 'Entertainment',
+  SPORTS = 'Sports',
+  DISCOVERY = 'Discovery',
+  ADVENTURE = 'Adventure',
+}

@@ -19,6 +19,7 @@ import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { MailService } from '../mail/mail.service';
+import { PaidOrderDto } from './dtos/paid-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -194,6 +195,7 @@ export class OrderService {
   async getOneOrder(userId: number, orderId: number): Promise<Response> {
     const user = await this.userRepository.findOne({
       where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+      relations: ['tourGuide', 'userVoucher', 'tour', 'user', 'orderSchedule'],
     });
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -289,4 +291,17 @@ export class OrderService {
       }
     }
   }
+
+  // async paidOrder(body: PaidOrderDto): Promise<Response> {
+  //   const { orderId, amount } = body;
+  //   const order = await this.orderRepository.findOne({
+  //     where: {
+  //       id: orderId,
+  //       status: OrderStatus.WAITING_PURCHASE,
+  //     },
+  //   });
+  //   if (!order) {
+  //     throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+  //   }
+  // }
 }

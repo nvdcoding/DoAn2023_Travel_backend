@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -12,6 +13,7 @@ import { TourScheduleDto } from './tour-schedule.dto';
 import { Type } from 'class-transformer';
 import { TourImage } from 'src/models/entities/tour-image.entity';
 import { TourImagesDto } from './tour-images.dto';
+import { TourTypes } from 'src/shares/enum/tour.enum';
 
 export class CreateTourDto {
   @ApiProperty()
@@ -48,6 +50,11 @@ export class CreateTourDto {
   @IsNumber()
   @IsNotEmpty()
   provinceId: number;
+
+  @ApiProperty()
+  @IsEnum(TourTypes)
+  @IsNotEmpty()
+  type: TourTypes;
 
   @ApiProperty({ type: [TourScheduleDto] })
   @IsArray()

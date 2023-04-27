@@ -18,6 +18,12 @@ export class TourSchedule extends BaseEntity {
   @Column({ nullable: false, name: 'content' })
   content: string;
 
+  @Column({ nullable: false, name: 'image' })
+  image: string;
+
+  @Column({ nullable: false, name: 'title' })
+  title: string;
+
   @ManyToOne(() => Tour, (tour) => tour.tourSchedule, {
     onDelete: 'CASCADE',
   })

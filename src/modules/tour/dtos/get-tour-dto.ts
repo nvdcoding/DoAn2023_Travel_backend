@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
+import { TourTypes } from 'src/shares/enum/tour.enum';
+import { TourTypesDto } from './tour-type.dto';
 
 export class GetTourDto extends BasePaginationRequestDto {
   @ApiProperty({ required: false })
@@ -22,4 +33,9 @@ export class GetTourDto extends BasePaginationRequestDto {
   @IsString()
   @IsOptional()
   maxPrice: number;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  types: string;
 }

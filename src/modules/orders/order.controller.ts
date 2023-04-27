@@ -16,6 +16,7 @@ import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
+import { PaidOrderDto } from './dtos/paid-order.dto';
 import { OrderService } from './order.service';
 
 @Controller('orders')
@@ -69,5 +70,5 @@ export class OrderController {
   }
   @Put('/paid')
   @UseGuards(UserAuthGuard)
-  async payOrder() {}
+  async payOrder(@Body() body: PaidOrderDto): Promise<void> {}
 }

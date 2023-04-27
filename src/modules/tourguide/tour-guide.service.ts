@@ -22,7 +22,15 @@ export class TourGuideService {
     private readonly mailService: MailService,
   ) {}
 
-  async getTourguide(id: number, username: string, email: string) {
+  // asycn getTourGuide() {
+
+  // };
+
+  async getTourguideByIdUsernameEmail(
+    id: number,
+    username: string,
+    email: string,
+  ) {
     const tourGuide = await this.tourGuideRepository.findOne({
       where: {
         id,

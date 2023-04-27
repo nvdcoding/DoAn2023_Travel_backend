@@ -32,11 +32,12 @@ export class TourGuideAuthGuard extends AuthGuard('jwt') {
     }
     try {
       const tourGuideJwt = await this.jtwSv.verify(token[1]);
-      const tourGuide = await this.tourGuideService.getTourguide(
-        tourGuideJwt.id,
-        tourGuideJwt.username,
-        tourGuideJwt.email,
-      );
+      const tourGuide =
+        await this.tourGuideService.getTourguideByIdUsernameEmail(
+          tourGuideJwt.id,
+          tourGuideJwt.username,
+          tourGuideJwt.email,
+        );
       if (!tourGuide) {
         throw new HttpException(
           httpErrors.UNAUTHORIZED,

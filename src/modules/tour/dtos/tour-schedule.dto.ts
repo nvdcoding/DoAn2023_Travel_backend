@@ -6,4 +6,14 @@ export class TourScheduleDto {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  image: string;
 }

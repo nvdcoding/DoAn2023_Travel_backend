@@ -18,7 +18,7 @@ import { Province } from './province.entity';
 import { Rate } from './rate.entity';
 import { TourGuide } from './tourguide.entity';
 import { TourSchedule } from './tour_schedule.entity';
-import { TourStatus } from 'src/shares/enum/tour.enum';
+import { TourStatus, TourTypes } from 'src/shares/enum/tour.enum';
 import { TourImage } from './tour-image.entity';
 
 @Entity({ name: 'tours' })
@@ -65,6 +65,15 @@ export class Tour extends BaseEntity {
     nullable: false,
   })
   status: TourStatus;
+
+  @Column({
+    name: 'type',
+    type: 'enum',
+    enum: TourTypes,
+    default: TourTypes.ECO_TOURISM,
+    nullable: false,
+  })
+  type: TourTypes;
 
   @ManyToOne(() => Province, (province) => province.tours)
   @JoinColumn({ name: 'province_id' })

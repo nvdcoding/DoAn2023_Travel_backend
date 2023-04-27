@@ -5,12 +5,16 @@ import { TourScheduleRepository } from 'src/models/repositories/tour-schedule.re
 import { TourRepository } from 'src/models/repositories/tour.repository';
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
-import { AdminApproveAction, TourStatus } from 'src/shares/enum/tour.enum';
+import {
+  AdminApproveAction,
+  TourStatus,
+  TourTypes,
+} from 'src/shares/enum/tour.enum';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { Between, LessThanOrEqual, MoreThanOrEqual, Not } from 'typeorm';
+import { Between, In, LessThanOrEqual, MoreThanOrEqual, Not } from 'typeorm';
 import { ApproveTourDto } from './dtos/approve-tour.dto';
 import { CreateTourDto } from './dtos/create-tour.dto';
 import { GetTourDto } from './dtos/get-tour-dto';
@@ -78,8 +82,14 @@ export class TourService {
 
   async getTours(options: GetTourDto): Promise<Response> {
     // const tours = await this.tourRepository.fin
-    const { provinceId, tourGuideId, minPrice, maxPrice } = options;
+    const { provinceId, tourGuideId, minPrice, maxPrice, types } = options;
+    const tourTypesArray = types
+      .replace(/\s/g, '')
+      .split(',')
+      .filter((e) => (Object.values(TourTypes) as string[]).includes(e));
+
     const where = {};
+
     if (provinceId) {
       where[`province`] = provinceId;
     }
@@ -94,6 +104,10 @@ export class TourService {
     }
     if (!minPrice && maxPrice) {
       where[`basePrice`] = LessThanOrEqual(maxPrice);
+    }
+
+    if (tourTypesArray && tourTypesArray.length > 0) {
+      where[`type`] = In(tourTypesArray);
     }
     const data = await this.tourRepository.findAndCount({
       where: {
