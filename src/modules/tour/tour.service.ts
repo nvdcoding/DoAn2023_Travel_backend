@@ -84,7 +84,7 @@ export class TourService {
     // const tours = await this.tourRepository.fin
     const { provinceId, tourGuideId, minPrice, maxPrice, types } = options;
     const tourTypesArray = types
-      .replace(/\s/g, '')
+      ?.replace(/\s/g, '')
       .split(',')
       .filter((e) => (Object.values(TourTypes) as string[]).includes(e));
 
