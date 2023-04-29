@@ -11,6 +11,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  Transaction,
   UpdateDateColumn,
 } from 'typeorm';
 import { Comment } from './comment.entity';
@@ -19,6 +20,7 @@ import { Report } from './report.entity';
 import { UserVoucher } from './user_voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
+import { TransactionEntity } from './transaction.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -46,7 +48,7 @@ export class User extends BaseEntity {
     name: 'balance',
     unsigned: true,
   })
-  balance: string;
+  balance: number;
 
   @Column({
     type: 'bigint',
@@ -54,7 +56,7 @@ export class User extends BaseEntity {
     name: 'available_balance',
     unsigned: true,
   })
-  availableBalance: string;
+  availableBalance: number;
 
   @Column({
     type: 'int',
@@ -63,7 +65,6 @@ export class User extends BaseEntity {
   })
   voucherPoint: number;
 
-  //TODO: add link here
   @Column({
     nullable: false,
     default: 'default-avartar-url',
@@ -108,6 +109,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.user)
+  transactions: TransactionEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

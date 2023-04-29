@@ -61,7 +61,7 @@ export class TourGuide extends BaseEntity {
     name: 'balance',
     unsigned: true,
   })
-  balance: string;
+  balance: number;
 
   @Column({
     type: 'bigint',
@@ -69,7 +69,7 @@ export class TourGuide extends BaseEntity {
     name: 'available_balance',
     unsigned: true,
   })
-  availableBalance: string;
+  availableBalance: number;
 
   @Column({
     nullable: false,

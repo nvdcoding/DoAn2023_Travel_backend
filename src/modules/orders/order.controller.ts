@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -11,12 +12,14 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
+import { IsLoginGuard } from '../auth/guards/is-login.guard';
 import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import { PaidOrderDto } from './dtos/paid-order.dto';
+import { RateOrderDto } from './dtos/rate-order.dto';
 import { OrderService } from './order.service';
 
 @Controller('orders')
@@ -70,5 +73,36 @@ export class OrderController {
   }
   @Put('/paid')
   @UseGuards(UserAuthGuard)
-  async payOrder(@Body() body: PaidOrderDto): Promise<void> {}
+  async payOrder(
+    @Body() body: PaidOrderDto,
+    @ActorID() userId: number,
+  ): Promise<Response> {
+    return this.orderService.paidOrder(body, userId);
+  }
+
+  @Put('/start-user/:orderId')
+  @UseGuards(UserAuthGuard)
+  async userStartOrder(@Param('orderId') orderId: number): Promise<Response> {
+    return this.orderService.startOrder(orderId, 'user');
+  }
+
+  @Put('/start-user/:orderId')
+  @UseGuards(UserAuthGuard)
+  async tourGuideStartOrder(
+    @Param('orderId') orderId: number,
+  ): Promise<Response> {
+    return this.orderService.startOrder(orderId, 'tourguide');
+  }
+
+  @Put('/end-order/')
+  @UseGuards(UserAuthGuard)
+  async endOrder(@Body() body: RateOrderDto): Promise<Response> {
+    return this.orderService.endOrder(body);
+  }
+
+  // @Delete('/del-user/:orderId')@para
+  // @UseGuards(UserAuthGuard)
+  // async userCancelOrder(@Param('orderId') orderId: number) {
+  //   return this.orderService.startOrder(orderId, 'tourguide');
+  // }
 }

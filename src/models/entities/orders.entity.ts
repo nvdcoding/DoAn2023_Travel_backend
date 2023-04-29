@@ -48,6 +48,30 @@ export class Order extends BaseEntity {
   @Column({ name: 'size', type: 'int', nullable: false })
   size: number;
 
+  @Column({
+    name: 'user_start',
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  userStart: boolean;
+
+  @Column({
+    name: 'tourguide_start',
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  tourGuideStart: boolean;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+    name: 'tourguide_deposit',
+    unsigned: true,
+  })
+  tourGuideDeposit: number;
+
   @ManyToOne(() => TourGuide, (tourGuide) => tourGuide.orders)
   @JoinColumn()
   tourGuide: TourGuide;

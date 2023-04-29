@@ -14,12 +14,20 @@ import {
   OrderStatus,
 } from 'src/shares/enum/order.enum';
 import { GetOrdersDto } from './dtos/get-orders.dto';
-import { In, Not } from 'typeorm';
+import { In } from 'typeorm';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { MailService } from '../mail/mail.service';
 import { PaidOrderDto } from './dtos/paid-order.dto';
+import { RateOrderDto } from './dtos/rate-order.dto';
+import { RateRepository } from 'src/models/repositories/rate.repository';
+import { TransactionRepository } from 'src/models/repositories/transaction.repository';
+import {
+  TransactionStatus,
+  TransactionType,
+} from 'src/shares/enum/transaction.enum';
+import { SystemRepository } from 'src/models/repositories/system.repository';
 
 @Injectable()
 export class OrderService {
@@ -30,6 +38,9 @@ export class OrderService {
     private readonly orderRepository: OrderRepository,
     private readonly orderScheduleRepository: OrderScheduleRepository,
     private readonly mailService: MailService,
+    private readonly rateRepository: RateRepository,
+    private readonly transactionRepository: TransactionRepository,
+    private readonly systemRepository: SystemRepository,
   ) {}
 
   async orderTour(userId: number, body: OrderTourDto): Promise<Response> {
@@ -213,13 +224,16 @@ export class OrderService {
   }
 
   async approveOrder(body: ApproveOrderDto, tourguideId: number) {
-    const order = await this.orderRepository.findOne({
-      where: {
-        id: body.orderId,
-        status: OrderStatus.WAITING_TOUR_GUIDE,
-      },
-      relations: ['user', 'tourGuide'],
-    });
+    const [order, system] = await Promise.all([
+      this.orderRepository.findOne({
+        where: {
+          id: body.orderId,
+          status: OrderStatus.WAITING_TOUR_GUIDE,
+        },
+        relations: ['user', 'tourGuide'],
+      }),
+      this.systemRepository.findOne(),
+    ]);
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
@@ -228,6 +242,15 @@ export class OrderService {
       order.startDate.toDateString(),
       order.endDate.toDateString(),
     );
+    if (
+      +order.tourGuide.availableBalance <
+      +(system.tourGuidePrepaidOrder / 100) * order.price
+    ) {
+      throw new HttpException(
+        httpErrors.ORDER_PREPAID_NOT_VALID,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const task =
       body.action === ActionApproveOrder.ACCEPT
         ? this.mailService.sendAcceptOrderMail({
@@ -242,12 +265,23 @@ export class OrderService {
             username: order.user.username,
             action: body.action,
           });
+    if (body.action === ActionApproveOrder.ACCEPT) {
+      await this.tourGuideRepository.update(
+        { id: order.tourGuide.id },
+        {
+          availableBalance:
+            order.tourGuide.availableBalance -
+            order.price * (system.tourGuidePrepaidOrder / 100),
+        },
+      );
+    }
     await Promise.all([
       this.orderRepository.update(body.orderId, {
         status:
           body.action === ActionApproveOrder.ACCEPT
             ? OrderStatus.WAITING_PURCHASE
             : OrderStatus.REJECTED,
+        tourGuideDeposit: order.price * (system.tourGuidePrepaidOrder / 100),
       }),
       task,
     ]);
@@ -292,16 +326,167 @@ export class OrderService {
     }
   }
 
-  // async paidOrder(body: PaidOrderDto): Promise<Response> {
-  //   const { orderId, amount } = body;
-  //   const order = await this.orderRepository.findOne({
-  //     where: {
-  //       id: orderId,
-  //       status: OrderStatus.WAITING_PURCHASE,
-  //     },
-  //   });
-  //   if (!order) {
-  //     throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
-  //   }
-  // }
+  async paidOrder(body: PaidOrderDto, userId: number): Promise<Response> {
+    const { orderId, amount } = body;
+    const [order, user, system] = await Promise.all([
+      this.orderRepository.findOne({
+        where: {
+          id: orderId,
+          status: OrderStatus.WAITING_PURCHASE,
+        },
+      }),
+      this.userRepository.findOne({
+        where: {
+          id: userId,
+          verifyStatus: UserStatus.ACTIVE,
+        },
+      }),
+      this.systemRepository.findOne(),
+    ]);
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (amount > +user.availableBalance) {
+      throw new HttpException(
+        httpErrors.USER_INSUFFICIENT_BALANCE,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (amount + order.paid > order.price) {
+      throw new HttpException(
+        httpErrors.ORDER_PAID_NOT_VALID,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await Promise.all([
+      this.orderRepository.update(order.id, {
+        paid: order.paid + amount,
+        status:
+          order.paid + amount === order.price
+            ? OrderStatus.WAITING_START
+            : OrderStatus.WAITING_PURCHASE,
+      }),
+      this.userRepository.update(user.id, {
+        availableBalance: +user.availableBalance - amount,
+        balance: +user.availableBalance - amount,
+      }),
+
+      this.systemRepository.update(system.id, {
+        balance: system.balance + amount,
+      }),
+    ]);
+    //TODO: update send mail, send noti to hdv,
+    await this.transactionRepository.save([
+      {
+        type: TransactionType.USER_PAY_ORDER,
+        user,
+        status: TransactionStatus.SUCCESS,
+        amount,
+      },
+      {
+        type: TransactionType.SYSTEM_USER_PAYORDER,
+        user: null,
+        amount,
+        status: TransactionStatus.SUCCESS,
+      },
+    ]);
+    return httpResponse.PAID_ORDER_SUCCESS;
+  }
+
+  async startOrder(orderId: number, actor: string): Promise<Response> {
+    const today = new Date().toISOString().slice(0, 10); // get today's date in ISO format
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        status: OrderStatus.WAITING_START,
+        startDate: today,
+      },
+    });
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    switch (actor) {
+      case 'tourguide':
+        await this.orderRepository.update(order.id, {
+          tourGuideStart: true,
+          status: order.userStart
+            ? OrderStatus.PROCESSING
+            : OrderStatus.WAITING_START,
+        });
+        break;
+      case 'user':
+        await this.orderRepository.update(order.id, {
+          userStart: true,
+          status: order.tourGuideStart
+            ? OrderStatus.PROCESSING
+            : OrderStatus.WAITING_START,
+        });
+      default:
+        break;
+    }
+    return httpResponse.START_ORDER_SUCCESS;
+  }
+
+  async endOrder(body: RateOrderDto) {
+    const { content, orderId, image, star } = body;
+    const [order, system] = await Promise.all([
+      this.orderRepository.findOne({
+        where: {
+          id: orderId,
+          status: OrderStatus.PROCESSING,
+        },
+        relations: ['tour', 'tourGuide'],
+      }),
+      this.systemRepository.findOne(),
+    ]);
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    // check if
+    const endDate = moment(order.endDate);
+    const now = moment();
+    const endDatePlus7Days = moment(endDate).add(7, 'days');
+    if (!now.isBetween(endDate, endDatePlus7Days)) {
+      throw new HttpException(
+        httpErrors.ORDER_DATE_NOT_VALID,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (star) {
+      await this.rateRepository.save({
+        star,
+        order,
+        tour: order.tour,
+        content: content ? content : null,
+        image: image ? image : null,
+      });
+    }
+    const tourGuideBalanceAdd = (system.commission / 100) * order.price;
+    await Promise.all([
+      this.orderRepository.update(
+        { id: order.id },
+        {
+          status: OrderStatus.DONE,
+        },
+      ),
+      this.systemRepository.update(
+        { id: system.id },
+        { balance: system.balance - tourGuideBalanceAdd },
+      ),
+      this.tourGuideRepository.update(
+        { id: order.tourGuide.id },
+        {
+          availableBalance:
+            order.tourGuide.availableBalance +
+            order.tourGuideDeposit +
+            tourGuideBalanceAdd,
+          balance: order.tourGuide.balance + tourGuideBalanceAdd,
+        },
+      ),
+    ]);
+    return httpResponse.END_ORDER_SUCCESS;
+  }
 }

@@ -83,6 +83,26 @@ export const httpResponse = {
     code: 'ORDER_002',
     statusCode: 200,
   },
+  PAID_ORDER_SUCCESS: {
+    message: 'Paid order success',
+    code: 'ORDER_003',
+    statusCode: 200,
+  },
+  START_ORDER_SUCCESS: {
+    message: 'Order start success',
+    code: 'ORDER_004',
+    statusCode: 200,
+  },
+  CANCEL_ORDER_SUCCESS: {
+    message: 'Order cancelled',
+    code: 'ORDER_005',
+    statusCode: 200,
+  },
+  END_ORDER_SUCCESS: {
+    message: 'Order End',
+    code: 'ORDER_006',
+    statusCode: 200,
+  },
   //GET ME
   GET_ME_SUCCESS: {
     message: 'get orders success',

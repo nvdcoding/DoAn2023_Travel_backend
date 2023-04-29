@@ -23,6 +23,10 @@ export const httpErrors = {
     message: 'Email or password not match',
     code: 'ERR_USER_004',
   },
+  USER_INSUFFICIENT_BALANCE: {
+    message: 'Insufficient balance !',
+    code: 'ERR_USER_005',
+  },
   // Admin
   ADMIN_EXIST: {
     message: 'Admin existed',
@@ -94,6 +98,18 @@ export const httpErrors = {
   ORDER_NOT_FOUND: {
     message: 'Order not found',
     code: 'ERR_ORDER_002',
+  },
+  ORDER_PAID_NOT_VALID: {
+    message: 'Order paid is not valid',
+    code: 'ERR_ORDER_003',
+  },
+  ORDER_DATE_NOT_VALID: {
+    message: 'Order date is not valid',
+    code: 'ERR_ORDER_004',
+  },
+  ORDER_PREPAID_NOT_VALID: {
+    message: 'Order prepaid not valid',
+    code: 'ERR_ORDER_005',
   },
   // VOUCHER
   VOUCHER_EXIST: {
