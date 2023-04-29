@@ -45,13 +45,22 @@ export class OrderController {
     return this.orderService.getOrdersByStatus(userId, options);
   }
 
-  @Get('/:id')
+  @Get('/user/:id')
   @UseGuards(UserAuthGuard)
-  async getOneOrder(
+  async userGetOneOrder(
     @ActorID() userId: number,
     @Param('id') orderId: number,
   ): Promise<Response> {
-    return this.orderService.getOneOrder(userId, orderId);
+    return this.orderService.userGetOneOrder(userId, orderId);
+  }
+
+  @Get('/tourguide/:id')
+  @UseGuards(TourGuideAuthGuard)
+  async tourGuideGetOneOrder(
+    @ActorID() tourGuideId: number,
+    @Param('id') orderId: number,
+  ): Promise<Response> {
+    return this.orderService.tourGuideGetOneOrder(tourGuideId, orderId);
   }
 
   @Get('/')
@@ -86,7 +95,7 @@ export class OrderController {
     return this.orderService.startOrder(orderId, 'user');
   }
 
-  @Put('/start-user/:orderId')
+  @Put('/start-tourguide/:orderId')
   @UseGuards(UserAuthGuard)
   async tourGuideStartOrder(
     @Param('orderId') orderId: number,

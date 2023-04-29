@@ -14,7 +14,7 @@ import {
   OrderStatus,
 } from 'src/shares/enum/order.enum';
 import { GetOrdersDto } from './dtos/get-orders.dto';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
@@ -28,6 +28,8 @@ import {
   TransactionType,
 } from 'src/shares/enum/transaction.enum';
 import { SystemRepository } from 'src/models/repositories/system.repository';
+import { CancelOrderDto } from './dtos/cancel-order.dto';
+import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 
 @Injectable()
 export class OrderService {
@@ -203,10 +205,9 @@ export class OrderService {
     return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
   }
 
-  async getOneOrder(userId: number, orderId: number): Promise<Response> {
+  async userGetOneOrder(userId: number, orderId: number): Promise<Response> {
     const user = await this.userRepository.findOne({
       where: { id: userId, verifyStatus: UserStatus.ACTIVE },
-      relations: ['tourGuide', 'userVoucher', 'tour', 'user', 'orderSchedule'],
     });
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -216,6 +217,33 @@ export class OrderService {
         id: orderId,
         user,
       },
+      relations: ['tourGuide', 'userVoucher', 'tour', 'user', 'orderSchedule'],
+    });
+    if (!orders) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
+  }
+
+  async tourGuideGetOneOrder(
+    tourguideId: number,
+    orderId: number,
+  ): Promise<Response> {
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: { id: tourguideId, verifyStatus: TourguideStatus.ACTIVE },
+    });
+    if (!tourGuide) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const orders = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        tourGuide,
+      },
+      relations: ['tourGuide', 'userVoucher', 'tour', 'user', 'orderSchedule'],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -488,5 +516,20 @@ export class OrderService {
       ),
     ]);
     return httpResponse.END_ORDER_SUCCESS;
+  }
+
+  async cancelOrder(body: CancelOrderDto, actor: string) {
+    const { orderId } = body;
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        status: Not(
+          In([OrderStatus.DONE, OrderStatus.PROCESSING, OrderStatus.REJECTED]),
+        ),
+      },
+    });
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
   }
 }
