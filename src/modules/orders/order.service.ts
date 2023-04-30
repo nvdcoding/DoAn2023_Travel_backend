@@ -75,6 +75,7 @@ export class OrderService {
         id: tour.tourGuide.id,
       },
     });
+    console.log({ tourGuide });
     if (!tourGuide) {
       throw new HttpException(
         httpErrors.TOUR_GUIDE_NOT_FOUND,
