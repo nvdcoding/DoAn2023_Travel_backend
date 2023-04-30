@@ -565,7 +565,7 @@ export class OrderService {
         },
       }),
       this.userRepository.findOne({
-        where: { id: userId, status: UserStatus.ACTIVE },
+        where: { id: userId, verifyStatus: UserStatus.ACTIVE },
       }),
       this.systemRepository.findOne(),
     ]);

@@ -151,4 +151,6 @@ export class TourGuideService {
     ]);
     return httpResponse.RESPONSE_SUCCESS;
   }
+
+  async getTourGuide(): Promise<void> {}
 }

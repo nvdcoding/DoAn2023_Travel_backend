@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
-import { RegisterTourguideDto } from '../auth/dto/register-tourguide.dto';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { AdminGetTourGuideDto } from './dtos/get-tour-guide.dto';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
