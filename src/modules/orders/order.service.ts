@@ -266,11 +266,10 @@ export class OrderService {
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    console.log({ order });
     await this.checkTourguideAvailable(
       tourguideId,
-      order.startDate.toDateString(),
-      order.endDate.toDateString(),
+      `${order.startDate}`,
+      `${order.endDate}`,
     );
     if (
       +order.tourGuide.availableBalance <
