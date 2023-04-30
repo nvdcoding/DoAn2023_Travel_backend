@@ -378,7 +378,7 @@ export class OrderService {
   }
 
   async paidOrder(body: PaidOrderDto, userId: number): Promise<Response> {
-    const { orderId, amount } = body;
+    const { orderId } = body;
     const [order, user, system] = await Promise.all([
       this.orderRepository.findOne({
         where: {
@@ -400,6 +400,7 @@ export class OrderService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    const amount = +order.price - +order.paid;
     if (amount > +user.availableBalance || amount > +user.balance) {
       throw new HttpException(
         httpErrors.USER_INSUFFICIENT_BALANCE,
