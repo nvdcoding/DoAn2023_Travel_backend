@@ -299,17 +299,27 @@ export class OrderService {
             action: body.action,
           });
     if (body.action === ActionApproveOrder.ACCEPT) {
-      await this.tourGuideRepository.update(
-        { id: order.tourGuide.id },
-        {
-          availableBalance:
-            order.tourGuide.availableBalance -
-            order.price * (system.tourGuidePrepaidOrder / 100),
-          balance:
-            order.tourGuide.balance -
-            order.price * (system.tourGuidePrepaidOrder / 100),
-        },
-      );
+      await Promise.all([
+        this.tourGuideRepository.update(
+          { id: order.tourGuide.id },
+          {
+            availableBalance:
+              order.tourGuide.availableBalance -
+              order.price * (system.tourGuidePrepaidOrder / 100),
+            balance:
+              order.tourGuide.balance -
+              order.price * (system.tourGuidePrepaidOrder / 100),
+          },
+        ),
+        this.systemRepository.update(
+          { id: system.id },
+          {
+            balance:
+              system.balance +
+              order.price * (system.tourGuidePrepaidOrder / 100),
+          },
+        ),
+      ]);
     }
     await Promise.all([
       this.orderRepository.update(body.orderId, {
@@ -325,7 +335,7 @@ export class OrderService {
       }),
       task,
     ]);
-    return httpResponse.APPROVE_TOUR_SUCCESS;
+    return httpResponse.PREPAID_ORDER_SUCCESS;
   }
 
   private async checkTourguideAvailable(
@@ -535,7 +545,7 @@ export class OrderService {
     userId: number,
   ): Promise<Response> {
     const { orderId } = body;
-    const [order, user] = await Promise.all([
+    const [order, user, system] = await Promise.all([
       this.orderRepository.findOne({
         where: {
           id: orderId,
@@ -545,6 +555,7 @@ export class OrderService {
       this.userRepository.findOne({
         where: { id: userId, status: UserStatus.ACTIVE },
       }),
+      this.systemRepository.findOne(),
     ]);
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -575,32 +586,188 @@ export class OrderService {
           balance: user.balance - 0.1 * order.price,
         },
       ),
+      this.systemRepository.update(system.id, {
+        balance: system.balance + 0.1 * order.price,
+      }),
     ]);
     return httpResponse.APPROVE_ORDER_SUCCESS;
   }
 
-  async cancelOrder(body: CancelOrderDto, actor: string, actorId: number) {
+  async userCancelOrder(
+    body: CancelOrderDto,
+    userId: number,
+  ): Promise<Response> {
     const { orderId } = body;
-    const order = await this.orderRepository.findOne({
-      where: {
-        id: orderId,
-        status: Not(
-          In([OrderStatus.DONE, OrderStatus.PROCESSING, OrderStatus.REJECTED]),
-        ),
-      },
-    });
+    const [order, user, system] = await Promise.all([
+      this.orderRepository.findOne({
+        where: {
+          id: orderId,
+          status: Not(
+            In([
+              OrderStatus.DONE,
+              OrderStatus.PROCESSING,
+              OrderStatus.REJECTED,
+            ]),
+          ),
+        },
+        relations: ['tourGuide'],
+      }),
+      this.userRepository.findOne({
+        where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+      }),
+      this.systemRepository.findOne(),
+    ]);
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    switch (actor) {
-      case 'user':
-        const user = await this.userRepository.findOne({
-          where: { id: actorId, verifyStatus: UserStatus.ACTIVE },
-        });
-        break;
-
-      default:
-        break;
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    if (order.status === OrderStatus.WAITING_TOUR_GUIDE) {
+      await this.orderRepository.update(
+        { id: order.id },
+        { status: OrderStatus.REJECTED },
+      );
+    } else if (order.status === OrderStatus.WAITING_PREPAID) {
+      await Promise.all([
+        this.orderRepository.update(
+          { id: order.id },
+          { status: OrderStatus.REJECTED },
+        ),
+        this.systemRepository.update(
+          { id: system.id },
+          {
+            balance: system.balance - order.tourGuideDeposit,
+          },
+        ),
+        this.tourGuideRepository.update(
+          { id: order.tourGuide.id },
+          {
+            availableBalance:
+              order.tourGuide.availableBalance + order.tourGuideDeposit,
+            balance: order.tourGuide.balance + order.tourGuideDeposit,
+          },
+        ),
+      ]);
+    } else if (
+      order.status === OrderStatus.WAITING_PURCHASE ||
+      order.status === OrderStatus.WAITING_START
+    ) {
+      await Promise.all([
+        this.orderRepository.update(
+          { id: order.id },
+          { status: OrderStatus.REJECTED },
+        ),
+        this.tourGuideRepository.update(
+          { id: order.tourGuide.id },
+          {
+            availableBalance:
+              order.tourGuide.availableBalance +
+              order.tourGuideDeposit +
+              0.1 * order.price,
+            balance:
+              order.tourGuide.balance +
+              order.tourGuideDeposit +
+              0.1 * order.price,
+          },
+        ),
+        this.systemRepository.update(
+          { id: system.id },
+          {
+            balance:
+              system.balance - order.tourGuideDeposit - 0.1 * order.price,
+          },
+        ),
+      ]);
+    }
+    return httpResponse.CANCEL_ORDER_SUCCESS;
+  }
+
+  async tourGuideCancelOrder(
+    body: CancelOrderDto,
+    tourGuideId: number,
+  ): Promise<Response> {
+    const { orderId } = body;
+    const [order, tourguide, system] = await Promise.all([
+      this.orderRepository.findOne({
+        where: {
+          id: orderId,
+          status: Not(
+            In([
+              OrderStatus.DONE,
+              OrderStatus.PROCESSING,
+              OrderStatus.REJECTED,
+              OrderStatus.WAITING_TOUR_GUIDE,
+            ]),
+          ),
+        },
+        relations: ['tourGuide', 'user'],
+      }),
+      this.tourGuideRepository.findOne({
+        where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
+      }),
+      this.systemRepository.findOne(),
+    ]);
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (!tourguide) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (order.status === OrderStatus.WAITING_PREPAID) {
+      await Promise.all([
+        this.orderRepository.update(
+          { id: order.id },
+          { status: OrderStatus.REJECTED },
+        ),
+        this.systemRepository.update(
+          { id: system.id },
+          {
+            balance: system.balance - 0.9 * order.tourGuideDeposit,
+          },
+        ),
+        this.tourGuideRepository.update(
+          { id: order.tourGuide.id },
+          {
+            availableBalance:
+              order.tourGuide.availableBalance + 0.9 * order.tourGuideDeposit,
+            balance: order.tourGuide.balance + 0.9 * order.tourGuideDeposit,
+            cancelledOrders: order.tourGuide.cancelledOrders + 1,
+          },
+        ),
+      ]);
+    } else {
+      await Promise.all([
+        this.orderRepository.update(
+          { id: order.id },
+          { status: OrderStatus.REJECTED },
+        ),
+        this.systemRepository.update(
+          { id: system.id },
+          {
+            balance:
+              system.balance - 0.9 * order.tourGuideDeposit - 0.1 * order.price,
+          },
+        ),
+        this.tourGuideRepository.update(
+          { id: order.tourGuide.id },
+          {
+            availableBalance:
+              order.tourGuide.availableBalance + 0.9 * order.tourGuideDeposit,
+            balance: order.tourGuide.balance + 0.9 * order.tourGuideDeposit,
+            cancelledOrders: order.tourGuide.cancelledOrders + 1,
+          },
+        ),
+        this.userRepository.update(
+          { id: order.user.id },
+          {
+            balance: order.user.balance + 0.1 * order.price,
+            availableBalance: order.user.availableBalance + 0.1 * order.price,
+          },
+        ),
+        // TODO: trả lại voucher
+      ]);
+    }
+    return httpResponse.CANCEL_ORDER_SUCCESS;
   }
 }

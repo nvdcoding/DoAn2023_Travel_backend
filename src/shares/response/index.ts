@@ -103,6 +103,11 @@ export const httpResponse = {
     code: 'ORDER_006',
     statusCode: 200,
   },
+  PREPAID_ORDER_SUCCESS: {
+    message: 'Prepaid order success',
+    code: 'ORDER_007',
+    statusCode: 200
+  }
   //GET ME
   GET_ME_SUCCESS: {
     message: 'get orders success',

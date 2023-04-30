@@ -12,10 +12,10 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
-import { IsLoginGuard } from '../auth/guards/is-login.guard';
 import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
+import { CancelOrderDto } from './dtos/cancel-order.dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import { PaidOrderDto } from './dtos/paid-order.dto';
@@ -120,9 +120,21 @@ export class OrderController {
     return this.orderService.endOrder(body);
   }
 
-  // @Delete('/del-user/:orderId')@para
-  // @UseGuards(UserAuthGuard)
-  // async userCancelOrder(@Param('orderId') orderId: number) {
-  //   return this.orderService.startOrder(orderId, 'tourguide');
-  // }
+  @Delete('/user')
+  @UseGuards(UserAuthGuard)
+  async userCancelOrder(
+    @Body() body: CancelOrderDto,
+    @ActorID() userId: number,
+  ): Promise<Response> {
+    return this.orderService.userCancelOrder(body, userId);
+  }
+
+  @Delete('/tourguide')
+  @UseGuards(TourGuideAuthGuard)
+  async tourGuideCancelOrder(
+    @Body() body: CancelOrderDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.orderService.tourGuideCancelOrder(body, tourGuideId);
+  }
 }
