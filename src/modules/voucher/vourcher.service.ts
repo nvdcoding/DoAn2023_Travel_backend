@@ -62,12 +62,16 @@ export class VoucherService {
     const { discountType } = options;
     let data;
     if (discountType) {
-      data = await this.voucherRepository.find({ where: { discountType } });
+      data = await this.voucherRepository.findAndCount({
+        where: { discountType },
+        order: { id: 'DESC' },
+      });
     } else {
-      data = await this.voucherRepository.find({
+      data = await this.voucherRepository.findAndCount({
         where: {
           endDate: MoreThan(new Date()),
         },
+        order: { id: 'DESC' },
       });
     }
     return {
@@ -76,7 +80,7 @@ export class VoucherService {
         options.page || 1,
         options.limit || 10,
       ),
-      ...httpResponse.CLAIM_VOUCHER_SUCCESS,
+      ...httpResponse.GET_VOUCHER_SUCCESS,
     };
   }
 
