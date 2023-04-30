@@ -29,7 +29,7 @@ export class VoucherController {
   }
 
   @Get('/')
-  @UseGuards(UserAuthGuard)
+  // @UseGuards(UserAuthGuard)
   async getAllVoucher(@Query() options: GetVoucherDto): Promise<Response> {
     return this.voucherService.getAllVoucher(options);
   }

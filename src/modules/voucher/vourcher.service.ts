@@ -62,9 +62,13 @@ export class VoucherService {
     const { discountType } = options;
     let data;
     if (discountType) {
-      data = this.voucherRepository.find({ where: { discountType } });
+      data = await this.voucherRepository.find({ where: { discountType } });
     } else {
-      data = this.voucherRepository.find();
+      data = await this.voucherRepository.find({
+        where: {
+          endDate: MoreThan(new Date()),
+        },
+      });
     }
     return {
       returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(

@@ -8,7 +8,7 @@ import {
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { GetTourGuideDto } from './dtos/get-tour-guide.dto';
+import { AdminGetTourGuideDto } from './dtos/get-tour-guide.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
 import { httpErrors } from 'src/shares/exceptions';
@@ -49,7 +49,7 @@ export class TourGuideService {
   }
 
   async getTourGuidesByStatusAndKeyword(
-    options: GetTourGuideDto,
+    options: AdminGetTourGuideDto,
   ): Promise<Response> {
     const { keyword, status, limit, page } = options;
 

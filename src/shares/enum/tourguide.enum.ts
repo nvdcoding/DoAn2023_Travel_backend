@@ -1,7 +1,6 @@
 export enum Gender {
-  FEMALE = 'FEMALE',
-  MALE = 'MALE',
-  OTHER = 'OTHER',
+  FEMALE = '0',
+  MALE = '1',
 }
 
 export enum TourguideStatus {
