@@ -402,7 +402,6 @@ export class OrderService {
     }
     const amount = +order.price - +order.paid;
     console.log({ amount, orderPrice: +order.price, orderPaid: order.paid });
-    return;
     if (+amount > +user.availableBalance || +amount > +user.balance) {
       throw new HttpException(
         httpErrors.USER_INSUFFICIENT_BALANCE,
