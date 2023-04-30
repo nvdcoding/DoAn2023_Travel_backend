@@ -575,11 +575,6 @@ export class OrderService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    console.log({
-      available: user.availableBalance,
-      balance: user.balance,
-      orderPrice: order.price,
-    });
     if (
       user.availableBalance < +order.price * 0.1 ||
       user.balance < +order.price * 0.1
@@ -589,11 +584,13 @@ export class OrderService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    console.log(system.balance + 0.1 * order.price);
     await Promise.all([
       this.orderRepository.update(
-        { id: order.id, paid: 0.1 * order.price },
+        { id: order.id },
         {
           status: OrderStatus.WAITING_PURCHASE,
+          paid: 0.1 * order.price,
         },
       ),
       this.userRepository.update(
