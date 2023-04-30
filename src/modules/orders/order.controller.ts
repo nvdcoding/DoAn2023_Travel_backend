@@ -19,6 +19,7 @@ import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import { PaidOrderDto } from './dtos/paid-order.dto';
+import { PrepaidOrderDto } from './dtos/prepaid-order.dto';
 import { RateOrderDto } from './dtos/rate-order.dto';
 import { OrderService } from './order.service';
 
@@ -73,13 +74,23 @@ export class OrderController {
   }
 
   @Put('/tour-guide/approve-order')
-  @UseGuards()
+  @UseGuards(TourGuideAuthGuard)
   async approveOrder(
     @Body() body: ApproveOrderDto,
     @ActorID() tourGuideId: number,
   ): Promise<Response> {
     return this.orderService.approveOrder(body, tourGuideId);
   }
+
+  @Put('/prepaid')
+  @UseGuards(UserAuthGuard)
+  async prepaidOrder(
+    @Body() body: PrepaidOrderDto,
+    @ActorID() userId: number,
+  ): Promise<Response> {
+    return this.orderService.userPrepaidOrder(body, userId);
+  }
+
   @Put('/paid')
   @UseGuards(UserAuthGuard)
   async payOrder(

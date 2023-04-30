@@ -38,6 +38,9 @@ export class Order extends BaseEntity {
   @Column({ name: 'end_date', type: 'date', nullable: false })
   endDate: Date;
 
+  @Column({ name: 'approve_date', type: 'date', nullable: true })
+  approveTime: Date;
+
   @Column({ name: 'price', type: 'bigint', nullable: false })
   price: number;
 

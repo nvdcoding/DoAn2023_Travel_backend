@@ -30,6 +30,7 @@ import {
 import { SystemRepository } from 'src/models/repositories/system.repository';
 import { CancelOrderDto } from './dtos/cancel-order.dto';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
+import { PrepaidOrderDto } from './dtos/prepaid-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -75,7 +76,6 @@ export class OrderService {
         id: tour.tourGuide.id,
       },
     });
-    console.log({ tourGuide });
     if (!tourGuide) {
       throw new HttpException(
         httpErrors.TOUR_GUIDE_NOT_FOUND,
@@ -99,21 +99,23 @@ export class OrderService {
       ),
     );
 
-    await this.orderRepository.save({
-      startDate,
-      endDate: moment(new Date(startDate))
-        .add(scheduleContent.length, 'days')
-        .toISOString()
-        .split('T')[0],
-      price: orderPrice,
-      paid: 0,
-      size: numberOfMember,
-      tourGuide,
-      tour,
-      user,
-      orderSchedule,
-      status: OrderStatus.WAITING_TOUR_GUIDE,
-    });
+    await Promise.all([
+      this.orderRepository.save({
+        startDate,
+        endDate: moment(new Date(startDate))
+          .add(scheduleContent.length, 'days')
+          .toISOString()
+          .split('T')[0],
+        price: orderPrice,
+        paid: 0,
+        size: numberOfMember,
+        tourGuide,
+        tour,
+        user,
+        orderSchedule,
+        status: OrderStatus.WAITING_TOUR_GUIDE,
+      }),
+    ]);
     return httpResponse.GET_ORDER_SUCCESS;
   }
 
@@ -127,6 +129,7 @@ export class OrderService {
       case GetTourOptions.ALL:
         orderStatus = [
           ...OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_PREPAID,
           OrderStatus.WAITING_TOUR_GUIDE,
           OrderStatus.WAITING_START,
           OrderStatus.PROCESSING,
@@ -138,6 +141,7 @@ export class OrderService {
         orderStatus = [
           ...OrderStatus.WAITING_PURCHASE,
           OrderStatus.WAITING_TOUR_GUIDE,
+          OrderStatus.WAITING_PREPAID,
         ];
         break;
       case GetTourOptions.PROCESSING:
@@ -301,6 +305,9 @@ export class OrderService {
           availableBalance:
             order.tourGuide.availableBalance -
             order.price * (system.tourGuidePrepaidOrder / 100),
+          balance:
+            order.tourGuide.balance -
+            order.price * (system.tourGuidePrepaidOrder / 100),
         },
       );
     }
@@ -308,9 +315,13 @@ export class OrderService {
       this.orderRepository.update(body.orderId, {
         status:
           body.action === ActionApproveOrder.ACCEPT
-            ? OrderStatus.WAITING_PURCHASE
+            ? OrderStatus.WAITING_PREPAID
             : OrderStatus.REJECTED,
-        tourGuideDeposit: order.price * (system.tourGuidePrepaidOrder / 100),
+        tourGuideDeposit:
+          body.action === ActionApproveOrder.ACCEPT
+            ? order.price * (system.tourGuidePrepaidOrder / 100)
+            : null,
+        approveTime: moment(new Date()).toISOString().split('T')[0],
       }),
       task,
     ]);
@@ -378,7 +389,7 @@ export class OrderService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    if (amount > +user.availableBalance) {
+    if (amount > +user.availableBalance || amount > +user.balance) {
       throw new HttpException(
         httpErrors.USER_INSUFFICIENT_BALANCE,
         HttpStatus.NOT_FOUND,
@@ -517,6 +528,55 @@ export class OrderService {
       ),
     ]);
     return httpResponse.END_ORDER_SUCCESS;
+  }
+
+  async userPrepaidOrder(
+    body: PrepaidOrderDto,
+    userId: number,
+  ): Promise<Response> {
+    const { orderId } = body;
+    const [order, user] = await Promise.all([
+      this.orderRepository.findOne({
+        where: {
+          id: orderId,
+          status: OrderStatus.WAITING_PREPAID,
+        },
+      }),
+      this.userRepository.findOne({
+        where: { id: userId, status: UserStatus.ACTIVE },
+      }),
+    ]);
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (
+      user.availableBalance < +order.price * 0.1 ||
+      user.balance < +order.price * 0.1
+    ) {
+      throw new HttpException(
+        httpErrors.USER_INSUFFICIENT_BALANCE,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await Promise.all([
+      this.orderRepository.update(
+        { id: order.id, paid: 0.1 * order.price },
+        {
+          status: OrderStatus.WAITING_PURCHASE,
+        },
+      ),
+      this.userRepository.update(
+        { id: user.id },
+        {
+          availableBalance: user.availableBalance - 0.1 * order.price,
+          balance: user.balance - 0.1 * order.price,
+        },
+      ),
+    ]);
+    return httpResponse.APPROVE_ORDER_SUCCESS;
   }
 
   async cancelOrder(body: CancelOrderDto, actor: string) {
