@@ -575,6 +575,11 @@ export class OrderService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    console.log({
+      available: user.availableBalance,
+      balance: user.balance,
+      orderPrice: order.price,
+    });
     if (
       user.availableBalance < +order.price * 0.1 ||
       user.balance < +order.price * 0.1
