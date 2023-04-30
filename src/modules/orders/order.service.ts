@@ -585,7 +585,7 @@ export class OrderService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    console.log(system.balance + 0.1 * order.price);
+    console.log(0.1 * order.price);
     await Promise.all([
       this.orderRepository.update(
         { id: order.id },
