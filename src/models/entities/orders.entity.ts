@@ -41,10 +41,10 @@ export class Order extends BaseEntity {
   @Column({ name: 'approve_date', type: 'date', nullable: true })
   approveTime: Date;
 
-  @Column({ name: 'price', type: 'bigint', nullable: false })
+  @Column({ name: 'price', type: 'int', nullable: false })
   price: number;
 
-  @Column({ name: 'paid', type: 'bigint', nullable: false })
+  @Column({ name: 'paid', type: 'int', nullable: false })
   paid: number;
 
   // so nguoi
@@ -68,7 +68,7 @@ export class Order extends BaseEntity {
   tourGuideStart: boolean;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'tourguide_deposit',
     unsigned: true,

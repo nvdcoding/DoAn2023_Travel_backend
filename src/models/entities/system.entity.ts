@@ -13,7 +13,7 @@ export class SystemEntity {
   id: number;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'balance',
     unsigned: true,

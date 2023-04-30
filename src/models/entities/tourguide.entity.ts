@@ -56,7 +56,7 @@ export class TourGuide extends BaseEntity {
   gender: Gender;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'balance',
     unsigned: true,
@@ -64,7 +64,7 @@ export class TourGuide extends BaseEntity {
   balance: number;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'available_balance',
     unsigned: true,

@@ -34,7 +34,7 @@ export class TransactionEntity extends BaseEntity {
   @Column({
     name: 'amount',
     default: 0,
-    type: 'bigint',
+    type: 'int',
     nullable: false,
   })
   amount: number;

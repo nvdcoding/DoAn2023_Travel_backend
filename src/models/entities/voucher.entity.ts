@@ -57,7 +57,7 @@ export class Voucher {
 
   @Column({
     name: 'requirement_point',
-    type: 'bigint',
+    type: 'int',
     default: 0,
     nullable: false,
   })

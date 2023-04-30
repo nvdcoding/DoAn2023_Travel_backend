@@ -32,13 +32,13 @@ export class Tour extends BaseEntity {
   @Column({ nullable: false, name: 'description', type: 'longtext' })
   description: string;
 
-  @Column({ name: 'base_price', default: 0, type: 'bigint', nullable: false })
+  @Column({ name: 'base_price', default: 0, type: 'int', nullable: false })
   basePrice: number;
 
-  @Column({ name: 'max_price', default: 0, type: 'bigint', nullable: false })
+  @Column({ name: 'max_price', default: 0, type: 'int', nullable: false })
   maxPrice: number;
 
-  @Column({ name: 'max_member', default: 0, type: 'bigint', nullable: false })
+  @Column({ name: 'max_member', default: 0, type: 'int', nullable: false })
   maxMember: number;
 
   @Column({
@@ -52,7 +52,7 @@ export class Tour extends BaseEntity {
   @Column({
     name: 'fee_per_member',
     default: 0,
-    type: 'bigint',
+    type: 'int',
     nullable: false,
   })
   feePerMember: number;

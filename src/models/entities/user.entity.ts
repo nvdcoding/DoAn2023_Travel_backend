@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   phone: string;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'balance',
     unsigned: true,
@@ -51,7 +51,7 @@ export class User extends BaseEntity {
   balance: number;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'available_balance',
     unsigned: true,
