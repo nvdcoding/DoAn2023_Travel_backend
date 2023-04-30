@@ -160,6 +160,9 @@ export class TourService {
         status: TourStatus.WAITING,
       },
       relations: ['images', 'rates', 'tourGuide', 'tourSchedule', 'province'],
+      order: {
+        id: 'DESC',
+      },
     });
     return {
       ...httpResponse.GET_TOUR_SUCCESS,
