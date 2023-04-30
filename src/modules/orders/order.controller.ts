@@ -36,7 +36,7 @@ export class OrderController {
     return this.orderService.orderTour(userId, body);
   }
 
-  @Get('/')
+  @Get('/user')
   @UseGuards(UserAuthGuard)
   async getOrdersByStatus(
     @ActorID() userId: number,
@@ -63,7 +63,7 @@ export class OrderController {
     return this.orderService.tourGuideGetOneOrder(tourGuideId, orderId);
   }
 
-  @Get('/')
+  @Get('/tourguide')
   @UseGuards(TourGuideAuthGuard)
   async tourGuidGetOrdersByStatus(
     @ActorID() tourGuideId: number,
@@ -103,7 +103,7 @@ export class OrderController {
     return this.orderService.startOrder(orderId, 'tourguide');
   }
 
-  @Put('/end-order/')
+  @Put('/end-order')
   @UseGuards(UserAuthGuard)
   async endOrder(@Body() body: RateOrderDto): Promise<Response> {
     return this.orderService.endOrder(body);
