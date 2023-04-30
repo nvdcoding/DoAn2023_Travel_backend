@@ -159,7 +159,7 @@ export class OrderService {
         status: In(orderStatus),
         user,
       },
-      relations: ['tour', 'orderSchedule', 'tourGuide'],
+      relations: ['tour', 'orderSchedule', 'tourGuide', 'tour.images'],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -202,7 +202,7 @@ export class OrderService {
         status: In(orderStatus),
         tourGuide,
       },
-      relations: ['tour', 'orderSchedule', 'tourGuide'],
+      relations: ['tour', 'orderSchedule', 'tourGuide', 'tour.images'],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -579,7 +579,7 @@ export class OrderService {
     return httpResponse.APPROVE_ORDER_SUCCESS;
   }
 
-  async cancelOrder(body: CancelOrderDto, actor: string) {
+  async cancelOrder(body: CancelOrderDto, actor: string, actorId: number) {
     const { orderId } = body;
     const order = await this.orderRepository.findOne({
       where: {
@@ -591,6 +591,16 @@ export class OrderService {
     });
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    switch (actor) {
+      case 'user':
+        const user = await this.userRepository.findOne({
+          where: { id: actorId, verifyStatus: UserStatus.ACTIVE },
+        });
+        break;
+
+      default:
+        break;
     }
   }
 }
