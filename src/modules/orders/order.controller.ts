@@ -55,33 +55,6 @@ export class OrderController {
     return this.orderService.userGetOneOrder(userId, orderId);
   }
 
-  @Get('/tourguide/:id')
-  @UseGuards(TourGuideAuthGuard)
-  async tourGuideGetOneOrder(
-    @ActorID() tourGuideId: number,
-    @Param('id') orderId: number,
-  ): Promise<Response> {
-    return this.orderService.tourGuideGetOneOrder(tourGuideId, orderId);
-  }
-
-  @Get('/tourguide')
-  @UseGuards(TourGuideAuthGuard)
-  async tourGuidGetOrdersByStatus(
-    @ActorID() tourGuideId: number,
-    @Query() options: GetOrdersDto,
-  ): Promise<Response> {
-    return this.orderService.tourGuideGetOrderByStatus(tourGuideId, options);
-  }
-
-  @Put('/tour-guide/approve-order')
-  @UseGuards(TourGuideAuthGuard)
-  async approveOrder(
-    @Body() body: ApproveOrderDto,
-    @ActorID() tourGuideId: number,
-  ): Promise<Response> {
-    return this.orderService.approveOrder(body, tourGuideId);
-  }
-
   @Put('/prepaid')
   @UseGuards(UserAuthGuard)
   async prepaidOrder(
@@ -106,14 +79,6 @@ export class OrderController {
     return this.orderService.startOrder(orderId, 'user');
   }
 
-  @Put('/start-tourguide/:orderId')
-  @UseGuards(UserAuthGuard)
-  async tourGuideStartOrder(
-    @Param('orderId') orderId: number,
-  ): Promise<Response> {
-    return this.orderService.startOrder(orderId, 'tourguide');
-  }
-
   @Put('/end-order')
   @UseGuards(UserAuthGuard)
   async endOrder(@Body() body: RateOrderDto): Promise<Response> {
@@ -127,6 +92,43 @@ export class OrderController {
     @ActorID() userId: number,
   ): Promise<Response> {
     return this.orderService.userCancelOrder(body, userId);
+  }
+
+  // CALL BY TOURGUIDE
+
+  @Get('/tourguide/:id')
+  @UseGuards(TourGuideAuthGuard)
+  async tourGuideGetOneOrder(
+    @ActorID() tourGuideId: number,
+    @Param('id') orderId: number,
+  ): Promise<Response> {
+    return this.orderService.tourGuideGetOneOrder(tourGuideId, orderId);
+  }
+
+  @Get('/tourguide')
+  @UseGuards(TourGuideAuthGuard)
+  async tourGuidGetOrdersByStatus(
+    @ActorID() tourGuideId: number,
+    @Query() options: GetOrdersDto,
+  ): Promise<Response> {
+    return this.orderService.tourGuideGetOrderByStatus(tourGuideId, options);
+  }
+
+  @Put('/tourguide/approve-order')
+  @UseGuards(TourGuideAuthGuard)
+  async approveOrder(
+    @Body() body: ApproveOrderDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.orderService.approveOrder(body, tourGuideId);
+  }
+
+  @Put('/start-tourguide/:orderId')
+  @UseGuards(TourGuideAuthGuard)
+  async tourGuideStartOrder(
+    @Param('orderId') orderId: number,
+  ): Promise<Response> {
+    return this.orderService.startOrder(orderId, 'tourguide');
   }
 
   @Delete('/tourguide')
