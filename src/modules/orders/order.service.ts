@@ -401,15 +401,15 @@ export class OrderService {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const amount = +order.price - +order.paid;
-    console.log({ amount });
+    console.log({ amount, orderPrice: +order.price, orderPaid: order.paid });
     return;
-    if (amount > +user.availableBalance || amount > +user.balance) {
+    if (+amount > +user.availableBalance || +amount > +user.balance) {
       throw new HttpException(
         httpErrors.USER_INSUFFICIENT_BALANCE,
         HttpStatus.NOT_FOUND,
       );
     }
-    if (amount + order.paid > order.price) {
+    if (+amount + +order.paid > +order.price) {
       throw new HttpException(
         httpErrors.ORDER_PAID_NOT_VALID,
         HttpStatus.BAD_REQUEST,
@@ -417,19 +417,19 @@ export class OrderService {
     }
     await Promise.all([
       this.orderRepository.update(order.id, {
-        paid: order.paid + amount,
+        paid: +order.paid + +amount,
         status:
-          order.paid + amount === order.price
+          +order.paid + +amount === order.price
             ? OrderStatus.WAITING_START
             : OrderStatus.WAITING_PURCHASE,
       }),
       this.userRepository.update(user.id, {
-        availableBalance: +user.availableBalance - amount,
-        balance: +user.availableBalance - amount,
+        availableBalance: +user.availableBalance - +amount,
+        balance: +user.availableBalance - +amount,
       }),
 
       this.systemRepository.update(system.id, {
-        balance: system.balance + amount,
+        balance: +system.balance + +amount,
       }),
     ]);
     //TODO: update send mail, send noti to hdv,
