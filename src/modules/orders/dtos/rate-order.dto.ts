@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   Max,
   Min,
@@ -29,6 +28,6 @@ export class RateOrderDto {
   @IsNumber()
   @Max(5)
   @Min(1)
-  @IsOptional()
+  @IsNotEmpty()
   star: number;
 }

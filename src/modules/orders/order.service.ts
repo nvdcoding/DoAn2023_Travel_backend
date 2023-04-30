@@ -31,6 +31,7 @@ import { SystemRepository } from 'src/models/repositories/system.repository';
 import { CancelOrderDto } from './dtos/cancel-order.dto';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { PrepaidOrderDto } from './dtos/prepaid-order.dto';
+import { EndOrderDto } from './dtos/end-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -480,8 +481,8 @@ export class OrderService {
     return httpResponse.START_ORDER_SUCCESS;
   }
 
-  async endOrder(body: RateOrderDto) {
-    const { content, orderId, image, star } = body;
+  async endOrder(body: EndOrderDto): Promise<Response> {
+    const { orderId } = body;
     const [order, system] = await Promise.all([
       this.orderRepository.findOne({
         where: {
@@ -504,15 +505,6 @@ export class OrderService {
         httpErrors.ORDER_DATE_NOT_VALID,
         HttpStatus.NOT_FOUND,
       );
-    }
-    if (star) {
-      await this.rateRepository.save({
-        star,
-        order,
-        tour: order.tour,
-        content: content ? content : null,
-        image: image ? image : null,
-      });
     }
     const tourGuideBalanceAdd = (system.commission / 100) * order.price;
     await Promise.all([
@@ -538,6 +530,26 @@ export class OrderService {
       ),
     ]);
     return httpResponse.END_ORDER_SUCCESS;
+  }
+
+  async rateOrder(body: RateOrderDto): Promise<Response> {
+    const { content, star, image, orderId } = body;
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        status: OrderStatus.DONE,
+      },
+    });
+    if (!order) {
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const rate = await this.rateRepository.save({
+      star,
+      order,
+      content,
+      image,
+    });
+    return httpResponse.APPROVE_ORDER_SUCCESS;
   }
 
   async userPrepaidOrder(

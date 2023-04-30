@@ -16,6 +16,7 @@ import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { ApproveOrderDto } from './dtos/approve-order.dto';
 import { CancelOrderDto } from './dtos/cancel-order.dto';
+import { EndOrderDto } from './dtos/end-order.dto';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { OrderTourDto } from './dtos/order-tour.dto';
 import { PaidOrderDto } from './dtos/paid-order.dto';
@@ -81,8 +82,14 @@ export class OrderController {
 
   @Put('/end-order')
   @UseGuards(UserAuthGuard)
-  async endOrder(@Body() body: RateOrderDto): Promise<Response> {
+  async endOrder(@Body() body: EndOrderDto): Promise<Response> {
     return this.orderService.endOrder(body);
+  }
+
+  @Put('/rate-order')
+  @UseGuards(UserAuthGuard)
+  async rateOrder(@Body() body: RateOrderDto): Promise<Response> {
+    return this.orderService.rateOrder(body);
   }
 
   @Delete('/user')
