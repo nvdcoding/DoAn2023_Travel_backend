@@ -33,7 +33,7 @@ export class GetTourGuideDto extends BasePaginationRequestDto {
 
   @ApiProperty({ required: false })
   @IsEnum(Gender)
-  @IsNotEmpty()
+  @IsOptional()
   gender: Gender;
 
   @ApiProperty({ required: false })
