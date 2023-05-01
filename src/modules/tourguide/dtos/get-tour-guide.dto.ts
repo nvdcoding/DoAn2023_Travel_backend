@@ -1,6 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
+import { Direction } from 'src/shares/enum/order.enum';
 import { Gender, TourguideStatus } from 'src/shares/enum/tourguide.enum';
 
 export class AdminGetTourGuideDto extends BasePaginationRequestDto {
@@ -16,6 +26,11 @@ export class AdminGetTourGuideDto extends BasePaginationRequestDto {
 }
 
 export class GetTourGuideDto extends BasePaginationRequestDto {
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsNotEmpty()
+  provinces: string;
+
   @ApiProperty()
   @IsEnum(Gender)
   @IsNotEmpty()
@@ -25,4 +40,19 @@ export class GetTourGuideDto extends BasePaginationRequestDto {
   @IsString()
   @IsOptional()
   keyword: string;
+
+  @ApiProperty({ required: false })
+  @IsEnum(Direction)
+  @IsOptional()
+  totalTourDirection: Direction;
+
+  @ApiProperty({ required: false })
+  @IsEnum(Direction)
+  @IsOptional()
+  totalFavorite: Direction;
+
+  @ApiProperty({ required: false })
+  @IsEnum(Direction)
+  @IsOptional()
+  totalTourCanceleds: Direction;
 }

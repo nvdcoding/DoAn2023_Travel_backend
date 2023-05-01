@@ -48,7 +48,7 @@ export class OrderService {
   ) {}
 
   async orderTour(userId: number, body: OrderTourDto): Promise<Response> {
-    const { startDate, tourId, price, numberOfMember } = body;
+    const { startDate, tourId, numberOfMember } = body;
     const [tour, user] = await Promise.all([
       this.tourRepository.findOne({
         where: {
@@ -86,8 +86,9 @@ export class OrderService {
     // TODO: add voucher
     const orderPrice =
       numberOfMember - tour.numOfFreeMember > 0
-        ? price + (numberOfMember - tour.numOfFreeMember) * tour.feePerMember
-        : price;
+        ? tour.basePrice +
+          (numberOfMember - tour.numOfFreeMember) * tour.feePerMember
+        : tour.basePrice;
     const scheduleContent = tour.tourSchedule.map((e) => {
       return { content: e.content };
     });

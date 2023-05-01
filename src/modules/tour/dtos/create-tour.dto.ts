@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { TourScheduleDto } from './tour-schedule.dto';
 import { Type } from 'class-transformer';
-import { TourImage } from 'src/models/entities/tour-image.entity';
 import { TourImagesDto } from './tour-images.dto';
 import { TourTypes } from 'src/shares/enum/tour.enum';
 
@@ -30,11 +29,6 @@ export class CreateTourDto {
   @IsNumber()
   @IsNotEmpty()
   basePrice: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  maxPrice: number;
 
   @ApiProperty()
   @IsNumber()

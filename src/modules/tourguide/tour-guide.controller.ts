@@ -2,7 +2,10 @@ import { Body, Controller, Get, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
-import { AdminGetTourGuideDto } from './dtos/get-tour-guide.dto';
+import {
+  AdminGetTourGuideDto,
+  GetTourGuideDto,
+} from './dtos/get-tour-guide.dto';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
 import { TourGuideService } from './tour-guide.service';
@@ -26,7 +29,6 @@ export class TourGuideController {
     return this.tourGuideService.getTourGuidesByStatusAndKeyword(options);
   }
 
-  @Get('/')
   @Put('/response-registation')
   @UseGuards(AdminModAuthGuard)
   async responseRegistationRequest(
@@ -41,5 +43,10 @@ export class TourGuideController {
     @Body() body: ResponseInterviewTourguideDto,
   ): Promise<Response> {
     return this.tourGuideService.responseInterview(body);
+  }
+
+  @Get('/')
+  async getTourGuide(@Query() options: GetTourGuideDto): Promise<Response> {
+    return this.tourGuideService.getTourGuide(options);
   }
 }

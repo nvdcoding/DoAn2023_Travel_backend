@@ -19,3 +19,8 @@ export enum ActionApproveOrder {
   ACCEPT = 'accept',
   REJECT = 'reject',
 }
+
+export enum Direction {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}

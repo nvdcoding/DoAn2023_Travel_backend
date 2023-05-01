@@ -15,3 +15,5 @@ export enum ActionResponseRegisterTourguide {
   ACCEPT = 'ACCEPT',
   REJECT = 'REJECT',
 }
+
+export enum AgeRange {}

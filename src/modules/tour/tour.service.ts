@@ -33,8 +33,7 @@ export class TourService {
     body: CreateTourDto,
     tourGuideId: number,
   ): Promise<Response> {
-    const { name, description, basePrice, maxPrice, provinceId, maxMember } =
-      body;
+    const { name, description, basePrice, provinceId, maxMember } = body;
     const [tour, tourGuide, province] = await Promise.all([
       this.tourRepository.findOne({
         where: { name },
@@ -68,7 +67,6 @@ export class TourService {
       name,
       description,
       basePrice,
-      maxPrice,
       tourGuide,
       images: imagesData,
       tourSchedule: tourSchedulesData,

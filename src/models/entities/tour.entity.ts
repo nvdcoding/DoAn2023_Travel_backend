@@ -35,9 +35,6 @@ export class Tour extends BaseEntity {
   @Column({ name: 'base_price', default: 0, type: 'int', nullable: false })
   basePrice: number;
 
-  @Column({ name: 'max_price', default: 0, type: 'int', nullable: false })
-  maxPrice: number;
-
   @Column({ name: 'max_member', default: 0, type: 'int', nullable: false })
   maxMember: number;
 

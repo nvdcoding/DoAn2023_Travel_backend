@@ -8,7 +8,10 @@ import {
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { AdminGetTourGuideDto } from './dtos/get-tour-guide.dto';
+import {
+  AdminGetTourGuideDto,
+  GetTourGuideDto,
+} from './dtos/get-tour-guide.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
 import { httpErrors } from 'src/shares/exceptions';
@@ -152,5 +155,10 @@ export class TourGuideService {
     return httpResponse.RESPONSE_SUCCESS;
   }
 
-  async getTourGuide(): Promise<void> {}
+  async getTourGuide(option: GetTourGuideDto): Promise<Response> {
+    return {
+      returnValue: this.tourGuideRepository.getTourGuides(option),
+      ...httpResponse.GET_TOURGUIDE_SUCCESS,
+    };
+  }
 }
