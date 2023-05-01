@@ -47,17 +47,13 @@ export class TourGuideRepository extends Repository<TourGuide> {
 
     const query = this.createQueryBuilder('tourguide')
       .leftJoinAndSelect('tourguide.provinces', 'province')
-      .leftJoinAndSelect(
-        'user_favorite',
-        'favorite',
-        'favorite.tourGuideId = tourguide.id',
-      )
+      .leftJoinAndSelect('tourguide.userFavorites', 'userFavorites')
       .leftJoinAndSelect(
         'tourguide.orders',
         'orders',
-        'orders.status = :status',
+        'orders.status = :status AND orders.tourGuideId = tourguide.id',
         {
-          status: '6',
+          status: OrderStatus.DONE,
         },
       )
       .select([
@@ -66,13 +62,14 @@ export class TourGuideRepository extends Repository<TourGuide> {
         'tourguide.bio',
         'tourguide.email',
         'tourguide.phone',
+        'tourguide.name',
         'province.name',
         'tourguide.gender',
+        'COUNT(DISTINCT orders.id) AS totalTour',
+        'COUNT(DISTINCT userFavorites.id) AS totalFavorite',
       ])
-      // .andWhere('tourguide.gender = :gender', { gender })
-      // .andWhere('tourguide.status = :status', {
-      //   status: TourguideStatus.ACTIVE,
-      // })
+      .andWhere('tourguide.gender = :gender', { gender })
+      .andWhere('tourguide.status = "ACTIVE"')
       .groupBy('tourguide.id');
 
     if (provinces) {
@@ -81,35 +78,29 @@ export class TourGuideRepository extends Repository<TourGuide> {
 
     if (keyword) {
       query.andWhere(
-        '(tourguide.firstName LIKE :keyword OR tourguide.lastName LIKE :keyword OR tourguide.email LIKE :keyword)',
+        '(tourguide.username LIKE :keyword OR tourguide.name LIKE :keyword OR tourguide.email LIKE :keyword)',
         { keyword: `%${keyword}%` },
       );
     }
 
-    if (totalTourDirection) {
+    if (totalTourDirection && !totalFavorite) {
       if (totalTourDirection === Direction.DESC) {
-        query.orderBy('tourguide.totalTour', Direction.DESC);
+        query.orderBy('totalTour', Direction.DESC);
       } else {
-        query.orderBy('tourguide.totalTour', Direction.ASC);
+        query.orderBy('totalTour', Direction.ASC);
       }
     }
 
-    if (totalFavorite) {
+    if (totalFavorite && !totalTourDirection) {
       if (totalFavorite === Direction.DESC) {
-        query.orderBy('tourguide.totalFavorite', Direction.DESC);
+        query.orderBy('totalFavorite', Direction.DESC);
       } else {
-        query.orderBy('tourguide.totalFavorite', Direction.ASC);
+        query.orderBy('totalFavorite', Direction.ASC);
       }
     }
-
-    if (totalTourCanceleds) {
-      if (totalTourCanceleds === Direction.DESC) {
-        query.orderBy('tourguide.totalTourCanceleds', Direction.DESC);
-      } else {
-        query.orderBy('tourguide.totalTourCanceleds', Direction.ASC);
-      }
-    }
+    query.orderBy('tourguide.totalTourCanceleds', Direction.ASC);
     const data = await query.getManyAndCount();
+
     return BasePaginationResponseDto.convertToPaginationWithTotalPages(
       data,
       page || 1,

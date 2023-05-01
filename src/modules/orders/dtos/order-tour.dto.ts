@@ -10,11 +10,6 @@ export class OrderTourDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  price: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
   numberOfMember: number;
 
   @ApiProperty()

@@ -156,8 +156,9 @@ export class TourGuideService {
   }
 
   async getTourGuide(option: GetTourGuideDto): Promise<Response> {
+    const data = await this.tourGuideRepository.getTourGuides(option);
     return {
-      returnValue: this.tourGuideRepository.getTourGuides(option),
+      returnValue: data,
       ...httpResponse.GET_TOURGUIDE_SUCCESS,
     };
   }
