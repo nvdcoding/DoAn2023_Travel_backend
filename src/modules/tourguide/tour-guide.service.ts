@@ -166,7 +166,7 @@ export class TourGuideService {
     const tourGuide = await this.tourGuideRepository.findOne({
       where: {
         id: tourGuideId,
-        status: TourguideStatus.ACTIVE,
+        verifyStatus: TourguideStatus.ACTIVE,
       },
       relations: [
         'tours',
