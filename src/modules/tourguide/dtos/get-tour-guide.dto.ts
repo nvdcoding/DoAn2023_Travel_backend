@@ -28,10 +28,10 @@ export class AdminGetTourGuideDto extends BasePaginationRequestDto {
 export class GetTourGuideDto extends BasePaginationRequestDto {
   @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   provinces: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsEnum(Gender)
   @IsNotEmpty()
   gender: Gender;

@@ -72,10 +72,11 @@ export class TourGuideRepository extends Repository<TourGuide> {
         'COUNT(DISTINCT userFavorites.id) AS totalFavorite',
         'AVG(rates.star) as star',
       ])
-      .andWhere('tourguide.gender = :gender', { gender })
       .andWhere('tourguide.status = "ACTIVE"')
       .groupBy('tourguide.id');
-
+    if (gender) {
+      query.andWhere('tourguide.gender = :gender', { gender });
+    }
     if (provinces) {
       query.andWhere('province.id = :id', { id: provinces });
     }
@@ -107,8 +108,6 @@ export class TourGuideRepository extends Repository<TourGuide> {
       query.getRawMany(),
       query.getCount(),
     ]);
-
-    console.log(data);
 
     return BasePaginationResponseDto.convertToPaginationWithTotalPages(
       [data, countData],
