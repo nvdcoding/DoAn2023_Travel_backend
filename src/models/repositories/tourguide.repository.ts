@@ -118,8 +118,9 @@ export class TourGuideRepository extends Repository<TourGuide> {
   }
 
   async getAvgStar(tourGuideId) {
-    const avgStar = await this.createQueryBuilder('tour')
-      .leftJoin('tour.rates', 'rate')
+    const avgStar = await this.createQueryBuilder('tourguide')
+      .leftJoin('tourguide.tours', 'tours')
+      .leftJoin('tours.rates', 'rate')
       .select('AVG(rate.star)', 'avgStar')
       .where('tour.tourGuideId = :tourGuideId', { tourGuideId })
       .andWhere('tour.status = :status', { status: '5' })
