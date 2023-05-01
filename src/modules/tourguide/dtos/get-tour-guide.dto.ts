@@ -50,9 +50,4 @@ export class GetTourGuideDto extends BasePaginationRequestDto {
   @IsEnum(Direction)
   @IsOptional()
   totalFavorite: Direction;
-
-  @ApiProperty({ required: false })
-  @IsEnum(Direction)
-  @IsOptional()
-  totalTourCanceleds: Direction;
 }

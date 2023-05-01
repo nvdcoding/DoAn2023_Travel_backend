@@ -542,6 +542,7 @@ export class OrderService {
         id: orderId,
         status: OrderStatus.DONE,
       },
+      relations: ['tour'],
     });
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -551,6 +552,7 @@ export class OrderService {
       order,
       content,
       image,
+      tour: order.tour,
     });
     return httpResponse.APPROVE_ORDER_SUCCESS;
   }

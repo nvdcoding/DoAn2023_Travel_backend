@@ -56,17 +56,22 @@ export class TourGuideRepository extends Repository<TourGuide> {
           status: OrderStatus.DONE,
         },
       )
+      .leftJoinAndSelect('orders.tour', 'tour')
+      .leftJoinAndSelect('tour.rates', 'rates')
       .select([
-        'tourguide.id',
-        'tourguide.username',
-        'tourguide.bio',
-        'tourguide.email',
-        'tourguide.phone',
-        'tourguide.name',
-        'province.name',
-        'tourguide.gender',
+        'tourguide.id As tourGuideId',
+        'tourguide.username as tourGuideUsername',
+        'tourguide.bio as tourGuideBio',
+        'tourguide.email as tourGuideEmail',
+        'tourguide.phone as tourGuidePhone',
+        'tourguide.name as tourGuideName',
+        'province.name as provinceName',
+        'tourguide.gender as tourGuideGender',
+        'tourguide.dob as tourGuideDob',
+        'tourguide.num_of_favorites as numOfFavorites',
         'COUNT(DISTINCT orders.id) AS totalTour',
         'COUNT(DISTINCT userFavorites.id) AS totalFavorite',
+        'AVG(rates.star) as star',
       ])
       .andWhere('tourguide.gender = :gender', { gender })
       .andWhere('tourguide.status = "ACTIVE"')
@@ -98,11 +103,16 @@ export class TourGuideRepository extends Repository<TourGuide> {
         query.orderBy('totalFavorite', Direction.ASC);
       }
     }
-    query.orderBy('tourguide.totalTourCanceleds', Direction.ASC);
-    const data = await query.getManyAndCount();
+    query.orderBy('tourguide.cancelledOrders', Direction.ASC);
+    const [data, countData] = await Promise.all([
+      query.getRawMany(),
+      query.getCount(),
+    ]);
+
+    console.log(data);
 
     return BasePaginationResponseDto.convertToPaginationWithTotalPages(
-      data,
+      [data, countData],
       page || 1,
       limit || 10,
     );
