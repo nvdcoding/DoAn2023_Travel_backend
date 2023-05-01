@@ -42,7 +42,6 @@ export class TourGuideRepository extends Repository<TourGuide> {
       keyword,
       totalTourDirection,
       totalFavorite,
-      totalTourCanceleds,
     } = getTourGuideDto;
 
     const query = this.createQueryBuilder('tourguide')

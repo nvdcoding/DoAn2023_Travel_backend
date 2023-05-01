@@ -162,4 +162,13 @@ export class TourGuideService {
       ...httpResponse.GET_TOURGUIDE_SUCCESS,
     };
   }
+  // async getOneTourGuide(tourGuideId: number): Promise<Response> {
+  //   const tourGuide = await this.tourGuideRepository.findOne({
+  //     where: {
+  //       id: tourGuideId,
+  //       status: TourguideStatus.ACTIVE,
+  //     },
+  //     relations: [''],
+  //   });
+  // }
 }

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
@@ -49,4 +57,7 @@ export class TourGuideController {
   async getTourGuide(@Query() options: GetTourGuideDto): Promise<Response> {
     return this.tourGuideService.getTourGuide(options);
   }
+
+  // @Get('/guest/:id')
+  // async getOneTourGuide(@Param('id') id: number): Promise<Response> {}
 }
