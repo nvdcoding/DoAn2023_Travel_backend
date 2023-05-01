@@ -32,6 +32,9 @@ export class Tour extends BaseEntity {
   @Column({ nullable: false, name: 'description', type: 'longtext' })
   description: string;
 
+  @Column({ nullable: false, name: 'overview', type: 'longtext' })
+  overview: string;
+
   @Column({ name: 'base_price', default: 0, type: 'int', nullable: false })
   basePrice: number;
 

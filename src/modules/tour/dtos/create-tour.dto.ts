@@ -31,9 +31,9 @@ export class CreateTourDto {
   basePrice: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  maxMember: number;
+  overview: string;
 
   @ApiProperty()
   @IsNumber()
