@@ -185,12 +185,12 @@ export class TourGuideService {
       );
     }
     const avgStar = await this.tourGuideRepository.getAvgStar(tourGuideId);
-    const numberOfTour = tourGuide.orders.filter((order) => {
+    const numberOfOrder = tourGuide.orders.filter((order) => {
       order.status === OrderStatus.DONE;
     }).length;
     return {
       ...httpResponse.GET_TOURGUIDE_SUCCESS,
-      returnValue: { ...tourGuide, ...avgStar, numberOfTour },
+      returnValue: { ...tourGuide, ...avgStar, numberOfOrder },
     };
   }
 }
