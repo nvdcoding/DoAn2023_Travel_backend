@@ -122,7 +122,7 @@ export class TourGuideRepository extends Repository<TourGuide> {
       .leftJoin('tour.rates', 'rate')
       .select('AVG(rate.star)', 'avgStar')
       .where('tour.tourGuideId = :tourGuideId', { tourGuideId })
-      .andWhere('tour.status = :status', { status: 'DONE' })
+      .andWhere('tour.status = :status', { status: '5' })
       .getRawOne();
     return avgStar;
   }
