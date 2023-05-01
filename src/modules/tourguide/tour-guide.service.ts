@@ -182,6 +182,10 @@ export class TourGuideService {
         HttpStatus.NOT_FOUND,
       );
     }
-    return { ...httpResponse.GET_TOURGUIDE_SUCCESS, returnValue: tourGuide };
+    const avgStar = await this.tourGuideRepository.getAvgStar(tourGuideId);
+    return {
+      ...httpResponse.GET_TOURGUIDE_SUCCESS,
+      returnValue: { ...tourGuide, ...avgStar },
+    };
   }
 }

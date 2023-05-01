@@ -116,4 +116,14 @@ export class TourGuideRepository extends Repository<TourGuide> {
       limit || 10,
     );
   }
+
+  async getAvgStar(tourGuideId) {
+    const avgStar = await this.createQueryBuilder('tour')
+      .leftJoin('tour.rates', 'rate')
+      .select('AVG(rate.star)', 'avgStar')
+      .where('tour.tourGuideId = :tourGuideId', { tourGuideId })
+      .andWhere('tour.status = :status', { status: 'DONE' })
+      .getRawOne();
+    return avgStar;
+  }
 }
