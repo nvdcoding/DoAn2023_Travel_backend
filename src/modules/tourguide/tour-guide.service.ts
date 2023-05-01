@@ -17,6 +17,7 @@ import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourgu
 import { httpErrors } from 'src/shares/exceptions';
 import { MailService } from '../mail/mail.service';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
+import { OrderStatus } from 'src/shares/enum/order.enum';
 
 @Injectable()
 export class TourGuideService {
@@ -174,6 +175,7 @@ export class TourGuideService {
         'provinces',
         'userFavorites',
         'reports',
+        'orders',
       ],
     });
     if (!tourGuide) {
@@ -183,9 +185,12 @@ export class TourGuideService {
       );
     }
     const avgStar = await this.tourGuideRepository.getAvgStar(tourGuideId);
+    const numberOfTour = tourGuide.orders.filter((order) => {
+      order.status === OrderStatus.DONE;
+    }).length;
     return {
       ...httpResponse.GET_TOURGUIDE_SUCCESS,
-      returnValue: { ...tourGuide, ...avgStar },
+      returnValue: { ...tourGuide, ...avgStar, numberOfTour },
     };
   }
 }
