@@ -61,6 +61,7 @@ export class TourGuideRepository extends Repository<TourGuide> {
         'tourguide.id As tourGuideId',
         'tourguide.username as tourGuideUsername',
         'tourguide.bio as tourGuideBio',
+        'tourguide.avatar as tourGuideAvatar',
         'tourguide.email as tourGuideEmail',
         'tourguide.phone as tourGuidePhone',
         'tourguide.name as tourGuideName',

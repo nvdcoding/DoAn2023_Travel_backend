@@ -58,6 +58,8 @@ export class TourGuideController {
     return this.tourGuideService.getTourGuide(options);
   }
 
-  // @Get('/guest/:id')
-  // async getOneTourGuide(@Param('id') id: number): Promise<Response> {}
+  @Get('/guest/:id')
+  async getOneTourGuide(@Param('id') id: number): Promise<Response> {
+    return this.tourGuideService.getOneTourGuide(id);
+  }
 }
