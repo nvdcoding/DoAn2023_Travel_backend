@@ -170,11 +170,10 @@ export class TourGuideService {
       },
       relations: [
         'tours',
-        'posts',
-        'tours',
         'tours.rates',
         'provinces',
         'userFavorites',
+        'reports',
       ],
     });
     if (!tourGuide) {
