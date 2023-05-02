@@ -16,6 +16,7 @@ import {
 } from './dtos/get-tour-guide.dto';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
+import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 import { TourGuideService } from './tour-guide.service';
 
 @Controller('tour-guide')
@@ -35,6 +36,14 @@ export class TourGuideController {
     @Query() options: AdminGetTourGuideDto,
   ): Promise<Response> {
     return this.tourGuideService.getTourGuidesByStatusAndKeyword(options);
+  }
+
+  @Put('/')
+  @UseGuards(AdminModAuthGuard)
+  async updateTourguideStatus(
+    @Body() body: UpdateStatusTourGuideDto,
+  ): Promise<void> {
+    return this.tourGuideService.updateStatusTourGuide(body);
   }
 
   @Put('/response-registation')

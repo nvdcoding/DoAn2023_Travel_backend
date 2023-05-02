@@ -18,6 +18,7 @@ import { httpErrors } from 'src/shares/exceptions';
 import { MailService } from '../mail/mail.service';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { OrderStatus } from 'src/shares/enum/order.enum';
+import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 
 @Injectable()
 export class TourGuideService {
@@ -163,6 +164,7 @@ export class TourGuideService {
       ...httpResponse.GET_TOURGUIDE_SUCCESS,
     };
   }
+
   async getOneTourGuide(tourGuideId: number): Promise<Response> {
     const tourGuide = await this.tourGuideRepository.findOne({
       where: {
@@ -192,5 +194,38 @@ export class TourGuideService {
       ...httpResponse.GET_TOURGUIDE_SUCCESS,
       returnValue: { ...tourGuide, ...avgStar, numberOfOrder },
     };
+  }
+
+  async updateStatusTourGuide(body: UpdateStatusTourGuideDto) {
+    const { tourGuideId, status } = body;
+    if (![TourguideStatus.ACTIVE, TourguideStatus.INACTIVE].includes(status)) {
+      throw new HttpException(
+        httpErrors.INVALID_STATUS,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: {
+        id: tourGuideId,
+      },
+      relations: ['orders'],
+    });
+    const tourGuideOrders = tourGuide.orders.filter((order) => {
+      ![].includes(order.status);
+    });
+    console.log(tourGuideOrders);
+    return;
+    if (!tourGuide) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.tourGuideRepository.update(
+      { id: tourGuideId },
+      {
+        verifyStatus: status,
+      },
+    );
   }
 }

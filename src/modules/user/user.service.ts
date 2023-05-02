@@ -64,7 +64,7 @@ export class UserService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    await this.userRepository.softDelete(user);
+    await this.userRepository.softDelete(user.id);
     return httpResponse.DELETE_USER_SUCCES;
   }
 

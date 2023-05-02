@@ -90,6 +90,10 @@ export const httpErrors = {
     message: 'Interview date is not valid',
     code: 'ERR_TOUR_GUIDE_004',
   },
+  INVALID_STATUS: {
+    message: 'Status change is not valid',
+    code: 'ERR_TOUR_GUIDE_005',
+  },
   // ORDER
   NUM_OF_MEMBER_INVALID: {
     message: 'Number of member is not valid',
