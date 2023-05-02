@@ -6,6 +6,7 @@ export class AdminRepository extends Repository<Admin> {
   async getAdmins(keyword: string, page: number, limit: number) {
     const queryBuilder = this.createQueryBuilder('admin');
     queryBuilder.select([
+      'admin.id',
       'admin.email',
       'admin.username',
       'admin.role',

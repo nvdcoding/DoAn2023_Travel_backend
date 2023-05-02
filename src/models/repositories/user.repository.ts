@@ -6,6 +6,7 @@ export class UserRepository extends Repository<User> {
   async getUsers(keyword: string, page: number, limit: number) {
     const queryBuilder = this.createQueryBuilder('user');
     queryBuilder.select([
+      'user.id',
       'user.email',
       'user.username',
       'user.phone',
