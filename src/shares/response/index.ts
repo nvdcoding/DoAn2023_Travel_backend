@@ -141,4 +141,9 @@ export const httpResponse = {
     code: 'USER_002',
     statusCode: 200,
   },
+  DELETE_USER_SUCCES: {
+    message: 'Delete user success',
+    code: 'USER_003',
+    statusCode: 200,
+  },
 };

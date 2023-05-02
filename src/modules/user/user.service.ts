@@ -57,6 +57,17 @@ export class UserService {
     return httpResponse.CHANGE_USER_STATUS_SUCCESS;
   }
 
+  async deleteUser(userId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this.userRepository.softDelete(user);
+    return httpResponse.DELETE_USER_SUCCES;
+  }
+
   // async userDeposit(body: TransferDto, userId: number): Promise<Response> {
   //   const object = {
   //     partnerCode: 'MOMOBKUN20180529',
