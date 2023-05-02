@@ -130,6 +130,21 @@ export const httpResponse = {
     code: 'ADMIN_002',
     statusCode: 200,
   },
+  GET_ADMIN_SUCCESS: {
+    message: 'Get admin success',
+    code: 'ADMIN_003',
+    statusCode: 200,
+  },
+  CHANGE_STATUS_MOD_SUCCESS: {
+    message: 'Change status mod success',
+    code: 'ADMIN_004',
+    statusCode: 200,
+  },
+  DELETE_MOD_SUCCESS: {
+    message: 'Delete mod success',
+    code: 'ADMIN_005',
+    statusCode: 200,
+  },
   //USER
   CHANGE_USER_STATUS_SUCCESS: {
     message: 'Change status Success',

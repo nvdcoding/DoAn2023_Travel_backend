@@ -21,6 +21,9 @@ import { emailConfig } from 'src/configs/email.config';
 import { MailService } from '../mail/mail.service';
 import { siteConfig } from 'src/configs/site.config';
 import { ActiveAdminDto } from './dtos/active-admin.dto';
+import { GetListAdminDto } from './dtos/get-list-admin.dto';
+import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import { AdminChangeStatusModDto } from './dtos/change-mod-status.dto';
 
 @Injectable()
 export class AdminService {
@@ -125,5 +128,55 @@ export class AdminService {
       this.cacheManager.del(`create-admin-${email}`),
     ]);
     return httpResponse.ACTIVE_ADMIN_SUCCESS;
+  }
+
+  async getListAdmin(options: GetListAdminDto): Promise<Response> {
+    const { keyword, limit, page } = options;
+    const admins = await this.adminRepository.getAdmins(keyword, page, limit);
+    return {
+      ...httpResponse.GET_ADMIN_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        admins,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async changeModStatus(body: AdminChangeStatusModDto): Promise<Response> {
+    const { modId, status } = body;
+    const mod = await this.adminRepository.findOne({
+      where: {
+        id: modId,
+        role: AdminRole.MOD,
+      },
+    });
+    if (!mod) {
+      throw new HttpException(httpErrors.ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this.adminRepository.update(
+      {
+        id: modId,
+        role: AdminRole.MOD,
+      },
+      {
+        status,
+      },
+    );
+    return httpResponse.CHANGE_STATUS_MOD_SUCCESS;
+  }
+
+  async deleteModAccount(modId: number): Promise<Response> {
+    const mod = await this.adminRepository.findOne({
+      where: {
+        id: modId,
+        role: AdminRole.MOD,
+      },
+    });
+    if (!mod) {
+      throw new HttpException(httpErrors.ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this.adminRepository.delete(modId);
+    return httpResponse.DELETE_MOD_SUCCESS;
   }
 }

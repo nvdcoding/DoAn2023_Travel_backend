@@ -7,12 +7,14 @@ import { httpErrors } from 'src/shares/exceptions';
 import { GenAdminDto } from './dtos/gen-admin.dto';
 import * as bcrypt from 'bcrypt';
 import { AdminRole, AdminStatus } from 'src/shares/enum/admin.enum';
+import { PermissionRepository } from 'src/models/repositories/permission.repository';
 
 @Injectable()
 export class GenDataService {
   constructor(
     private readonly provinceRepository: ProvinceRepository,
     private readonly adminRepository: AdminRepository,
+    private readonly permissionRepository: PermissionRepository,
   ) {}
 
   private vietnameseToSlug = (str) => {
@@ -59,5 +61,12 @@ export class GenDataService {
       status: AdminStatus.ACTIVE,
       role: AdminRole.ADMIN,
     });
+  }
+
+  async genLevelPermission() {
+    const data = await this.permissionRepository.findOne();
+    if (data) {
+      throw new HttpException('Data existed', 400);
+    }
   }
 }

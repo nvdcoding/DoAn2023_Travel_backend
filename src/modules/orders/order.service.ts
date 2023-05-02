@@ -161,7 +161,13 @@ export class OrderService {
         status: In(orderStatus),
         user,
       },
-      relations: ['tour', 'orderSchedule', 'tourGuide', 'tour.images'],
+      relations: [
+        'tour',
+        'orderSchedule',
+        'tourGuide',
+        'tour.images',
+        'tour.rates',
+      ],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -546,6 +552,14 @@ export class OrderService {
     });
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const checkRate = await this.rateRepository.findOne({
+      where: {
+        order,
+      },
+    });
+    if (checkRate) {
+      throw new HttpException(httpErrors.RATE_EXISTED, HttpStatus.BAD_REQUEST);
     }
     const rate = await this.rateRepository.save({
       star,

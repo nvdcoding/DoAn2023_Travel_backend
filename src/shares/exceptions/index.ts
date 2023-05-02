@@ -140,4 +140,10 @@ export const httpErrors = {
     message: 'Voucher already claimed',
     code: 'ERR_VOUCHER_007',
   },
+
+  //RATE
+  RATE_EXISTED: {
+    message: 'Rate existed',
+    code: 'ERR_RATE_001',
+  },
 };

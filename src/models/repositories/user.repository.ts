@@ -5,7 +5,15 @@ import { EntityRepository, Repository } from 'typeorm';
 export class UserRepository extends Repository<User> {
   async getUsers(keyword: string, page: number, limit: number) {
     const queryBuilder = this.createQueryBuilder('user');
-
+    queryBuilder.select([
+      'user.email',
+      'user.username',
+      'user.name',
+      'user.phone',
+      'user.avatar',
+      'user.status',
+      'user.voucherPoint',
+    ]);
     if (keyword) {
       const keywordLike = `%${keyword}%`;
       queryBuilder
