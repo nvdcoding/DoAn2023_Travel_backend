@@ -54,12 +54,16 @@ export class GenDataService {
     if (admin) {
       throw new HttpException(httpErrors.ADMIN_EXIST, HttpStatus.BAD_REQUEST);
     }
+    const permissionLv4 = await this.permissionRepository.findOne({
+      where: { level: 4 },
+    });
     const passwordHash = await bcrypt.hash(password, +authConfig.salt);
     await this.adminRepository.insert({
       ...body,
       password: passwordHash,
       status: AdminStatus.ACTIVE,
       role: AdminRole.ADMIN,
+      permission: permissionLv4,
     });
   }
 
@@ -68,5 +72,48 @@ export class GenDataService {
     if (data) {
       throw new HttpException('Data existed', 400);
     }
+    const permissions = [
+      {
+        level: 1,
+        post: true,
+        users: true,
+        tourguides: false,
+        reports: false,
+        tours: false,
+        payments: false,
+        vouchers: false,
+      },
+      {
+        level: 2,
+        post: true,
+        users: true,
+        tourguides: false,
+        reports: false,
+        tours: true,
+        payments: false,
+        vouchers: true,
+      },
+      {
+        level: 3,
+        post: true,
+        users: true,
+        tourguides: true,
+        reports: true,
+        tours: true,
+        payments: false,
+        vouchers: true,
+      },
+      {
+        level: 4,
+        post: true,
+        users: true,
+        tourguides: true,
+        reports: true,
+        tours: true,
+        payments: true,
+        vouchers: true,
+      },
+    ];
+    await this.permissionRepository.save(permissions);
   }
 }

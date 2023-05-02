@@ -22,4 +22,9 @@ export class GenDataController {
   async getAdmin(@Body() body: GenAdminDto) {
     return this.genDataService.genAdminAccount(body);
   }
+
+  @Post('/gen-permission')
+  async genPermission() {
+    return this.genDataService.genLevelPermission();
+  }
 }

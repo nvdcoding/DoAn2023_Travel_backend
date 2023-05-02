@@ -24,6 +24,7 @@ import { ActiveAdminDto } from './dtos/active-admin.dto';
 import { GetListAdminDto } from './dtos/get-list-admin.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { AdminChangeStatusModDto } from './dtos/change-mod-status.dto';
+import { PermissionRepository } from 'src/models/repositories/permission.repository';
 
 @Injectable()
 export class AdminService {
@@ -32,6 +33,7 @@ export class AdminService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly permissionRepository: PermissionRepository,
   ) {}
 
   async getAdminByIdAndUsername(id: number, username: string): Promise<Admin> {
@@ -73,9 +75,12 @@ export class AdminService {
       username,
     };
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
-    await this.cacheManager.set(`create-admin-${email}`, token, {
-      ttl: emailConfig.registerTTL,
-    });
+    const [cacheData, permissions] = await Promise.all([
+      this.cacheManager.set(`create-admin-${email}`, token, {
+        ttl: emailConfig.registerTTL,
+      }),
+      this.permissionRepository.find({ where: { level: In([1, 4]) } }),
+    ]);
     await Promise.all([
       this.mailService.sendCreateAdmin({
         email: email,
@@ -86,6 +91,10 @@ export class AdminService {
         ...body,
         status: AdminStatus.INACTIVE,
         role,
+        permission:
+          role === AdminRole.ADMIN
+            ? permissions.filter((e) => e.level === 1)[0]
+            : permissions.filter((e) => e.level === 4)[0],
       }),
     ]);
     return httpResponse.CREATE_ADMIN_SUCCESS;

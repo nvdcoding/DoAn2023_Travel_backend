@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Admin } from './admin.entity';
 
 @Entity({ name: 'permissions' })
 export class Permission {
@@ -14,6 +15,9 @@ export class Permission {
   @Column({ nullable: false, name: 'users', type: 'boolean' })
   users: boolean;
 
+  @Column({ nullable: false, name: 'tourguides', type: 'boolean' })
+  tourguides: boolean;
+
   @Column({ nullable: false, name: 'reports', type: 'boolean' })
   reports: boolean;
 
@@ -25,4 +29,7 @@ export class Permission {
 
   @Column({ nullable: false, name: 'vouchers', type: 'boolean' })
   vouchers: boolean;
+
+  @OneToMany(() => Admin, (admin) => admin.permission)
+  admins: Admin[];
 }

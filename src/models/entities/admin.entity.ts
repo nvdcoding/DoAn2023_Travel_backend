@@ -5,7 +5,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
+import { Permission } from './permission.entity';
 
 @Entity({ name: 'admins' })
 export class Admin {
@@ -48,6 +52,10 @@ export class Admin {
     default: AdminStatus.INACTIVE,
   })
   status: AdminStatus;
+
+  @ManyToOne(() => Permission, (permission) => permission.admins)
+  @JoinColumn({ name: 'permission_id' })
+  permission: Permission;
 
   @CreateDateColumn()
   createdAt: Date;

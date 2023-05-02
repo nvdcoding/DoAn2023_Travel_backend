@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminRepository } from './repositories/admin.repository';
 import { OrderScheduleRepository } from './repositories/order-schedule.repository';
 import { OrderRepository } from './repositories/order.repository';
+import { PermissionRepository } from './repositories/permission.repository';
 import { ProvinceRepository } from './repositories/province.repository';
 import { RateRepository } from './repositories/rate.repository';
 import { SystemRepository } from './repositories/system.repository';
@@ -30,6 +31,7 @@ const commonRepositories = [
   RateRepository,
   TransactionRepository,
   SystemRepository,
+  PermissionRepository,
 ];
 
 @Global()

@@ -5,7 +5,7 @@ import { GenDataService } from './gen-data.service';
 import { GenDataController } from './gen-date.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PermissionRepository])],
+  imports: [],
   providers: [GenDataService],
   controllers: [GenDataController],
   exports: [],

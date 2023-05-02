@@ -8,7 +8,6 @@ export class UserRepository extends Repository<User> {
     queryBuilder.select([
       'user.email',
       'user.username',
-      'user.name',
       'user.phone',
       'user.avatar',
       'user.status',
