@@ -23,7 +23,7 @@ import { siteConfig } from 'src/configs/site.config';
 import { ActiveAdminDto } from './dtos/active-admin.dto';
 import { GetListAdminDto } from './dtos/get-list-admin.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
-import { AdminChangeStatusModDto } from './dtos/change-mod-status.dto';
+import { AdminUpdateMod } from './dtos/change-mod-status.dto';
 import { PermissionRepository } from 'src/models/repositories/permission.repository';
 
 @Injectable()
@@ -152,14 +152,19 @@ export class AdminService {
     };
   }
 
-  async changeModStatus(body: AdminChangeStatusModDto): Promise<Response> {
-    const { modId, status } = body;
-    const mod = await this.adminRepository.findOne({
-      where: {
-        id: modId,
-        role: AdminRole.MOD,
-      },
-    });
+  async updateMod(body: AdminUpdateMod): Promise<Response> {
+    const { modId, status, level } = body;
+    const [mod, permission] = await Promise.all([
+      this.adminRepository.findOne({
+        where: {
+          id: modId,
+          role: AdminRole.MOD,
+        },
+      }),
+      this.permissionRepository.findOne({
+        where: { level },
+      }),
+    ]);
     if (!mod) {
       throw new HttpException(httpErrors.ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
@@ -170,6 +175,7 @@ export class AdminService {
       },
       {
         status,
+        permission,
       },
     );
     return httpResponse.CHANGE_STATUS_MOD_SUCCESS;

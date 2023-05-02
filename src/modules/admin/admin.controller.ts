@@ -14,7 +14,7 @@ import { AdminAuthGuard } from '../auth/guards/admin-auth.guard';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { AdminService } from './admin.service';
 import { ActiveAdminDto } from './dtos/active-admin.dto';
-import { AdminChangeStatusModDto } from './dtos/change-mod-status.dto';
+import { AdminUpdateMod } from './dtos/change-mod-status.dto';
 import { CreateAdminDto } from './dtos/create-admin.dto';
 import { GetListAdminDto } from './dtos/get-list-admin.dto';
 
@@ -44,10 +44,8 @@ export class AdminController {
 
   @Put('/')
   @UseGuards(AdminAuthGuard)
-  async updateStatusMod(
-    @Body() body: AdminChangeStatusModDto,
-  ): Promise<Response> {
-    return this.adminService.changeModStatus(body);
+  async updateMod(@Body() body: AdminUpdateMod): Promise<Response> {
+    return this.adminService.updateMod(body);
   }
 
   @Post('/active-admin')
