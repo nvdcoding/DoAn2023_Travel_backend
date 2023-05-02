@@ -130,4 +130,15 @@ export const httpResponse = {
     code: 'ADMIN_002',
     statusCode: 200,
   },
+  //USER
+  CHANGE_USER_STATUS_SUCCESS: {
+    message: 'Change status Success',
+    code: 'USER_001',
+    statusCode: 200,
+  },
+  GET_USER_SUCCESS: {
+    message: 'Get user success',
+    code: 'USER_002',
+    statusCode: 200,
+  },
 };

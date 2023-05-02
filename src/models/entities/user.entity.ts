@@ -7,11 +7,8 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinColumn,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
-  Transaction,
   UpdateDateColumn,
 } from 'typeorm';
 import { Comment } from './comment.entity';

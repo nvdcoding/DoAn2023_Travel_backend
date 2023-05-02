@@ -80,7 +80,11 @@ export class AuthService {
     const newToken = this.genToken();
     const passwordHash = await bcrypt.hash(password, +authConfig.salt);
     if (!user) {
-      await this.userRepository.insert({ ...body, password: passwordHash });
+      await this.userRepository.insert({
+        ...body,
+        verifyStatus: UserStatus.INACTIVE,
+        password: passwordHash,
+      });
     }
     await Promise.all([
       this.cacheManager.set(`register-${email}`, newToken, {

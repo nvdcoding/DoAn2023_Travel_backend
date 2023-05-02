@@ -1,7 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { of } from 'rxjs';
 import { UserRepository } from 'src/models/repositories/user.repository';
+import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import { ChangeStatus, UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
+import { httpResponse } from 'src/shares/response';
+import { Response } from 'src/shares/response/response.interface';
+import { Like, Not } from 'typeorm';
+import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
+import { AdminGetUSersDto } from './dtos/get-list-user.dto';
 import { TransferDto } from './dtos/transfer.dto';
 @Injectable()
 export class UserService {
@@ -13,6 +20,41 @@ export class UserService {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     return user;
+  }
+
+  async getListUser(options: AdminGetUSersDto): Promise<Response> {
+    const { keyword, limit, page } = options;
+    const users = await this.userRepository.getUsers(keyword, page, limit);
+    return {
+      ...httpResponse.GET_USER_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        users,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async changeUserStatus(body: AdminChangeStatusUserDto): Promise<Response> {
+    const { status, userId } = body;
+    const user = await this.userRepository.findOne({
+      id: userId,
+      verifyStatus: Not(UserStatus.INACTIVE),
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    // to do send mail
+    await this.userRepository.update(
+      { id: userId },
+      {
+        verifyStatus:
+          status === ChangeStatus.ACTIVE
+            ? UserStatus.ACTIVE
+            : UserStatus.LOCKED,
+      },
+    );
+    return httpResponse.CHANGE_USER_STATUS_SUCCESS;
   }
 
   // async userDeposit(body: TransferDto, userId: number): Promise<Response> {

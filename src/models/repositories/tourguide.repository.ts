@@ -27,6 +27,7 @@ export class TourGuideRepository extends Repository<TourGuide> {
 
     queryBuilder
       .andWhere('tourGuide.verifyStatus = :status', { status })
+      .orderBy('tourGuide.id', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
 
