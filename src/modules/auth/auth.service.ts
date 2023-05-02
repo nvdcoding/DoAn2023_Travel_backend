@@ -9,7 +9,6 @@ import {
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { httpErrors } from 'src/shares/exceptions';
 import { RegisterDto } from './dto/register.dto';
-import { Cache } from 'cache-manager';
 import { Response } from 'src/shares/response/response.interface';
 import { httpResponse } from 'src/shares/response';
 import { emailConfig } from 'src/configs/email.config';
@@ -35,6 +34,7 @@ import { ProvinceRepository } from 'src/models/repositories/province.repository'
 import { In, Not } from 'typeorm';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { ActorRole } from 'src/shares/enum/auth.enum';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {

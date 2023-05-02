@@ -7,6 +7,7 @@ import { RegisterEmailDto } from './dto/register-email.dto';
 import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
 import { ApproveTourEmailDto } from './dto/approve-tour-email.dto';
 import { ApproveOrderEmailDto } from './dto/approve-order-email.dto';
+import { CreateAdminDto } from './dto/send-create-admin-email.dto';
 
 @Injectable()
 export class MailService {
@@ -15,6 +16,12 @@ export class MailService {
   async sendRegisterMail(registerDto: RegisterEmailDto): Promise<void> {
     await this.emailQueue.add('sendRegisterMail', {
       ...registerDto,
+    });
+  }
+
+  async sendCreateAdmin(createAdminDto: CreateAdminDto): Promise<void> {
+    await this.emailQueue.add('sendCreateAdminMail', {
+      ...createAdminDto,
     });
   }
 

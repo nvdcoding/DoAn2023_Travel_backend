@@ -119,4 +119,15 @@ export const httpResponse = {
     code: 'ME_001',
     statusCode: 200,
   },
+  // ADMIN
+  CREATE_ADMIN_SUCCESS: {
+    message: 'Create admin success',
+    code: 'ADMIN_001',
+    statusCode: 200,
+  },
+  ACTIVE_ADMIN_SUCCESS: {
+    message: 'Active admin success',
+    code: 'ADMIN_002',
+    statusCode: 200,
+  },
 };

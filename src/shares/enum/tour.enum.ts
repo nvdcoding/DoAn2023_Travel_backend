@@ -16,11 +16,11 @@ export enum AdminApproveAction {
 }
 
 export enum TourTypes {
-  ECO_TOURISM = 'Ecotourism',
-  CULTURAL = 'Cultural',
-  RESORT = 'Resort',
-  ENTERTAINMENT = 'Entertainment',
-  SPORTS = 'Sports',
-  DISCOVERY = 'Discovery',
-  ADVENTURE = 'Adventure',
+  ECO_TOURISM = 'Ecotourism', // Du lịch sinh thái
+  CULTURAL = 'Cultural', // du lịch văn hóa
+  RESORT = 'Resort', // du lịch nghĩ dưỡng
+  ENTERTAINMENT = 'Entertainment', // du lịch giải trí
+  SPORTS = 'Sports', // du lịch thể thao
+  DISCOVERY = 'Discovery', // du lịch khám phá
+  ADVENTURE = 'Adventure', // du lịch phiêu lưu
 }
