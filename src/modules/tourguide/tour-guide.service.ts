@@ -58,20 +58,6 @@ export class TourGuideService {
   ): Promise<Response> {
     const { keyword, status, limit, page } = options;
 
-    const where = {
-      verifyStatus: status,
-    };
-    if (keyword) {
-      const keywordLike = `%${keyword}%`;
-      where['email'] = Like(keywordLike);
-      where['OR'] = [
-        { email: Like(keywordLike) },
-        { username: Like(keywordLike) },
-        { name: Like(keywordLike) },
-        { id: Like(keywordLike) },
-      ];
-    }
-
     const tourGuides =
       await this.tourGuideRepository.getTourGuidesByStatusAndKeyword(
         keyword,
@@ -196,7 +182,9 @@ export class TourGuideService {
     };
   }
 
-  async updateStatusTourGuide(body: UpdateStatusTourGuideDto) {
+  async updateStatusTourGuide(
+    body: UpdateStatusTourGuideDto,
+  ): Promise<Response> {
     const { tourGuideId, status } = body;
     if (![TourguideStatus.ACTIVE, TourguideStatus.INACTIVE].includes(status)) {
       throw new HttpException(
@@ -210,15 +198,30 @@ export class TourGuideService {
       },
       relations: ['orders'],
     });
-    const tourGuideOrders = tourGuide.orders.filter((order) => {
-      ![].includes(order.status);
-    });
-    console.log(tourGuideOrders);
-    return;
+    // TODO: neus tourguide có tour chưa trả tiền thì hủy và ,,,
     if (!tourGuide) {
       throw new HttpException(
         httpErrors.TOUR_GUIDE_NOT_FOUND,
         HttpStatus.NOT_FOUND,
+      );
+    }
+    const tourGuideOrders = tourGuide.orders.filter((order) => {
+      if (
+        [
+          OrderStatus.PROCESSING,
+          OrderStatus.WAITING_PREPAID,
+          OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_START,
+          OrderStatus.WAITING_TOUR_GUIDE,
+        ].includes(order.status)
+      ) {
+        return order;
+      }
+    });
+    if (tourGuideOrders.length > 0) {
+      throw new HttpException(
+        httpErrors.TOURGUIDE_HAS_ORDER,
+        HttpStatus.BAD_REQUEST,
       );
     }
     await this.tourGuideRepository.update(
@@ -227,5 +230,43 @@ export class TourGuideService {
         verifyStatus: status,
       },
     );
+    return httpResponse.UPDATE_STATUS_TOURGUIDE_SUCCESS;
+  }
+
+  async deleteTourGuide(tourGuideId: number): Promise<Response> {
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: {
+        id: tourGuideId,
+      },
+      relations: ['orders'],
+    });
+    // TODO: neus tourguide có tour chưa trả tiền thì hủy và ,,,
+    if (!tourGuide) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const tourGuideOrders = tourGuide.orders.filter((order) => {
+      if (
+        [
+          OrderStatus.PROCESSING,
+          OrderStatus.WAITING_PREPAID,
+          OrderStatus.WAITING_PURCHASE,
+          OrderStatus.WAITING_START,
+          OrderStatus.WAITING_TOUR_GUIDE,
+        ].includes(order.status)
+      ) {
+        return order;
+      }
+    });
+    if (tourGuideOrders.length > 0) {
+      throw new HttpException(
+        httpErrors.TOURGUIDE_HAS_ORDER,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.tourGuideRepository.softDelete(tourGuide.id);
+    return httpResponse.UPDATE_STATUS_TOURGUIDE_SUCCESS;
   }
 }

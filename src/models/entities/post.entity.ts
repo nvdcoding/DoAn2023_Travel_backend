@@ -72,7 +72,7 @@ export class Post extends BaseEntity {
     name: 'status',
     type: 'enum',
     enum: PostStatus,
-    default: PostStatus.INACTIVE,
+    default: PostStatus.PENDING,
   })
   status: PostStatus;
 

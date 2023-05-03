@@ -94,6 +94,10 @@ export const httpErrors = {
     message: 'Status change is not valid',
     code: 'ERR_TOUR_GUIDE_005',
   },
+  TOURGUIDE_HAS_ORDER: {
+    message: 'Cant process because tourguide have open order',
+    code: 'ERR_TOUR_GUIDE_006',
+  },
   // ORDER
   NUM_OF_MEMBER_INVALID: {
     message: 'Number of member is not valid',

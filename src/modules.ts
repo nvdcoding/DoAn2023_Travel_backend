@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { GenDataModule } from './modules/gen-data/gen-data.modules';
 import { MailModule } from './modules/mail/mail.module';
 import { OrderModule } from './modules/orders/order.module';
+import { PostModule } from './modules/post/post.module';
 import { ProvinceModule } from './modules/province/province.module';
 import { TourModule } from './modules/tour/tour.module';
 import { TourGuideModule } from './modules/tourguide/tour-guide.module';
@@ -41,5 +42,6 @@ const Modules = [
   OrderModule,
   VoucherModule,
   TourGuideModule,
+  PostModule,
 ];
 export default Modules;

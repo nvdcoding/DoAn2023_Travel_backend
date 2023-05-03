@@ -71,6 +71,18 @@ export const httpResponse = {
     code: 'TOUR_GUIDE_002',
     statusCode: 200,
   },
+  UPDATE_STATUS_TOURGUIDE_SUCCESS: {
+    message: 'update success',
+    code: 'TOUR_GUIDE_003',
+    statusCode: 200,
+  },
+
+  //POST
+  GET_POST_SUCCESS: {
+    message: 'Get post guide success',
+    code: 'POST_001',
+    statusCode: 200,
+  },
 
   // ORDER
   GET_ORDER_SUCCESS: {

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Put,
@@ -42,8 +43,14 @@ export class TourGuideController {
   @UseGuards(AdminModAuthGuard)
   async updateTourguideStatus(
     @Body() body: UpdateStatusTourGuideDto,
-  ): Promise<void> {
+  ): Promise<Response> {
     return this.tourGuideService.updateStatusTourGuide(body);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AdminModAuthGuard)
+  async deleteTourguide(@Param('id') id: number): Promise<Response> {
+    return this.tourGuideService.deleteTourGuide(id);
   }
 
   @Put('/response-registation')
