@@ -193,6 +193,7 @@ export class OrderService {
         orderStatus = [
           ...OrderStatus.WAITING_PURCHASE,
           OrderStatus.WAITING_TOUR_GUIDE,
+          OrderStatus.WAITING_PREPAID,
         ];
         break;
       case GetTourOptions.PROCESSING:
