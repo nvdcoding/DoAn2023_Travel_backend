@@ -19,6 +19,11 @@ export const httpResponse = {
     code: 'USER_004',
     statusCode: 200,
   },
+  GEN_LINK_SUCCESS: {
+    message: 'Gen success',
+    code: 'Gen success',
+    statusCode: 200,
+  },
   // TOUR
   CREATE_TOUR_SUCCESS: {
     message: 'Tour has ben created, please wait admin review',

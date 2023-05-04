@@ -1,35 +1,36 @@
-import { UserFavorite } from './user_favorite.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Order } from './orders.entity';
-import { Province } from './province.entity';
-import { Rate } from './rate.entity';
-import { TourGuide } from './tourguide.entity';
-import { TourSchedule } from './tour_schedule.entity';
-import { TourStatus, TourTypes } from 'src/shares/enum/tour.enum';
-import { TourImage } from './tour-image.entity';
 import { User } from './user.entity';
-import { TransactionStatus } from 'src/shares/enum/transaction.enum';
+import {
+  TransactionStatus,
+  TransactionType,
+} from 'src/shares/enum/transaction.enum';
+import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
 
 @Entity({ name: 'transactions' })
 export class TransactionEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false, name: 'name' })
-  name: string;
+  @Column({ name: 'transaction_code', type: 'varchar', nullable: true })
+  transactionCode: string;
+
+  @Column({
+    type: 'enum',
+    enum: WALLET_TYPE,
+    name: 'wallet',
+    nullable: false,
+    default: WALLET_TYPE.VN_PAY,
+  })
+  wallet: WALLET_TYPE;
 
   @Column({
     name: 'amount',
@@ -46,6 +47,20 @@ export class TransactionEntity extends BaseEntity {
     nullable: false,
   })
   status: TransactionStatus;
+
+  @Column({
+    type: 'enum',
+    enum: TransactionType,
+    name: 'type',
+    nullable: false,
+  })
+  type: TransactionType;
+
+  @Column({
+    type: 'datetime',
+    name: 'time',
+  })
+  time: Date;
 
   @ManyToOne(() => User, (user) => user.transactions)
   @JoinColumn({ name: 'user_id' })
