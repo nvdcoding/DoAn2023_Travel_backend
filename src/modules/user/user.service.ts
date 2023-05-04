@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import moment from 'moment';
+import * as moment from 'moment';
 import { of } from 'rxjs';
 import { vnPayConfig } from 'src/configs/digital-wallet';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
