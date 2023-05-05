@@ -17,7 +17,6 @@ import { RegisterDto } from './dto/register.dto';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
-import { UserAuthGuard } from './guards/user-auth.guard';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { RegisterTourguideDto } from './dto/register-tourguide.dto';
 import { IsLoginGuard } from './guards/is-login.guard';

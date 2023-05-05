@@ -8,6 +8,7 @@ import { DatabaseCommonModule } from 'src/models/database-common';
 import { redisConfig } from './configs/redis.config';
 import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { GenDataModule } from './modules/gen-data/gen-data.modules';
 import { MailModule } from './modules/mail/mail.module';
 import { OrderModule } from './modules/orders/order.module';
@@ -43,5 +44,6 @@ const Modules = [
   VoucherModule,
   TourGuideModule,
   PostModule,
+  ChatModule,
 ];
 export default Modules;
