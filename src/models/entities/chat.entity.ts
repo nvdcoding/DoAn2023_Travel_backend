@@ -3,22 +3,27 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
+import { Participant } from './participant.entity';
 
-@Entity()
-export class ChatMessage {
+@Entity({ name: 'chats' })
+export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'userId', type: 'int', nullable: false })
-  userId: number;
+  @ManyToOne(() => Participant)
+  @JoinColumn({ name: 'participant_1_id' })
+  participant1: Participant;
 
-  @Column({ name: 'tourGuideId', type: 'int', nullable: false })
-  tourGuideId: number;
+  @ManyToOne(() => Participant)
+  @JoinColumn({ name: 'participant_2_id' })
+  participant2: Participant;
 
-  @Column({ name: 'message', type: 'text', nullable: false })
+  @Column()
   message: string;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  @CreateDateColumn()
+  created_at: Date;
 }

@@ -6,10 +6,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'typeorm';
 import { HttpExceptionFilter } from './shares/filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+// import { RedisIoAdapter } from './adapters/redis.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: true });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  // app.useWebSocketAdapter(new RedisIoAdapter(app));
 
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors();

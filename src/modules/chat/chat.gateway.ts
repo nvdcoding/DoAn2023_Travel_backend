@@ -1,42 +1,46 @@
 import {
+  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  OnGatewayInit,
   WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { Server } from 'ws';
+import { Server } from 'socket.io';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as redis from 'redis';
+import { redisConfig } from 'src/configs/redis.config';
+import { createClient } from 'redis';
+import { Emitter } from '@socket.io/redis-emitter';
 
-// @WebSocketGateway({ namespace: '/chat' })
-// implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+@WebSocketGateway(8001, { cors: '*' })
 export class ChatGateWay {
-  // @WebSocketServer() server: Server;
-  // private logger: Logger = new Logger('MessageGateway');
-  // @SubscribeMessage('msgToServer')
-  // public handleMessage(client: Socket, payload: any): Promise<WsResponse<any>> {
-  //   return this.server.to(payload.room).emit('msgToClient', payload);
-  // }
-  // @SubscribeMessage('joinRoom')
-  // public joinRoom(client: Socket, room: string): void {
-  //   client.join(room);
-  //   client.emit('joinedRoom', room);
-  // }
-  // @SubscribeMessage('leaveRoom')
-  // public leaveRoom(client: Socket, room: string): void {
-  //   client.leave(room);
-  //   client.emit('leftRoom', room);
-  // }
-  // public afterInit(server: Server): void {
-  //   return this.logger.log('Init');
-  // }
-  // public handleDisconnect(client: Socket): void {
-  //   return this.logger.log(`Client disconnected: ${client.id}`);
-  // }
-  // public handleConnection(client: Socket): void {
-  //   return this.logger.log(`Client connected: ${client.id}`);
-  // }
+  @WebSocketServer()
+  server: Server;
+  public io;
+
+  constructor() {
+    const redisClient = createClient(redisConfig.port, redisConfig.host);
+    this.io = new Emitter(redisClient);
+    console.log;
+  }
+  private logger: Logger = new Logger('MessageGateway');
+  @SubscribeMessage('message')
+  handleMessage(@MessageBody() message: string): void {
+    console.log(message);
+
+    this.server.emit('hehe', message);
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    console.log('Client connected:', client.id);
+  }
+
+  handleDisconnect(client: Socket) {
+    console.log('Client disconnected:', client.id);
+  }
+
+  afterInit(server: Server) {
+    console.log('Websocket server initialized');
+  }
 }

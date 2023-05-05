@@ -1,17 +1,17 @@
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import { createClient } from 'redis';
-import { createAdapter } from '@socket.io/redis-adapter';
-import { redisConfig } from 'src/configs/redis.config';
+// /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+// import { IoAdapter } from '@nestjs/platform-socket.io';
+// // import * as redisIoAdapter from 'socket.io-redis';
+// import { redisConfig } from 'src/configs/redis.config';
 
-export class RedisIoAdapter extends IoAdapter {
-  createIOServer(port: number): any {
-    const server = super.createIOServer(port);
-    const pubClient = createClient({
-      url: `redis://${redisConfig}:${redisConfig.port}`,
-    });
-    const subClient = pubClient.duplicate();
+// export class RedisIoAdapter extends IoAdapter {
+//   createIOServer(port: number, options?: unknown): unknown {
+//     const server = super.createIOServer(port, options);
+//     const redisAdapter = redisIoAdapter({
+//       host: redisConfig.host,
+//       port: redisConfig.port,
+//     });
 
-    server.adapter(createAdapter(pubClient, subClient));
-    return server;
-  }
-}
+//     server.adapter(redisAdapter);
+//     return server;
+//   }
+// }
