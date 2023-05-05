@@ -459,7 +459,12 @@ export class AuthService {
             id,
             verifyStatus: UserStatus.ACTIVE,
           },
-          relations: ['userVouchers', 'userFavorites', 'orders'],
+          relations: [
+            'userVouchers',
+            'userFavorites',
+            'orders',
+            'transactions',
+          ],
         });
         break;
       case ActorRole.ADMIN:
