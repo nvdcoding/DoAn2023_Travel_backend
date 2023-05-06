@@ -16,9 +16,9 @@ export class AdminGetPostDto extends BasePaginationRequestDto {
 }
 
 export class GetPostDto extends BasePaginationRequestDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsEnum(Topics)
-  @IsNotEmpty()
+  @IsOptional()
   topics: Topics;
 
   @ApiProperty({ required: false })
