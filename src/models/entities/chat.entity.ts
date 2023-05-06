@@ -1,3 +1,4 @@
+import { TourGuide } from './tourguide.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,20 +7,29 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-import { Participant } from './participant.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'chats' })
 export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Participant)
-  @JoinColumn({ name: 'participant_1_id' })
-  participant1: Participant;
+  @Column('int', { name: 'user_id' })
+  userId: number;
 
-  @ManyToOne(() => Participant)
-  @JoinColumn({ name: 'participant_2_id' })
-  participant2: Participant;
+  @Column('int', { name: 'tour_guide_id' })
+  tourGuideId: number;
+
+  // @ManyToOne(() => User)
+  // @JoinColumn({ referencedColumnName: 'id' })
+  // user: User;
+
+  // @ManyToOne(() => TourGuide)
+  // @JoinColumn({ referencedColumnName: 'id' })
+  // tourGuide: TourGuide;
+
+  @Column()
+  sender: 'user' | 'tour_guide';
 
   @Column()
   message: string;
