@@ -55,7 +55,7 @@ export class PostRepository extends Repository<Post> {
     if (topic) {
       queryBuilder.andWhere('post.topic = :topic', { topic });
     }
-    queryBuilder.andWhere('status IN (:status)', {
+    queryBuilder.andWhere('post.status IN (:status)', {
       status: [PostStatus.ACTIVE, PostStatus.WAITING],
     });
     queryBuilder
