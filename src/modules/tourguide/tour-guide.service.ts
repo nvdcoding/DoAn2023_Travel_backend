@@ -15,17 +15,13 @@ import {
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
 import { httpErrors } from 'src/shares/exceptions';
-import { MailService } from '../mail/mail.service';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { OrderStatus } from 'src/shares/enum/order.enum';
 import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 
 @Injectable()
 export class TourGuideService {
-  constructor(
-    private readonly tourGuideRepository: TourGuideRepository,
-    private readonly mailService: MailService,
-  ) {}
+  constructor(private readonly tourGuideRepository: TourGuideRepository) {}
 
   // asycn getTourGuide() {
 
@@ -268,5 +264,9 @@ export class TourGuideService {
     }
     await this.tourGuideRepository.softDelete(tourGuide.id);
     return httpResponse.UPDATE_STATUS_TOURGUIDE_SUCCESS;
+  }
+
+  async getAllTourGuide() {
+    return this.tourGuideRepository.find();
   }
 }
