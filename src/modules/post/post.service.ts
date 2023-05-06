@@ -184,8 +184,8 @@ export class PostService {
             where: { id: actorId, verifyStatus: TourguideStatus.ACTIVE },
           }),
     ]);
-    if (post) {
-      throw new HttpException(httpErrors.POST_EXISTED, HttpStatus.FOUND);
+    if (!post) {
+      throw new HttpException(httpErrors.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     if (!actor) {
       throw new HttpException(
