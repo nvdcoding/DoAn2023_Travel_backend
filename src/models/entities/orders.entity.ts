@@ -68,6 +68,14 @@ export class Order extends BaseEntity {
   tourGuideStart: boolean;
 
   @Column({
+    name: 'star',
+    type: 'int',
+    nullable: true,
+    default: null,
+  })
+  star: number;
+
+  @Column({
     type: 'int',
     default: 0,
     name: 'tourguide_deposit',

@@ -562,13 +562,17 @@ export class OrderService {
     if (checkRate) {
       throw new HttpException(httpErrors.RATE_EXISTED, HttpStatus.BAD_REQUEST);
     }
-    const rate = await this.rateRepository.save({
-      star,
-      order,
-      content,
-      image,
-      tour: order.tour,
-    });
+    await Promise.all([
+      this.rateRepository.save({
+        star,
+        order,
+        content,
+        image,
+        tour: order.tour,
+      }),
+      this.orderRepository.update({ id: order.id }, { star }),
+    ]);
+
     return httpResponse.APPROVE_ORDER_SUCCESS;
   }
 
