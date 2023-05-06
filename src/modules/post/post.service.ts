@@ -10,8 +10,9 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
+import { In } from 'typeorm';
 import { CreateBlogDto } from './dtos/create-post.dto';
-import { AdminGetPostDto } from './dtos/get-post.dto';
+import { AdminGetPostDto, GetPostDto } from './dtos/get-post.dto';
 import { UpdateBlogDto } from './dtos/update-post.dto';
 import {
   AdminApproveRequest,
@@ -37,6 +38,43 @@ export class PostService {
       ...httpResponse.GET_POST_SUCCESS,
       returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
         tourGuides,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async getOnePost(postId: number, role?: string) {
+    const relations =
+      role === 'admin'
+        ? ['comments', 'userFavorites', 'user', 'tourGuide', 'reports']
+        : ['comments', 'userFavorites', 'user', 'tourGuide'];
+    const post = await this.postRepository.findOne({
+      where: {
+        id: postId,
+        status: In([PostStatus.ACTIVE, PostStatus.WAITING]),
+      },
+      relations,
+    });
+    if (!post) {
+      throw new HttpException(httpErrors.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return { ...httpResponse.GET_POST_SUCCESS, returnValue: post };
+  }
+
+  async getListPost(options: GetPostDto): Promise<Response> {
+    const { topics, limit, page, keyword } = options;
+
+    const posts = await this.postRepository.getPostByKeywordAndType(
+      keyword,
+      topics,
+      page,
+      limit,
+    );
+    return {
+      ...httpResponse.GET_POST_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        posts,
         options.page || 1,
         options.limit || 10,
       ),
@@ -192,5 +230,40 @@ export class PostService {
       },
     );
     return httpResponse.UPDATE_POST_SUCCESS;
+  }
+
+  async deletePost(postId: number, actorId: number, role: ActorRole) {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user', 'tourGuide'],
+    });
+    if (!post) {
+      throw new HttpException(httpErrors.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (role === ActorRole.ADMIN) {
+      await this.postRepository.softDelete(post.id);
+    } else {
+      const actor =
+        role === ActorRole.USER
+          ? await this.userRepository.findOne({
+              id: actorId,
+              verifyStatus: UserStatus.ACTIVE,
+            })
+          : await this.tourGuideRepository.findOne({
+              where: {
+                id: actorId,
+                verifyStatus: UserStatus.ACTIVE,
+              },
+            });
+      const postIdActor =
+        role === ActorRole.USER ? post.user.id : post.tourGuide.id;
+      if (actor.id !== postIdActor) {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+    }
+    return httpResponse.DELETE_POST_SUCCESS;
   }
 }

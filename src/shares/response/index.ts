@@ -83,11 +83,6 @@ export const httpResponse = {
   },
 
   //POST
-  GET_POST_SUCCESS: {
-    message: 'Get post guide success',
-    code: 'POST_001',
-    statusCode: 200,
-  },
 
   // ORDER
   GET_ORDER_SUCCESS: {
@@ -197,6 +192,16 @@ export const httpResponse = {
   UPDATE_POST_SUCCESS: {
     message: 'Post updated',
     code: 'POST_004',
+    statusCode: 200,
+  },
+  GET_POST_SUCCESS: {
+    message: 'Get post guide success',
+    code: 'POST_005',
+    statusCode: 200,
+  },
+  DELETE_POST_SUCCESS: {
+    message: 'Post deleted',
+    code: 'POST_006',
     statusCode: 200,
   },
 };
