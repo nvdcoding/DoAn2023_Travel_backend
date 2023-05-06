@@ -1,7 +1,7 @@
 export enum PostStatus {
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+  WAITING = 'WAITING',
   REJECTED = 'REJECTED',
 }
 export enum Topics {
@@ -9,4 +9,9 @@ export enum Topics {
   SHARE = 'SHARE',
   REVIEW = 'REVIEW',
   SUGGEST = 'SUGGEST',
+}
+
+export enum AdminAction {
+  APPROVE = 'APPROVE',
+  REJECTED = 'REJECTED',
 }

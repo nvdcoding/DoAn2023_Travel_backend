@@ -154,4 +154,19 @@ export const httpErrors = {
     message: 'Rate existed',
     code: 'ERR_RATE_001',
   },
+  // PSOT
+  POST_EXISTED: {
+    message: 'Post existed',
+    code: 'ERR_POST_001',
+  },
+  POST_NOT_FOUND: {
+    message: 'Post not found',
+    code: 'ERR_POST_002',
+  },
+
+  // PẨM_
+  INVALID_PARAMS: {
+    message: 'Invalid params',
+    code: 'ERR_PARAM_001',
+  },
 };

@@ -178,4 +178,25 @@ export const httpResponse = {
     code: 'USER_003',
     statusCode: 200,
   },
+  //POST
+  CREATE_POST_SUCCESS: {
+    message: 'Post created',
+    code: 'POST_001',
+    statusCode: 200,
+  },
+  APPROVE_POST_SUCCESS: {
+    message: 'Post approve',
+    code: 'POST_002',
+    statusCode: 200,
+  },
+  REQUEST_UPDATE_POST_SUCCESS: {
+    message: 'Request update post success',
+    code: 'POST_003',
+    statusCode: 200,
+  },
+  UPDATE_POST_SUCCESS: {
+    message: 'Post updated',
+    code: 'POST_004',
+    statusCode: 200,
+  },
 };
