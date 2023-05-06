@@ -49,16 +49,14 @@ export class PostService {
       role === 'admin'
         ? ['comments', 'userFavorites', 'user', 'tourGuide', 'reports']
         : ['comments', 'userFavorites', 'user', 'tourGuide'];
-
+    const where = {
+      id: postId,
+    };
+    if (role !== 'admin') {
+      where['status'] = In([PostStatus.ACTIVE, PostStatus.WAITING]);
+    }
     const post = await this.postRepository.findOne({
-      where: {
-        id: postId,
-        status: In(
-          role === 'admin'
-            ? Not(IsNull())
-            : [PostStatus.ACTIVE, PostStatus.WAITING],
-        ),
-      },
+      where,
       relations,
     });
     if (!post) {
