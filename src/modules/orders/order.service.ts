@@ -628,7 +628,7 @@ export class OrderService {
         balance: system.balance + 0.1 * order.price,
       }),
     ]);
-    return httpResponse.APPROVE_ORDER_SUCCESS;
+    return httpResponse.PREPAID_ORDER_SUCCESS;
   }
 
   async userCancelOrder(
