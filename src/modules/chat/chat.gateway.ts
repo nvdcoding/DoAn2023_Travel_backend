@@ -57,7 +57,7 @@ export class ChatGateWay {
           role === ActorRole.USER ? ActorRole.TOURGUIDE : ActorRole.USER
         }_${chatId}`,
       )
-      .emit('receive-messages', [{ ...payload, sender: ActorRole.TOURGUIDE }]);
+      .emit('receive-messages', [{ ...payload }]);
   }
 
   @SubscribeMessage('get-messages')
