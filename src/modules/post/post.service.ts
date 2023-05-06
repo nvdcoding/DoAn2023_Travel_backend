@@ -10,7 +10,7 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { In } from 'typeorm';
+import { In, IsNull, Not } from 'typeorm';
 import { CreateBlogDto } from './dtos/create-post.dto';
 import { AdminGetPostDto, GetPostDto } from './dtos/get-post.dto';
 import { UpdateBlogDto } from './dtos/update-post.dto';
@@ -49,10 +49,15 @@ export class PostService {
       role === 'admin'
         ? ['comments', 'userFavorites', 'user', 'tourGuide', 'reports']
         : ['comments', 'userFavorites', 'user', 'tourGuide'];
+
     const post = await this.postRepository.findOne({
       where: {
         id: postId,
-        status: In([PostStatus.ACTIVE, PostStatus.WAITING]),
+        status: In(
+          role === 'admin'
+            ? Not(IsNull())
+            : [PostStatus.ACTIVE, PostStatus.WAITING],
+        ),
       },
       relations,
     });
