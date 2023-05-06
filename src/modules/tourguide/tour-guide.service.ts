@@ -294,6 +294,8 @@ export class TourGuideService {
         tourGuide,
       },
       relations: ['userFavorites', 'tourGuide', 'comments'],
+      take: options.limit,
+      skip: (options.page - 1) * options.limit,
     });
 
     return {

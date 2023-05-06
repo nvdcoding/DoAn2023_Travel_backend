@@ -120,6 +120,8 @@ export class TourService {
         'tourSchedule',
         'province',
       ],
+      take: options.limit,
+      skip: (options.page - 1) * options.limit,
     });
     return {
       returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
@@ -161,6 +163,8 @@ export class TourService {
       order: {
         id: 'DESC',
       },
+      take: options.limit,
+      skip: (options.page - 1) * options.limit,
     });
     return {
       ...httpResponse.GET_TOUR_SUCCESS,

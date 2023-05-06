@@ -56,6 +56,8 @@ export class UserService {
     const posts = await this.postRepository.findAndCount({
       where: { status: In([PostStatus.ACTIVE, PostStatus.WAITING]), user },
       relations: ['userFavorites', 'user', 'comments'],
+      take: options.limit,
+      skip: (options.page - 1) * options.limit,
     });
 
     return {
