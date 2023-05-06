@@ -55,6 +55,9 @@ export class PostRepository extends Repository<Post> {
     if (topic) {
       queryBuilder.andWhere('post.topic = :topic', { topic });
     }
+    queryBuilder.andWhere('status IN (:status)', {
+      status: [PostStatus.ACTIVE, PostStatus.WAITING],
+    });
     queryBuilder
       .orderBy('post.id', 'DESC')
       .skip((page - 1) * limit)

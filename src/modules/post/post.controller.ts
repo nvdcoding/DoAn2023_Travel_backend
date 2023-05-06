@@ -32,7 +32,7 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get('/user-tourguide/:id')
-  async getOnePost(@Param('id') id: number): Promise<Response> {
+  async getOnePost(@Param('id', 'user') id: number): Promise<Response> {
     return this.postService.getOnePost(id);
   }
 
