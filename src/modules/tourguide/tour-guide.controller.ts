@@ -9,8 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
+import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
+import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import {
   AdminGetTourGuideDto,
   GetTourGuideDto,
@@ -31,6 +34,15 @@ export class TourGuideController {
   // async createTour(@Body() body: CreateTourDto): Promise<Response> {
   //   return this.tourService.createTour(body);
   // }
+  @Get('/post')
+  @UseGuards(TourGuideAuthGuard)
+  async getTourGuidePost(
+    @Query() options: BasePaginationRequestDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.tourGuideService.getTourGuidePost(options, tourGuideId);
+  }
+
   @Get('/admin')
   @UseGuards(AdminModAuthGuard)
   async getTourGuideByStatus(

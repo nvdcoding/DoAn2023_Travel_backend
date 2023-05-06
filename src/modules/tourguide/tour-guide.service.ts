@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import {
   ActionResponseRegisterTourguide,
   TourguideStatus,
@@ -12,16 +12,24 @@ import {
   AdminGetTourGuideDto,
   GetTourGuideDto,
 } from './dtos/get-tour-guide.dto';
-import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import {
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shares/dtos/base-pagination.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
 import { httpErrors } from 'src/shares/exceptions';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { OrderStatus } from 'src/shares/enum/order.enum';
 import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
+import { PostRepository } from 'src/models/repositories/post.repository';
+import { PostStatus } from 'src/shares/enum/post.enum';
 
 @Injectable()
 export class TourGuideService {
-  constructor(private readonly tourGuideRepository: TourGuideRepository) {}
+  constructor(
+    private readonly tourGuideRepository: TourGuideRepository,
+    private readonly postRepository: PostRepository,
+  ) {}
 
   // asycn getTourGuide() {
 
@@ -268,5 +276,33 @@ export class TourGuideService {
 
   async getAllTourGuide() {
     return this.tourGuideRepository.find();
+  }
+
+  async getTourGuidePost(
+    options: BasePaginationRequestDto,
+    tourGuideId: number,
+  ): Promise<Response> {
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
+    });
+    if (!tourGuide) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const posts = await this.postRepository.findAndCount({
+      where: {
+        status: In([PostStatus.ACTIVE, PostStatus.WAITING]),
+        tourGuide,
+      },
+      relations: ['userFavorites', 'tourGuide', 'comments'],
+    });
+
+    return {
+      ...httpResponse.GET_POST_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        posts,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
   }
 }

@@ -3,9 +3,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { of } from 'rxjs';
 import { vnPayConfig } from 'src/configs/digital-wallet';
+import { PostRepository } from 'src/models/repositories/post.repository';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
-import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import {
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shares/dtos/base-pagination.dto';
+import { PostStatus } from 'src/shares/enum/post.enum';
 import {
   TransactionStatus,
   TransactionType,
@@ -15,10 +20,10 @@ import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { Like, Not } from 'typeorm';
+import { In, Like, Not } from 'typeorm';
 import { promisify } from 'util';
 import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
-import { AdminGetUSersDto } from './dtos/get-list-user.dto';
+import { AdminGetUsersDto } from './dtos/get-list-user.dto';
 import { TransferDto } from './dtos/transfer.dto';
 const getIP = promisify(require('external-ip')());
 
@@ -27,6 +32,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly transactionRepository: TransactionRepository,
+    private readonly postRepository: PostRepository,
   ) {}
 
   async getUserById(id: number) {
@@ -37,7 +43,32 @@ export class UserService {
     return user;
   }
 
-  async getListUser(options: AdminGetUSersDto): Promise<Response> {
+  async getUserPost(
+    options: BasePaginationRequestDto,
+    userId: number,
+  ): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const posts = await this.postRepository.findAndCount({
+      where: { status: In([PostStatus.ACTIVE, PostStatus.WAITING]), user },
+      relations: ['userFavorites', 'user', 'comments'],
+    });
+
+    return {
+      ...httpResponse.GET_POST_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        posts,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async getListUser(options: AdminGetUsersDto): Promise<Response> {
     const { keyword, limit, page } = options;
     const users = await this.userRepository.getUsers(keyword, page, limit);
     return {

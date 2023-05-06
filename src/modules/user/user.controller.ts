@@ -11,11 +11,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
+import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
-import { AdminGetUSersDto } from './dtos/get-list-user.dto';
+import { AdminGetUsersDto } from './dtos/get-list-user.dto';
 import { TransferDto } from './dtos/transfer.dto';
 import { UserService } from './user.service';
 
@@ -27,8 +28,17 @@ export class UserController {
 
   @Get('/')
   @UseGuards(AdminModAuthGuard)
-  async getUsers(@Query() options: AdminGetUSersDto): Promise<Response> {
+  async getUsers(@Query() options: AdminGetUsersDto): Promise<Response> {
     return this.userService.getListUser(options);
+  }
+
+  @Get('/post')
+  @UseGuards(UserAuthGuard)
+  async getUserPost(
+    @Query() options: BasePaginationRequestDto,
+    @ActorID() actorId: number,
+  ): Promise<Response> {
+    return this.userService.getUserPost(options, actorId);
   }
 
   @Put('/')
