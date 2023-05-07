@@ -1,3 +1,4 @@
+import { ActorRole } from './../../shares/enum/auth.enum';
 import { TourGuideService } from 'src/modules/tourguide/tour-guide.service';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -51,13 +52,12 @@ export class ChatGateWay {
     };
     this.chatService.saveMessage(payload);
 
-    client
-      .to(
-        `${
-          role === ActorRole.USER ? ActorRole.TOURGUIDE : ActorRole.USER
-        }_${chatId}`,
-      )
-      .emit('receive-messages', [{ ...payload }]);
+    const roomId =
+      role === ActorRole.USER
+        ? `${ActorRole.USER}_${userId}_${ActorRole.TOURGUIDE}_${chatId}`
+        : `${ActorRole.USER}_${chatId}_${ActorRole.TOURGUIDE}_${userId}`;
+
+    client.to(roomId).emit('receive-messages', [{ ...payload }]);
   }
 
   @SubscribeMessage('get-messages')
@@ -92,6 +92,25 @@ export class ChatGateWay {
       });
 
       client.emit('receive-users', result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @SubscribeMessage('join-room')
+  async joinRoom(@MessageBody() message, @ConnectedSocket() client: Socket) {
+    try {
+      const decoded = this.authorizeToken(client);
+
+      const { id: userId, role } = decoded;
+      const { chatId } = message;
+
+      const roomId =
+        role === ActorRole.USER
+          ? `${ActorRole.USER}_${userId}_${ActorRole.TOURGUIDE}_${chatId}`
+          : `${ActorRole.USER}_${chatId}_${ActorRole.TOURGUIDE}_${userId}`;
+
+      client.join(roomId);
     } catch (error) {
       console.log(error);
     }
