@@ -1,4 +1,3 @@
-import { ActorRole } from './../../shares/enum/auth.enum';
 import { TourGuideService } from 'src/modules/tourguide/tour-guide.service';
 import { JwtService } from '@nestjs/jwt';
 import {
