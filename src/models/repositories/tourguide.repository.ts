@@ -69,6 +69,7 @@ export class TourGuideRepository extends Repository<TourGuide> {
         'province.name as provinceName',
         'tourguide.gender as tourGuideGender',
         'tourguide.dob as tourGuideDob',
+        'tourguide.status as tourGuideStatus',
         'tourguide.num_of_favorites as numOfFavorites',
         'COUNT(DISTINCT orders.id) AS totalTour',
         'COUNT(DISTINCT userFavorites.id) AS totalFavorite',

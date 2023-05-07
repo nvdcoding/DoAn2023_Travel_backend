@@ -11,7 +11,7 @@ export class UserRepository extends Repository<User> {
       'user.username',
       'user.phone',
       'user.avatar',
-      'user.verifyStatus',
+      'user.status',
       'user.voucherPoint',
     ]);
     if (keyword) {
