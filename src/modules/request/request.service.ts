@@ -4,13 +4,17 @@ import { ProvinceRepository } from 'src/models/repositories/province.repository'
 import { UserRequestRepository } from 'src/models/repositories/request.repository';
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
-import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import {
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shares/dtos/base-pagination.dto';
 import { ActorRole } from 'src/shares/enum/auth.enum';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
+import { In } from 'typeorm';
 import { CreateRequestDto } from './dtos/create-request.dto';
 import { GetUserRequestDto } from './dtos/get-request.dto';
 @Injectable()
@@ -76,6 +80,48 @@ export class RequestService {
         id: 'DESC',
       },
       relations: ['user', 'province'],
+    });
+    return {
+      ...httpResponse.GET_REQUEST_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        requests,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async tourGuideGetRequest(
+    options: BasePaginationRequestDto,
+    tourGuideId: number,
+  ): Promise<Response> {
+    const { limit, page } = options;
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: {
+        id: tourGuideId,
+        verifyStatus: TourguideStatus.ACTIVE,
+      },
+      relations: ['provinces'],
+    });
+    if (!tourGuide) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const tourGuideProvinces = tourGuide.provinces.map(
+      (province) => province.id,
+    );
+    const requests = await this.userRequestRepository.findAndCount({
+      where: {
+        id: In([...tourGuideProvinces]),
+      },
+      relations: ['province', 'user'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        id: 'DESC',
+      },
     });
     return {
       ...httpResponse.GET_REQUEST_SUCCESS,

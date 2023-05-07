@@ -11,9 +11,11 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorRoleDecorator } from 'src/shares/decorators/get-role.decorator';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
+import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 import { ActorRole } from 'src/shares/enum/auth.enum';
 import { Response } from 'src/shares/response/response.interface';
 import { IsLoginGuard } from '../auth/guards/is-login.guard';
+import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { CreateRequestDto } from './dtos/create-request.dto';
 import { GetUserRequestDto } from './dtos/get-request.dto';
@@ -41,6 +43,15 @@ export class RequestController {
     @ActorID() userId: number,
   ): Promise<Response> {
     return this.requestService.getMyRequest(options, userId);
+  }
+
+  @Get('/tourguide')
+  @UseGuards(TourGuideAuthGuard)
+  async getListRequest(
+    @Query() options: BasePaginationRequestDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.requestService.tourGuideGetRequest(options, tourGuideId);
   }
 
   @Get('/get/:requestId')
