@@ -204,4 +204,10 @@ export const httpResponse = {
     code: 'POST_006',
     statusCode: 200,
   },
+  // Request
+  CREATE_REQUEST_SUCCESS: {
+    message: 'Request created',
+    code: 'REQUEST_001',
+    statusCode: 200,
+  },
 };

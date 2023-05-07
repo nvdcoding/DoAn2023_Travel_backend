@@ -8,6 +8,7 @@ import { PermissionRepository } from './repositories/permission.repository';
 import { PostRepository } from './repositories/post.repository';
 import { ProvinceRepository } from './repositories/province.repository';
 import { RateRepository } from './repositories/rate.repository';
+import { UserRequestRepository } from './repositories/request.repository';
 import { SystemRepository } from './repositories/system.repository';
 import { TourImageRepository } from './repositories/tour-image.repository';
 import { TourScheduleRepository } from './repositories/tour-schedule.repository';
@@ -36,6 +37,7 @@ const commonRepositories = [
   PermissionRepository,
   PostRepository,
   ChatRepository,
+  UserRequestRepository,
 ];
 
 @Global()

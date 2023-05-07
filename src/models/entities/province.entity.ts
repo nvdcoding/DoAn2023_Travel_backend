@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { TourGuide } from './tourguide.entity';
 import { Tour } from './tour.entity';
+import { UserRequest } from './user-request.entity';
 
 @Entity({ name: 'provinces' })
 export class Province extends BaseEntity {
@@ -49,6 +50,9 @@ export class Province extends BaseEntity {
 
   @OneToMany(() => Tour, (tour) => tour.province)
   tours: Tour[];
+
+  @OneToMany(() => UserRequest, (userRequest) => userRequest.province)
+  requests: UserRequest[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

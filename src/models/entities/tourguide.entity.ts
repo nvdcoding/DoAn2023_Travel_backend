@@ -24,6 +24,7 @@ import { Tour } from './tour.entity';
 import { Voucher } from './voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
+import { UserRequest } from './user-request.entity';
 
 @Entity({ name: 'tour_guides' })
 export class TourGuide extends BaseEntity {

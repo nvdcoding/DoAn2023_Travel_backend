@@ -18,6 +18,7 @@ import { UserVoucher } from './user_voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
 import { TransactionEntity } from './transaction.entity';
+import { UserRequest } from './user-request.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -106,6 +107,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => UserRequest, (userRequest) => userRequest.user)
+  requests: UserRequest[];
 
   @OneToMany(() => TransactionEntity, (transaction) => transaction.user)
   transactions: TransactionEntity[];

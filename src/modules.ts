@@ -14,6 +14,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { OrderModule } from './modules/orders/order.module';
 import { PostModule } from './modules/post/post.module';
 import { ProvinceModule } from './modules/province/province.module';
+import { RequestModule } from './modules/request/request.module';
 import { TourModule } from './modules/tour/tour.module';
 import { TourGuideModule } from './modules/tourguide/tour-guide.module';
 import { UserModule } from './modules/user/user.module';
@@ -45,5 +46,6 @@ const Modules = [
   TourGuideModule,
   PostModule,
   ChatModule,
+  RequestModule,
 ];
 export default Modules;
