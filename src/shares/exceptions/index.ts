@@ -169,4 +169,9 @@ export const httpErrors = {
     message: 'Invalid params',
     code: 'ERR_PARAM_001',
   },
+  // REQUEST
+  REQUEST_NOT_FOUND: {
+    message: 'Request not found',
+    code: 'ERR_REQUEST_001',
+  },
 };

@@ -210,4 +210,16 @@ export const httpResponse = {
     code: 'REQUEST_001',
     statusCode: 200,
   },
+
+  GET_REQUEST_SUCCESS: {
+    message: 'Get requesst success',
+    code: 'REQUEST_002',
+    statusCode: 200,
+  },
+
+  DELETE_REQUEST_SUCCESS: {
+    message: 'Request deleted',
+    code: 'REQUEST_003',
+    statusCode: 200,
+  },
 };
