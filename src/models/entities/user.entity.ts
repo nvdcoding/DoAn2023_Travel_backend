@@ -18,11 +18,8 @@ import { UserVoucher } from './user_voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
 import { TransactionEntity } from './transaction.entity';
-<<<<<<< Updated upstream
 import { UserRequest } from './user-request.entity';
-=======
 import { Chat } from './chat.entity';
->>>>>>> Stashed changes
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
