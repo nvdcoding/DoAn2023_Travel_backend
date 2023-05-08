@@ -24,12 +24,9 @@ import { Tour } from './tour.entity';
 import { Voucher } from './voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
-<<<<<<< Updated upstream
 import { UserRequest } from './user-request.entity';
 import { TransactionEntity } from './transaction.entity';
-=======
 import { Chat } from './chat.entity';
->>>>>>> Stashed changes
 
 @Entity({ name: 'tour_guides' })
 export class TourGuide extends BaseEntity {
