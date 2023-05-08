@@ -70,7 +70,7 @@ export class TourService {
       tourGuide,
       images: imagesData,
       tourSchedule: tourSchedulesData,
-      status: TourStatus.ACTIVE,
+      status: TourStatus.WAITING,
       province,
       overview,
       tour,

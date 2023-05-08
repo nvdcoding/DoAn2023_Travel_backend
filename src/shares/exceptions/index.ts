@@ -1,93 +1,92 @@
 import { emailConfig } from 'src/configs/email.config';
 
 export const httpErrors = {
-  //AUTH
   UNAUTHORIZED: {
-    message: 'Unauthorized',
+    message: 'Tài khoản không hợp lệ',
     code: 'ERR_AUTH_001',
   },
   // User
   USER_EXIST: {
-    message: 'User exist',
+    message: 'Người dùng đã tồn tại',
     code: 'ERR_USER_001',
   },
   USER_NOT_FOUND: {
-    message: 'User not found',
+    message: 'Người dùng không tồn tại',
     code: 'ERR_USER_002',
   },
   USER_NOT_ACTIVE: {
-    message: 'User is not active',
+    message: 'Người dùng chưa được kích hoạt',
     code: 'ERR_USER_003',
   },
   USER_LOGIN_FAIL: {
-    message: 'Email or password not match',
+    message: 'Email hoặc mật khẩu không khớp',
     code: 'ERR_USER_004',
   },
   USER_INSUFFICIENT_BALANCE: {
-    message: 'Insufficient balance !',
+    message: 'Số dư không đủ!',
     code: 'ERR_USER_005',
   },
   // Admin
   ADMIN_EXIST: {
-    message: 'Admin existed',
+    message: 'Quản trị viên đã tồn tại',
     code: 'ERR_ADMIN_001',
   },
   ADMIN_NOT_FOUND: {
-    message: 'Admin not found',
+    message: 'Quản trị viên không tồn tại',
     code: 'ERR_ADMIN_002',
   },
   // Email
   WAIT_TO_RESEND: {
-    message: `Please wait for ${emailConfig.registerTTL} seconds to resend`,
+    message: `Vui lòng đợi ${emailConfig.registerTTL} giây để gửi lại`,
     code: `ERR_EMAIL_001`,
   },
   //REGISTER
   REGISTER_TOKEN_NOT_FOUND: {
-    message: `Register token not found`,
+    message: `Không tìm thấy mã token đăng ký`,
     code: `ERR_REGISTER_001`,
   },
   REGISTER_TOKEN_NOT_MATCH: {
-    message: `Register token not match`,
+    message: `Mã token đăng ký không khớp`,
     code: `ERR_REGISTER_002`,
   },
   //FORGOT PASSWORD
   FORGOT_PASSWORD_DIFFERENCE_PASSWORD: {
-    message: 'New password must difference password',
+    message: 'Mật khẩu mới phải khác mật khẩu cũ',
     code: 'ERR_FORGOT_PASSWORD_001',
   },
   FORGOT_PASSWORD_OTP_NOT_MATCH: {
-    message: 'Otp not match',
+    message: 'OTP không khớp',
     code: 'ERR_FORGOT_PASSWORD_002',
   },
   // PROVINCE
   PROVINCE_NOT_FOUND: {
-    message: 'Province not found',
+    message: 'Tỉnh/Thành phố không tồn tại',
     code: 'ERR_PROVINCE_001',
   },
   //TOUR
   TOUR_EXIST: {
-    message: 'Tour existed',
+    message: 'Tour đã tồn tại',
     code: 'ERR_TOUR_001',
   },
   TOUR_NOT_FOUND: {
-    message: 'Tour not found',
+    message: 'Tour không tồn tại',
     code: 'ERR_TOUR_002',
   },
   //TOUR GUIDE
   TOUR_GUIDE_NOT_FOUND: {
-    message: 'Tour guide not found',
+    message: 'Hướng dẫn viên không tồn tại',
     code: 'ERR_TOUR_GUIDE_001',
   },
   TOUR_GUIDE_NOT_ACTIVE: {
-    message: 'Tour guide not active',
+    message: 'Hướng dẫn viên chưa kích hoạt',
     code: 'ERR_TOUR_GUIDE_002',
   },
   TOUR_GUIDE_EXIST: {
-    message: 'Tour guide existed',
+    message: 'Hướng dẫn viên đã tồn tại',
     code: 'ERR_TOUR_GUIDE_003',
   },
   INTERVIEW_DATE_NOT_VALID: {
-    message: 'Interview date is not valid',
+    message: 'Ngày phỏng vấn không hợp lệ',
     code: 'ERR_TOUR_GUIDE_004',
   },
   INVALID_STATUS: {
