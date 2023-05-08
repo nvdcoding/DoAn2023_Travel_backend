@@ -101,4 +101,13 @@ export class TourGuideController {
   ): Promise<Response> {
     return this.tourGuideService.genUrlPay(body, userId);
   }
+
+  @Get('/transaction')
+  @UseGuards(TourGuideAuthGuard)
+  async getTransaction(
+    @Query() options: BasePaginationRequestDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.tourGuideService.getTourguideTransaction(options, tourGuideId);
+  }
 }

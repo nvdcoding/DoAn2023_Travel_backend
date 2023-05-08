@@ -222,4 +222,11 @@ export const httpResponse = {
     code: 'REQUEST_003',
     statusCode: 200,
   },
+
+  // GET TRansaction succes
+  GET_TRANSACTION_SUCCESS: {
+    message: 'Get transaction success',
+    code: 'TRANSACTION_001',
+    statusCode: 200,
+  },
 };

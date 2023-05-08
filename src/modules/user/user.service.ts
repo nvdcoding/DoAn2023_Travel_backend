@@ -196,6 +196,30 @@ export class UserService {
     return { ...httpResponse.GEN_LINK_SUCCESS, returnValue: vnpUrl };
   }
 
+  async getUserTransaction(
+    options: BasePaginationRequestDto,
+    userId: number,
+  ): Promise<Response> {
+    const { limit, page } = options;
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const transaction = await this.transactionRepository.findAndCount({
+      where: { user },
+    });
+    return {
+      ...httpResponse.GET_TRANSACTION_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        transaction,
+        page,
+        limit,
+      ),
+    };
+  }
+
   async IPNUrl(query) {
     const { vnp_Amount, vnp_ResponseCode, vnp_TransactionStatus, vnp_TxnRef } =
       query;

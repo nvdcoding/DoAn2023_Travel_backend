@@ -401,4 +401,31 @@ export class TourGuideService {
     });
     return { ...httpResponse.GEN_LINK_SUCCESS, returnValue: vnpUrl };
   }
+
+  async getTourguideTransaction(
+    options: BasePaginationRequestDto,
+    tourGuideId: number,
+  ): Promise<Response> {
+    const { limit, page } = options;
+    const tourguide = await this.tourGuideRepository.findOne({
+      where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
+    });
+    if (!tourguide) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const transaction = await this.transactionRepository.findAndCount({
+      where: { tourGuide: tourguide },
+    });
+    return {
+      ...httpResponse.GET_TRANSACTION_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        transaction,
+        page,
+        limit,
+      ),
+    };
+  }
 }

@@ -68,4 +68,13 @@ export class UserController {
   async webhookIPN(@Query() query) {
     return this.userService.IPNUrl(query);
   }
+
+  @Get('/transaction')
+  @UseGuards(UserAuthGuard)
+  async getTransaction(
+    @Query() options: BasePaginationRequestDto,
+    @ActorID() userId: number,
+  ): Promise<Response> {
+    return this.userService.getUserTransaction(options, userId);
+  }
 }
