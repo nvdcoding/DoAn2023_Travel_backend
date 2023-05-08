@@ -14,6 +14,7 @@ import {
   TransactionType,
 } from 'src/shares/enum/transaction.enum';
 import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
+import { TourGuide } from './tourguide.entity';
 
 @Entity({ name: 'transactions' })
 export class TransactionEntity extends BaseEntity {
@@ -65,6 +66,10 @@ export class TransactionEntity extends BaseEntity {
   @ManyToOne(() => User, (user) => user.transactions)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => TourGuide, (tourguide) => tourguide.transactions)
+  @JoinColumn({ name: 'tourguide_id' })
+  tourGuide: TourGuide;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

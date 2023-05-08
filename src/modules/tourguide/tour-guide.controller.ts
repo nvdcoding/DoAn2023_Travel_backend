@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Post,
   Put,
   Query,
   UseGuards,
@@ -20,6 +21,7 @@ import {
 } from './dtos/get-tour-guide.dto';
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
+import { TransferDto } from './dtos/transfer.dto';
 import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 import { TourGuideService } from './tour-guide.service';
 
@@ -89,5 +91,14 @@ export class TourGuideController {
   @Get('/guest/:id')
   async getOneTourGuide(@Param('id') id: number): Promise<Response> {
     return this.tourGuideService.getOneTourGuide(id);
+  }
+
+  @Post('/deposit')
+  @UseGuards(TourGuideAuthGuard)
+  async genUrlPay(
+    @Body() body: TransferDto,
+    @ActorID() userId: number,
+  ): Promise<Response> {
+    return this.tourGuideService.genUrlPay(body, userId);
   }
 }

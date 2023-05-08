@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Like, Repository } from 'typeorm';
@@ -23,12 +24,25 @@ import { OrderStatus } from 'src/shares/enum/order.enum';
 import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { PostStatus } from 'src/shares/enum/post.enum';
+import moment from 'moment';
+import { vnPayConfig } from 'src/configs/digital-wallet';
+import {
+  TransactionStatus,
+  TransactionType,
+} from 'src/shares/enum/transaction.enum';
+import { UserStatus } from 'src/shares/enum/user.enum';
+import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
+import { TransferDto } from './dtos/transfer.dto';
+import { promisify } from 'util';
+import { TransactionRepository } from 'src/models/repositories/transaction.repository';
+const getIP = promisify(require('external-ip')());
 
 @Injectable()
 export class TourGuideService {
   constructor(
     private readonly tourGuideRepository: TourGuideRepository,
     private readonly postRepository: PostRepository,
+    private readonly transactionRepository: TransactionRepository,
   ) {}
 
   // asycn getTourGuide() {
@@ -306,5 +320,85 @@ export class TourGuideService {
         options.limit || 10,
       ),
     };
+  }
+
+  sortObject(obj) {
+    const sorted = {};
+    const keys = [];
+
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        keys.push(key);
+      }
+    }
+
+    keys.sort();
+    const keysLength = keys.length;
+    for (let i = 0; i < keysLength; i++) {
+      sorted[keys[i]] = obj[keys[i]];
+    }
+
+    return sorted;
+  }
+
+  async genUrlPay(body: TransferDto, tourGuideId: number): Promise<Response> {
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: {
+        id: tourGuideId,
+        verifyStatus: UserStatus.ACTIVE,
+      },
+    });
+    if (!tourGuide) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    process.env.TZ = 'Asia/Ho_Chi_Minh';
+    const ipAddr = await getIP();
+    const tmnCode = `${vnPayConfig.TMN_CODE}`;
+    const secretKey = `${vnPayConfig.HASH_SECRET}`;
+    let vnpUrl = vnPayConfig.URL;
+    const returnUrl = vnPayConfig.RETURN_URL;
+    const date = new Date();
+    const createDate = moment(date).format('YYYYMMDDHHmmss');
+    const orderId = moment(date).format('DDHHmmss');
+    const amount = body.amount;
+    const bankCode = 'NCB';
+    const orderInfo = `${orderId}`;
+    const locale = 'vn';
+    const currCode = 'VND';
+    let vnp_Params = {};
+    vnp_Params['vnp_Version'] = '2.1.0';
+    vnp_Params['vnp_Command'] = 'pay';
+    vnp_Params['vnp_TmnCode'] = tmnCode;
+    // vnp_Params['vnp_Merchant'] = ''
+    vnp_Params['vnp_Locale'] = locale;
+    vnp_Params['vnp_CurrCode'] = currCode;
+    vnp_Params['vnp_TxnRef'] = orderId;
+    vnp_Params['vnp_OrderInfo'] = orderInfo;
+    vnp_Params['vnp_Amount'] = amount * 100;
+    vnp_Params['vnp_ReturnUrl'] = returnUrl;
+    vnp_Params['vnp_IpAddr'] = ipAddr;
+    vnp_Params['vnp_CreateDate'] = +createDate;
+    // if (bankCode !== null && bankCode !== '') {
+    // vnp_Params['vnp_BankCode'] = bankCode;
+    // vnp_Params['vnp_ExpireDate'] = expiredDate;
+    // }
+    vnp_Params = this.sortObject(vnp_Params);
+    const querystring = require('qs');
+    const signData = querystring.stringify(vnp_Params, { encode: true });
+    const crypto = require('crypto');
+    const hmac = crypto.createHmac('sha512', secretKey);
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    vnp_Params['vnp_SecureHash'] = signed;
+    vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: true });
+    await this.transactionRepository.insert({
+      status: TransactionStatus.PENDING,
+      amount,
+      transactionCode: orderId,
+      time: date,
+      tourGuide,
+      type: TransactionType.DEPOSIT,
+      wallet: WALLET_TYPE.VN_PAY,
+    });
+    return { ...httpResponse.GEN_LINK_SUCCESS, returnValue: vnpUrl };
   }
 }

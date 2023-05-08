@@ -25,6 +25,7 @@ import { Voucher } from './voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
 import { UserRequest } from './user-request.entity';
+import { TransactionEntity } from './transaction.entity';
 
 @Entity({ name: 'tour_guides' })
 export class TourGuide extends BaseEntity {
@@ -133,6 +134,9 @@ export class TourGuide extends BaseEntity {
 
   @OneToMany(() => UserFavorite, (userFavorite) => userFavorite.tourGuide)
   userFavorites: UserFavorite[];
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.tourGuide)
+  transactions: TransactionEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
