@@ -345,7 +345,7 @@ export class TourGuideService {
     const tourGuide = await this.tourGuideRepository.findOne({
       where: {
         id: tourGuideId,
-        verifyStatus: UserStatus.ACTIVE,
+        verifyStatus: TourguideStatus.ACTIVE,
       },
     });
     if (!tourGuide) {
