@@ -19,11 +19,16 @@ export class ChatService {
   }
 
   getUserChatted({ userId, role }) {
-    return this.chatRepository.find({
-      where: {
+    return this.chatRepository
+      .createQueryBuilder('chat')
+      .where({
         ...(role === ActorRole.USER ? { userId } : { tourGuideId: userId }),
-      },
-    });
+      })
+      .groupBy(`chat.userId`)
+      .addGroupBy(`chat.tourGuideId`);
+    // return this.chatRepository.find({
+    //   where: ,
+    // });
   }
 
   saveMessage(payload) {

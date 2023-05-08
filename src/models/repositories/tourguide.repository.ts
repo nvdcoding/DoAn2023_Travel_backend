@@ -1,7 +1,9 @@
+import * as moment from 'moment';
 import { GetTourGuideDto } from 'src/modules/tourguide/dtos/get-tour-guide.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { Direction, OrderStatus } from 'src/shares/enum/order.enum';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
+import { TransactionStatus } from 'src/shares/enum/transaction.enum';
 import { EntityRepository, Repository } from 'typeorm';
 import { TourGuide } from '../entities/tourguide.entity';
 
@@ -127,5 +129,24 @@ export class TourGuideRepository extends Repository<TourGuide> {
       .where('tours.tourGuideId = :tourGuideId', { tourGuideId })
       .getRawOne();
     return avgStar;
+  }
+
+  async getTotalIncome(monthAgo: boolean = false): Promise<number> {
+    const queryBuilder = this.createQueryBuilder('transaction');
+    queryBuilder.select('SUM(transaction.amount)', 'totalAmount');
+    queryBuilder.where('transaction.status = :status', {
+      status: TransactionStatus.SUCCESS,
+    });
+
+    if (monthAgo) {
+      const oneMonthAgo = moment().subtract(1, 'month').startOf('day').toDate();
+      queryBuilder.andWhere('transaction.time >= :monthAgo', {
+        monthAgo: oneMonthAgo,
+      });
+    }
+
+    const result = await queryBuilder.getRawOne();
+    const totalAmount = result ? result.totalAmount : 0;
+    return totalAmount;
   }
 }
