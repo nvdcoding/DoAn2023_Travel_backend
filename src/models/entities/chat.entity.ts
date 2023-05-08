@@ -20,13 +20,13 @@ export class Chat {
   @Column('int', { name: 'tour_guide_id' })
   tourGuideId: number;
 
-  // @ManyToOne(() => User)
-  // @JoinColumn({ referencedColumnName: 'id' })
-  // user: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ referencedColumnName: 'id' })
+  user: User;
 
-  // @ManyToOne(() => TourGuide)
-  // @JoinColumn({ referencedColumnName: 'id' })
-  // tourGuide: TourGuide;
+  @ManyToOne(() => TourGuide)
+  @JoinColumn({ referencedColumnName: 'id' })
+  tourGuide: TourGuide;
 
   @Column()
   sender: 'user' | 'tour_guide';
