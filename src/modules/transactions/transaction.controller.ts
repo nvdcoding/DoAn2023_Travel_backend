@@ -49,7 +49,7 @@ export class TransactionController {
     @ActorID() actorId: number,
     @Query() options: GetTransactionDto,
   ): Promise<Response> {
-    return this.transactionService.getListWithdrawRequest(
+    return this.transactionService.getMyListWithdraw(
       actorId,
       actorRole,
       options,
