@@ -229,4 +229,9 @@ export const httpResponse = {
     code: 'TRANSACTION_001',
     statusCode: 200,
   },
+  CREATE_TRANSACTION_SUCCESS: {
+    message: 'Create transaction success',
+    code: 'TRANSACTION_002',
+    statusCode: 200,
+  },
 };

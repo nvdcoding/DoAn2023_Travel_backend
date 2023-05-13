@@ -13,6 +13,14 @@ import {
 } from 'src/shares/enum/transaction.enum';
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
+import {
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shares/dtos/base-pagination.dto';
+import { httpResponse } from 'src/shares/response';
+import { Response } from 'src/shares/response/response.interface';
+import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
+import { Between } from 'typeorm';
 
 @Injectable()
 export class TransactionService {
@@ -22,7 +30,7 @@ export class TransactionService {
     private readonly tourGuideRepository: TourGuideRepository,
   ) {}
 
-  async userWithdraw(body: WithdrawDto, userId: number) {
+  async userWithdraw(body: WithdrawDto, userId: number): Promise<Response> {
     const { amount } = body;
     const user = await this.userRepository.findOne({
       where: { id: userId, verifyStatus: UserStatus.ACTIVE },
@@ -49,15 +57,22 @@ export class TransactionService {
         time: new Date(),
       }),
     ]);
+    return httpResponse.CREATE_TRANSACTION_SUCCESS;
   }
 
-  async tourGuideWithdraw(body: WithdrawDto, tourGuideId: number) {
+  async tourGuideWithdraw(
+    body: WithdrawDto,
+    tourGuideId: number,
+  ): Promise<Response> {
     const { amount } = body;
     const tourGuide = await this.tourGuideRepository.findOne({
       where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
     });
     if (!tourGuide) {
-      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (+tourGuide.availableBalance < +amount || +tourGuide.balance < +amount) {
       throw new HttpException(
@@ -78,5 +93,30 @@ export class TransactionService {
         time: new Date(),
       }),
     ]);
+    return httpResponse.CREATE_TRANSACTION_SUCCESS;
+  }
+
+  async getListWithdrawRequest(options: GetTransactionDto): Promise<Response> {
+    const { limit, page, startDate, endDate } = options;
+    const transactions = await this.transactionRepository.findAndCount({
+      where: {
+        time: Between(startDate, endDate),
+        status: TransactionStatus.WAITING,
+      },
+      relations: ['user', 'tourguide'],
+      order: {
+        id: 'DESC',
+      },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+    return {
+      ...httpResponse.GET_TRANSACTION_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        transactions,
+        page,
+        limit,
+      ),
+    };
   }
 }
