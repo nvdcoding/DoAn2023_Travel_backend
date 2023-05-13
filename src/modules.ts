@@ -18,6 +18,7 @@ import { ProvinceModule } from './modules/province/province.module';
 import { RequestModule } from './modules/request/request.module';
 import { TourModule } from './modules/tour/tour.module';
 import { TourGuideModule } from './modules/tourguide/tour-guide.module';
+import { TransactionModule } from './modules/transactions/transaction.modules';
 import { UserModule } from './modules/user/user.module';
 import { VoucherModule } from './modules/voucher/voucher.module';
 
@@ -49,5 +50,6 @@ const Modules = [
   ChatModule,
   RequestModule,
   CommentModule,
+  TransactionModule,
 ];
 export default Modules;
