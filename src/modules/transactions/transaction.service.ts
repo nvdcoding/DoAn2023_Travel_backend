@@ -21,6 +21,7 @@ import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
 import { Between } from 'typeorm';
+import { ActorRole } from 'src/shares/enum/auth.enum';
 
 @Injectable()
 export class TransactionService {
@@ -118,5 +119,74 @@ export class TransactionService {
         limit,
       ),
     };
+  }
+
+  async getMyListWithdraw(
+    actorId: number,
+    role: ActorRole,
+    options: GetTransactionDto,
+  ): Promise<Response> {
+    const { limit, page, startDate, endDate } = options;
+    switch (role) {
+      case ActorRole.TOURGUIDE:
+        const tourGuide = await this.tourGuideRepository.findOne({
+          id: actorId,
+          verifyStatus: TourguideStatus.ACTIVE,
+        });
+        const tourGuideTransactions =
+          await this.transactionRepository.findAndCount({
+            where: {
+              time: Between(startDate, endDate),
+              status: TransactionStatus.WAITING,
+              tourGuide,
+            },
+            relations: ['user', 'tourguide'],
+            order: {
+              id: 'DESC',
+            },
+            take: limit,
+            skip: (page - 1) * limit,
+          });
+        return {
+          ...httpResponse.GET_TRANSACTION_SUCCESS,
+          returnValue:
+            BasePaginationResponseDto.convertToPaginationWithTotalPages(
+              tourGuideTransactions,
+              page,
+              limit,
+            ),
+        };
+        break;
+      case ActorRole.USER:
+        const user = await this.tourGuideRepository.findOne({
+          id: actorId,
+          verifyStatus: TourguideStatus.ACTIVE,
+        });
+        const transactions = await this.transactionRepository.findAndCount({
+          where: {
+            time: Between(startDate, endDate),
+            status: TransactionStatus.WAITING,
+            user,
+          },
+          relations: ['user', 'tourguide'],
+          order: {
+            id: 'DESC',
+          },
+          take: limit,
+          skip: (page - 1) * limit,
+        });
+        return {
+          ...httpResponse.GET_TRANSACTION_SUCCESS,
+          returnValue:
+            BasePaginationResponseDto.convertToPaginationWithTotalPages(
+              transactions,
+              page,
+              limit,
+            ),
+        };
+        break;
+      default:
+        break;
+    }
   }
 }
