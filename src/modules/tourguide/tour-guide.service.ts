@@ -178,6 +178,7 @@ export class TourGuideService {
       },
       relations: [
         'tours',
+        'tours.images',
         'tours.rates',
         'provinces',
         'userFavorites',
