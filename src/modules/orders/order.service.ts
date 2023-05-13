@@ -231,7 +231,14 @@ export class OrderService {
         id: orderId,
         user,
       },
-      relations: ['tourGuide', 'userVoucher', 'tour', 'user', 'orderSchedule'],
+      relations: [
+        'tourGuide',
+        'userVoucher',
+        'tour',
+        'tour.images',
+        'user',
+        'orderSchedule',
+      ],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -257,7 +264,14 @@ export class OrderService {
         id: orderId,
         tourGuide,
       },
-      relations: ['tourGuide', 'userVoucher', 'tour', 'user', 'orderSchedule'],
+      relations: [
+        'tourGuide',
+        'userVoucher',
+        'tour',
+        'tour.images',
+        'user',
+        'orderSchedule',
+      ],
     });
     if (!orders) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
