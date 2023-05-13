@@ -28,7 +28,7 @@ export class TransactionEntity extends BaseEntity {
     type: 'enum',
     enum: WALLET_TYPE,
     name: 'wallet',
-    nullable: false,
+    nullable: true,
     default: WALLET_TYPE.VN_PAY,
   })
   wallet: WALLET_TYPE;
@@ -60,6 +60,7 @@ export class TransactionEntity extends BaseEntity {
   @Column({
     type: 'datetime',
     name: 'time',
+    nullable: true,
   })
   time: Date;
 

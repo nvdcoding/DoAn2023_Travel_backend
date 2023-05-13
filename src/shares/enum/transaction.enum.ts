@@ -1,7 +1,8 @@
 export enum TransactionStatus {
   SUCCESS = '1',
   FAILED = '0',
-  PENDING = '2',
+  VNPAY_PENDING = '2',
+  WAITING = '3',
 }
 
 export enum TransactionType {

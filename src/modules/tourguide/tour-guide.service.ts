@@ -393,7 +393,7 @@ export class TourGuideService {
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: true });
     await this.transactionRepository.insert({
-      status: TransactionStatus.PENDING,
+      status: TransactionStatus.VNPAY_PENDING,
       amount,
       transactionCode: orderId,
       time: date,
