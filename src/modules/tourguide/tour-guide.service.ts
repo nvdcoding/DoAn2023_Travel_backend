@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Like, Repository } from 'typeorm';
+import { Between, In, Like, Repository } from 'typeorm';
 import {
   ActionResponseRegisterTourguide,
   TourguideStatus,
@@ -35,6 +35,7 @@ import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
 import { TransferDto } from './dtos/transfer.dto';
 import { promisify } from 'util';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
+import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
 const getIP = promisify(require('external-ip')());
 
 @Injectable()
@@ -403,10 +404,10 @@ export class TourGuideService {
   }
 
   async getTourguideTransaction(
-    options: BasePaginationRequestDto,
+    options: GetTransactionDto,
     tourGuideId: number,
   ): Promise<Response> {
-    const { limit, page } = options;
+    const { limit, page, startDate, endDate } = options;
     const tourguide = await this.tourGuideRepository.findOne({
       where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
     });
@@ -417,7 +418,7 @@ export class TourGuideService {
       );
     }
     const transaction = await this.transactionRepository.findAndCount({
-      where: { tourGuide: tourguide },
+      where: { tourGuide: tourguide, time: Between(startDate, endDate) },
     });
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,

@@ -12,6 +12,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
+import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
@@ -105,7 +106,7 @@ export class TourGuideController {
   @Get('/transaction')
   @UseGuards(TourGuideAuthGuard)
   async getTransaction(
-    @Query() options: BasePaginationRequestDto,
+    @Query() options: GetTransactionDto,
     @ActorID() tourGuideId: number,
   ): Promise<Response> {
     return this.tourGuideService.getTourguideTransaction(options, tourGuideId);

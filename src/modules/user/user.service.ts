@@ -10,6 +10,7 @@ import {
   BasePaginationRequestDto,
   BasePaginationResponseDto,
 } from 'src/shares/dtos/base-pagination.dto';
+import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
 import { PostStatus } from 'src/shares/enum/post.enum';
 import {
   TransactionStatus,
@@ -20,7 +21,7 @@ import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { In, Like, Not } from 'typeorm';
+import { Between, In, Like, Not } from 'typeorm';
 import { promisify } from 'util';
 import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
 import { AdminGetUsersDto } from './dtos/get-list-user.dto';
@@ -197,10 +198,10 @@ export class UserService {
   }
 
   async getUserTransaction(
-    options: BasePaginationRequestDto,
+    options: GetTransactionDto,
     userId: number,
   ): Promise<Response> {
-    const { limit, page } = options;
+    const { limit, page, startDate, endDate } = options;
     const user = await this.userRepository.findOne({
       where: { id: userId, verifyStatus: UserStatus.ACTIVE },
     });
@@ -208,7 +209,7 @@ export class UserService {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const transaction = await this.transactionRepository.findAndCount({
-      where: { user },
+      where: { user, time: Between(startDate, endDate) },
     });
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,

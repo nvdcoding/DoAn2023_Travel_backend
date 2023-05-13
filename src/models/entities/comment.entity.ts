@@ -29,6 +29,8 @@ export class Comment {
   @Column({
     name: 'parrent_comment',
     type: 'int',
+    nullable: true,
+    default: null,
   })
   parrentComment: number;
 
