@@ -6,11 +6,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { MailModule } from '../mail/mail.module';
 import { TourGuideModule } from '../tourguide/tour-guide.module';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
     UserModule,
     TourGuideModule,
+    AdminModule,
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],
       useFactory: (configService: ConfigService) =>
