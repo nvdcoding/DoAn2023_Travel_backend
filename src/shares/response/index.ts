@@ -245,4 +245,14 @@ export const httpResponse = {
     code: 'REPORT_002',
     statusCode: 200,
   },
+  DELETE_REPORT_SUCCESS: {
+    message: 'Deleted report success',
+    code: 'REPORT_003',
+    statusCode: 200,
+  },
+  HANLED_REPORT: {
+    message: 'Handled Report',
+    code: 'REPORT_004',
+    statusCode: 200,
+  },
 };

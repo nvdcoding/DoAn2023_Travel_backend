@@ -173,4 +173,9 @@ export const httpErrors = {
     message: 'Request not found',
     code: 'ERR_REQUEST_001',
   },
+  //REPORT
+  REPORT_NOT_FOUND: {
+    message: 'Report not found',
+    code: 'ERR_REPORT_001',
+  },
 };

@@ -1,10 +1,19 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { GetReportDto } from './dtos/get-report.dto';
+import { HandleReportPostDto } from './dtos/handle-report-post.dto';
 import { ReportPostDto } from './dtos/report-post.dto';
 import { ReportService } from './report.service';
 
@@ -27,5 +36,11 @@ export class ReportController {
   @UseGuards(AdminModAuthGuard)
   async getReportPost(@Query() options: GetReportDto): Promise<Response> {
     return this.reportService.getReportPost(options);
+  }
+
+  @Put('/admin/post')
+  @UseGuards(AdminModAuthGuard)
+  async handleReportPost(@Body() body: HandleReportPostDto): Promise<Response> {
+    return this.reportService.handleReportPost(body);
   }
 }
