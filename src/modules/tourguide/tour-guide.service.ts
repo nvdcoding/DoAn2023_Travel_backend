@@ -184,6 +184,7 @@ export class TourGuideService {
         'userFavorites',
         'reports',
         'orders',
+        'ports',
       ],
     });
     if (!tourGuide) {

@@ -146,7 +146,7 @@ export class TransactionService {
               status: TransactionStatus.WAITING,
               tourGuide,
             },
-            relations: ['user', 'tourguide'],
+            relations: ['user', 'tourGuide'],
             order: {
               id: 'DESC',
             },
