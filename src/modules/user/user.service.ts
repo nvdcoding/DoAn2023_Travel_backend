@@ -209,7 +209,13 @@ export class UserService {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const transaction = await this.transactionRepository.findAndCount({
-      where: { user, time: Between(new Date(startDate), new Date(endDate)) },
+      where: {
+        user,
+        time: Between(
+          new Date(startDate),
+          new Date(moment(endDate).add(1, 'day').toString()),
+        ),
+      },
     });
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,

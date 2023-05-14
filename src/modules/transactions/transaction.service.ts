@@ -26,6 +26,7 @@ import { ActorRole } from 'src/shares/enum/auth.enum';
 import { AdminStatus } from 'src/shares/enum/admin.enum';
 import { AdminAproveWithdrawRequest } from './dtos/admin-prove.dto';
 import { SystemRepository } from 'src/models/repositories/system.repository';
+import moment from 'moment';
 
 @Injectable()
 export class TransactionService {
@@ -109,7 +110,10 @@ export class TransactionService {
     const { limit, page, startDate, endDate } = options;
     const transactions = await this.transactionRepository.findAndCount({
       where: {
-        time: Between(new Date(startDate), new Date(endDate)),
+        time: Between(
+          new Date(startDate),
+          new Date(moment(endDate).add(1, 'day').toString()),
+        ),
         status: TransactionStatus.WAITING,
       },
       relations: ['user', 'tourguide'],
@@ -144,7 +148,10 @@ export class TransactionService {
         const tourGuideTransactions =
           await this.transactionRepository.findAndCount({
             where: {
-              time: Between(new Date(startDate), new Date(endDate)),
+              time: Between(
+                new Date(startDate),
+                new Date(moment(endDate).add(1, 'day').toString()),
+              ),
               status: TransactionStatus.WAITING,
               tourGuide,
             },
@@ -166,13 +173,16 @@ export class TransactionService {
         };
         break;
       case ActorRole.USER:
-        const user = await this.tourGuideRepository.findOne({
+        const user = await this.userRepository.findOne({
           id: actorId,
-          verifyStatus: TourguideStatus.ACTIVE,
+          verifyStatus: UserStatus.ACTIVE,
         });
         const transactions = await this.transactionRepository.findAndCount({
           where: {
-            time: Between(new Date(startDate), new Date(endDate)),
+            time: Between(
+              new Date(startDate),
+              new Date(moment(endDate).add(1, 'day').toString()),
+            ),
             status: TransactionStatus.WAITING,
             user,
           },
