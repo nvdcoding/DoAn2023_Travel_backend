@@ -15,6 +15,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { OrderModule } from './modules/orders/order.module';
 import { PostModule } from './modules/post/post.module';
 import { ProvinceModule } from './modules/province/province.module';
+import { ReportModule } from './modules/report/report.module';
 import { RequestModule } from './modules/request/request.module';
 import { TourModule } from './modules/tour/tour.module';
 import { TourGuideModule } from './modules/tourguide/tour-guide.module';
@@ -51,5 +52,6 @@ const Modules = [
   RequestModule,
   CommentModule,
   TransactionModule,
+  ReportModule,
 ];
 export default Modules;

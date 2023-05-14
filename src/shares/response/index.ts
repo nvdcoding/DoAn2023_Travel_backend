@@ -234,4 +234,15 @@ export const httpResponse = {
     code: 'TRANSACTION_002',
     statusCode: 200,
   },
+  // REPORT
+  CREATE_REPORT_SUCCESS: {
+    message: 'Report created',
+    code: 'REPORT_001',
+    statusCode: 200,
+  },
+  GET_REPORT_SUCCESS: {
+    message: 'Get report success',
+    code: 'REPORT_002',
+    statusCode: 200,
+  },
 };
