@@ -62,6 +62,7 @@ export class TransactionService {
         amount,
         type: TransactionType.WITHDRAW,
         time: new Date(),
+        wallet: null,
       }),
     ]);
     return httpResponse.CREATE_TRANSACTION_SUCCESS;
@@ -98,6 +99,7 @@ export class TransactionService {
         amount,
         type: TransactionType.WITHDRAW,
         time: new Date(),
+        wallet: null,
       }),
     ]);
     return httpResponse.CREATE_TRANSACTION_SUCCESS;
