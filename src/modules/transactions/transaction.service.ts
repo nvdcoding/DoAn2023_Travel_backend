@@ -236,12 +236,12 @@ export class TransactionService {
               { id: withdraw.tourGuide.id },
               { balance: withdraw.tourGuide.balance - withdraw.amount },
             ),
-            this.systemRepository.update(
-              { id: system.id },
-              {
-                balance: system.balance - withdraw.amount,
-              },
-            ),
+            // this.systemRepository.update(
+            //   { id: system.id },
+            //   {
+            //     balance: system.balance - withdraw.amount,
+            //   },
+            // ),
             this.transactionRepository.update(
               { id: withdrawId },
               {
@@ -256,12 +256,12 @@ export class TransactionService {
               { id: withdraw.user.id },
               { balance: withdraw.user.balance - withdraw.amount },
             ),
-            this.systemRepository.update(
-              { id: system.id },
-              {
-                balance: system.balance - withdraw.amount,
-              },
-            ),
+            // this.systemRepository.update(
+            //   { id: system.id },
+            //   {
+            //     balance: system.balance - withdraw.amount,
+            //   },
+            // ),
             this.transactionRepository.update(
               { id: withdrawId },
               {
