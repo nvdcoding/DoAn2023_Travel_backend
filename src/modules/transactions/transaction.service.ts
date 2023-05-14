@@ -26,7 +26,7 @@ import { ActorRole } from 'src/shares/enum/auth.enum';
 import { AdminStatus } from 'src/shares/enum/admin.enum';
 import { AdminAproveWithdrawRequest } from './dtos/admin-prove.dto';
 import { SystemRepository } from 'src/models/repositories/system.repository';
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Injectable()
 export class TransactionService {
