@@ -144,7 +144,7 @@ export class TransactionService {
         const tourGuideTransactions =
           await this.transactionRepository.findAndCount({
             where: {
-              time: Between(startDate, endDate),
+              time: Between(new Date(startDate), new Date(endDate)),
               status: TransactionStatus.WAITING,
               tourGuide,
             },
