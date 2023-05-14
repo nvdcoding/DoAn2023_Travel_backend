@@ -8,8 +8,10 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Permission } from './permission.entity';
+import { TransactionEntity } from './transaction.entity';
 
 @Entity({ name: 'admins' })
 export class Admin {
@@ -52,6 +54,9 @@ export class Admin {
     default: AdminStatus.INACTIVE,
   })
   status: AdminStatus;
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.admin)
+  transactions: TransactionEntity[];
 
   @ManyToOne(() => Permission, (permission) => permission.admins)
   @JoinColumn({ name: 'permission_id' })

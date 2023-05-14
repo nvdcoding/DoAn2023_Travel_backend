@@ -12,3 +12,8 @@ export enum TransactionType {
   TOURGUIDE_ORDER = 'TOURGUIDE_ORDER',
   SYSTEM_USER_PAYORDER = 'SYSTEM_PAY_ORDER',
 }
+
+export enum AproveActionWithdraw {
+  ACCEPT = 'ACCEPT',
+  REJECT = 'REJECT',
+}

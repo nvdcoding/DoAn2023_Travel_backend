@@ -8,6 +8,7 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import {
+  AproveActionWithdraw,
   TransactionStatus,
   TransactionType,
 } from 'src/shares/enum/transaction.enum';
@@ -22,6 +23,9 @@ import { Response } from 'src/shares/response/response.interface';
 import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
 import { Between } from 'typeorm';
 import { ActorRole } from 'src/shares/enum/auth.enum';
+import { AdminStatus } from 'src/shares/enum/admin.enum';
+import { AdminAproveWithdrawRequest } from './dtos/admin-prove.dto';
+import { SystemRepository } from 'src/models/repositories/system.repository';
 
 @Injectable()
 export class TransactionService {
@@ -29,6 +33,8 @@ export class TransactionService {
     private readonly userRepository: UserRepository,
     private readonly transactionRepository: TransactionRepository,
     private readonly tourGuideRepository: TourGuideRepository,
+    private readonly adminRepository: AdminRepository,
+    private readonly systemRepository: SystemRepository,
   ) {}
 
   async userWithdraw(body: WithdrawDto, userId: number): Promise<Response> {
@@ -188,5 +194,125 @@ export class TransactionService {
       default:
         break;
     }
+  }
+
+  async approveRequestWithdraw(
+    body: AdminAproveWithdrawRequest,
+    actorId: number,
+  ): Promise<Response> {
+    const { withdrawId, action } = body;
+    const [actor, withdraw, system] = await Promise.all([
+      this.adminRepository.findOne({
+        where: {
+          id: actorId,
+          status: AdminStatus.ACTIVE,
+        },
+      }),
+      this.transactionRepository.findOne({
+        where: {
+          id: withdrawId,
+          status: TransactionStatus.WAITING,
+          type: TransactionType.WITHDRAW,
+        },
+        relations: ['tourGuide', 'user'],
+      }),
+      this.systemRepository.findOne(),
+    ]);
+    if (!actor) {
+      throw new HttpException(httpErrors.ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    if (!withdraw) {
+      throw new HttpException(
+        httpErrors.REQUEST_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    switch (action) {
+      case AproveActionWithdraw.ACCEPT:
+        if (withdraw.tourGuide !== null) {
+          await Promise.all([
+            this.tourGuideRepository.update(
+              { id: withdraw.tourGuide.id },
+              { balance: withdraw.tourGuide.balance - withdraw.amount },
+            ),
+            this.systemRepository.update(
+              { id: system.id },
+              {
+                balance: system.balance - withdraw.amount,
+              },
+            ),
+            this.transactionRepository.update(
+              { id: withdrawId },
+              {
+                status: TransactionStatus.SUCCESS,
+                admin: actor,
+              },
+            ),
+          ]);
+        } else {
+          await Promise.all([
+            this.userRepository.update(
+              { id: withdraw.user.id },
+              { balance: withdraw.user.balance - withdraw.amount },
+            ),
+            this.systemRepository.update(
+              { id: system.id },
+              {
+                balance: system.balance - withdraw.amount,
+              },
+            ),
+            this.transactionRepository.update(
+              { id: withdrawId },
+              {
+                status: TransactionStatus.SUCCESS,
+                admin: actor,
+              },
+            ),
+          ]);
+        }
+        break;
+      case AproveActionWithdraw.REJECT: {
+        if (withdraw.tourGuide !== null) {
+          await Promise.all([
+            this.tourGuideRepository.update(
+              { id: withdraw.tourGuide.id },
+              {
+                availableBalance:
+                  withdraw.tourGuide.availableBalance - withdraw.amount,
+              },
+            ),
+            this.transactionRepository.update(
+              { id: withdrawId },
+              {
+                status: TransactionStatus.FAILED,
+                admin: actor,
+              },
+            ),
+          ]);
+        } else {
+          await Promise.all([
+            this.userRepository.update(
+              { id: withdraw.user.id },
+              {
+                availableBalance:
+                  withdraw.user.availableBalance - withdraw.amount,
+              },
+            ),
+            this.transactionRepository.update(
+              { id: withdrawId },
+              {
+                status: TransactionStatus.FAILED,
+                admin: actor,
+              },
+            ),
+          ]);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+    return httpResponse.ACTIVE_ADMIN_SUCCESS;
   }
 }

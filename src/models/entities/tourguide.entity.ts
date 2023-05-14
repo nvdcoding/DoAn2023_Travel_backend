@@ -1,6 +1,5 @@
 import { UserFavorite } from './user_favorite.entity';
 import { Gender, TourguideStatus } from 'src/shares/enum/tourguide.enum';
-import { UserStatus } from 'src/shares/enum/user.enum';
 import {
   BaseEntity,
   Column,
@@ -8,11 +7,9 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -21,10 +18,8 @@ import { Post } from './post.entity';
 import { Province } from './province.entity';
 import { Report } from './report.entity';
 import { Tour } from './tour.entity';
-import { Voucher } from './voucher.entity';
 import { Wallet } from './wallet.entity';
 import { Order } from './orders.entity';
-import { UserRequest } from './user-request.entity';
 import { TransactionEntity } from './transaction.entity';
 import { Chat } from './chat.entity';
 

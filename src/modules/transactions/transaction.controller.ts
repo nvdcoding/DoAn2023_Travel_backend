@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ActorRoleDecorator } from 'src/shares/decorators/get-role.decorator';
 import { ActorID } from 'src/shares/decorators/get-user-id.decorator';
@@ -9,6 +17,7 @@ import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { IsLoginGuard } from '../auth/guards/is-login.guard';
 import { TourGuideAuthGuard } from '../auth/guards/tour-guide-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
+import { AdminAproveWithdrawRequest } from './dtos/admin-prove.dto';
 import { WithdrawDto } from './dtos/withdraw.dto';
 import { TransactionService } from './transaction.service';
 
@@ -40,6 +49,15 @@ export class TransactionController {
   @UseGuards(AdminModAuthGuard)
   async getRequestList(@Query() options: GetTransactionDto): Promise<Response> {
     return this.transactionService.getListWithdrawRequest(options);
+  }
+
+  @Put('/request-withdraw')
+  @UseGuards(AdminModAuthGuard)
+  async approveRequest(
+    @Body() body: AdminAproveWithdrawRequest,
+    @ActorID() actorId: number,
+  ): Promise<Response> {
+    return this.transactionService.approveRequestWithdraw(body, actorId);
   }
 
   @Get('/my-request-witrhdraw')
