@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In, Like, Repository } from 'typeorm';
+import { Between, In } from 'typeorm';
 import {
   ActionResponseRegisterTourguide,
   TourguideStatus,
@@ -24,13 +23,12 @@ import { OrderStatus } from 'src/shares/enum/order.enum';
 import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { PostStatus } from 'src/shares/enum/post.enum';
-import moment from 'moment';
+import * as moment from 'moment';
 import { vnPayConfig } from 'src/configs/digital-wallet';
 import {
   TransactionStatus,
   TransactionType,
 } from 'src/shares/enum/transaction.enum';
-import { UserStatus } from 'src/shares/enum/user.enum';
 import { WALLET_TYPE } from 'src/shares/enum/wallet.enum';
 import { TransferDto } from './dtos/transfer.dto';
 import { promisify } from 'util';
