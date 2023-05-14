@@ -109,7 +109,7 @@ export class TransactionService {
     const { limit, page, startDate, endDate } = options;
     const transactions = await this.transactionRepository.findAndCount({
       where: {
-        time: Between(startDate, endDate),
+        time: Between(new Date(startDate), new Date(endDate)),
         status: TransactionStatus.WAITING,
       },
       relations: ['user', 'tourguide'],
@@ -172,7 +172,7 @@ export class TransactionService {
         });
         const transactions = await this.transactionRepository.findAndCount({
           where: {
-            time: Between(startDate, endDate),
+            time: Between(new Date(startDate), new Date(endDate)),
             status: TransactionStatus.WAITING,
             user,
           },

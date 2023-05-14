@@ -420,7 +420,10 @@ export class TourGuideService {
       );
     }
     const transaction = await this.transactionRepository.findAndCount({
-      where: { tourGuide: tourguide, time: Between(startDate, endDate) },
+      where: {
+        tourGuide: tourguide,
+        time: Between(new Date(startDate), new Date(endDate)),
+      },
     });
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,
