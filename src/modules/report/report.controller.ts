@@ -35,14 +35,14 @@ export class ReportController {
     return this.reportService.reportPost(body, userId);
   }
 
-  // @Post('/tourguide')
-  // @UseGuards(UserAuthGuard)
-  // async createTourguideReport(
-  //   @Body() body: ReportOrderDto,
-  //   @ActorID() userId: number,
-  // ): Promise<Response> {
-  //   return this.reportService.reportTourguide(body, userId);
-  // }
+  @Post('/tourguide')
+  @UseGuards(UserAuthGuard)
+  async createTourguideReport(
+    @Body() body: ReportOrderDto,
+    @ActorID() userId: number,
+  ): Promise<Response> {
+    return this.reportService.reportOrder(body, userId);
+  }
 
   @Get('/admin/post')
   @UseGuards(AdminModAuthGuard)
