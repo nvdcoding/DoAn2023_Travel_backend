@@ -6,4 +6,5 @@ export class CreateMeetingDto {
   name: string;
   content: string;
   date: string;
+  tourName: string;
 }

@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { OrderRepository } from 'src/models/repositories/order.repository';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { ReportRepository } from 'src/models/repositories/report.repository';
+import { SystemRepository } from 'src/models/repositories/system.repository';
+import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { OrderStatus } from 'src/shares/enum/order.enum';
@@ -11,6 +13,7 @@ import {
   HandleReportPostAction,
   ReportStatus,
 } from 'src/shares/enum/report.enum';
+import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
@@ -30,6 +33,8 @@ export class ReportService {
     private readonly userRepository: UserRepository,
     private readonly orderRepository: OrderRepository,
     private readonly mailService: MailService,
+    private readonly tourGuideRepository: TourGuideRepository,
+    private readonly systemRepository: SystemRepository,
   ) {}
 
   async reportPost(body: ReportPostDto, userId: number): Promise<Response> {
@@ -191,7 +196,13 @@ export class ReportService {
         tourGuide: IsNull(),
         status: ReportStatus.PENDING,
       },
-      relations: ['post', 'reportedBy', 'tourGuide'],
+      relations: [
+        'post',
+        'reportedBy',
+        'order',
+        'order.tourGuide',
+        'order.tour',
+      ],
     });
     if (!report) {
       throw new HttpException(
@@ -203,13 +214,14 @@ export class ReportService {
       { id: reportId },
       { status: ReportStatus.PROCESSING, meetingDate },
     );
-    // this.mailService.sendCreatMeetingMail({
-    //   email: report.tourGuide.email,
-    //   username: report.reportedBy.username,
-    //   name: report.tourGuide.name,
-    //   date: meetingDate.toDateString(),
-    //   content: report.content,
-    // });
+    this.mailService.sendCreatMeetingMail({
+      email: report.order.tourGuide.email,
+      username: report.reportedBy.username,
+      name: report.order.tourGuide.name,
+      date: meetingDate.toDateString(),
+      content: report.content,
+      tourName: report.order.tour.name,
+    });
     return httpResponse.CREATING_MEETING_REPORT;
   }
 
@@ -226,9 +238,35 @@ export class ReportService {
         HttpStatus.NOT_FOUND,
       );
     }
-    this.deleteReport(reportId);
+    await this.deleteReport(reportId);
     return httpResponse.HANLED_REPORT;
   }
 
-  // async handleReportTourguide(reportId): Promise<Response> {}
+  async handleBanReportTourguide(reportId: number): Promise<Response> {
+    const [report, system] = await Promise.all([
+      this.reportRepository.findOne({
+        where: {
+          id: reportId,
+          status: ReportStatus.PROCESSING,
+        },
+        relations: ['order', 'order.user', 'order.tourGuide'],
+      }),
+      this.systemRepository.findOne(),
+    ]);
+    if (!report) {
+      throw new HttpException(
+        httpErrors.REPORT_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    // hoafn tienfg
+    await Promise.all([
+      this.tourGuideRepository.update(
+        { id: report.order.tourGuide.id },
+        { verifyStatus: TourguideStatus.REJECT },
+      ),
+      this.userRepository.update({ id: report.order.user.id }, {}),
+    ]);
+    return httpResponse.HANLED_REPORT;
+  }
 }

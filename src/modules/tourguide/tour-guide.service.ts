@@ -180,9 +180,8 @@ export class TourGuideService {
         'tours.rates',
         'provinces',
         'userFavorites',
-        'reports',
         'orders',
-        'ports',
+        'posts',
       ],
     });
     if (!tourGuide) {

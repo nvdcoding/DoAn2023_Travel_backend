@@ -169,6 +169,7 @@ export class MailProcessor {
       date: data.date,
       username: data.username,
       content: data.content,
+      tourName: data.tourName,
     };
     try {
       await this.mailerService.sendMail({

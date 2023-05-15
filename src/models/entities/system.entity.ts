@@ -30,6 +30,14 @@ export class SystemEntity {
 
   @Column({
     type: 'int',
+    default: 100,
+    name: 'return_user_percent',
+    unsigned: true,
+  })
+  returnUserPercent: number;
+
+  @Column({
+    type: 'int',
     default: 10,
     name: 'tourguide_prepaid_order',
     unsigned: true,

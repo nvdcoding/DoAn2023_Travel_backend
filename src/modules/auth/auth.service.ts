@@ -27,7 +27,7 @@ import {
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SendOtpForgotPasswordDto } from './dto/send-otp-forgot-password.dto';
 import { AdminRepository } from 'src/models/repositories/admin.repository';
-import { AdminStatus } from 'src/shares/enum/admin.enum';
+import { AdminRole, AdminStatus } from 'src/shares/enum/admin.enum';
 import { RegisterTourguideDto } from './dto/register-tourguide.dto';
 import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { ProvinceRepository } from 'src/models/repositories/province.repository';
@@ -349,7 +349,8 @@ export class AuthService {
       id: adminExisted.id,
       email,
       status: adminExisted.status,
-      role: ActorRole.ADMIN,
+      role:
+        adminExisted.role === AdminRole.ADMIN ? ActorRole.ADMIN : ActorRole.MOD,
       username: adminExisted.username,
     } as IJwtAdminPayload;
 

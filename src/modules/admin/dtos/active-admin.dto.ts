@@ -6,7 +6,6 @@ import {
   Matches,
   IsEnum,
 } from 'class-validator';
-import { AdminRole } from 'src/shares/enum/admin.enum';
 
 export class ActiveAdminDto {
   @ApiProperty()
