@@ -33,7 +33,7 @@ export class ChatService {
         } = :userId`,
         { userId },
       )
-      .orderBy('id', 'DESC')
+      .orderBy('chat.id', 'DESC')
       .groupBy('chat.userId')
       .addGroupBy('chat.tourGuideId')
       .getMany();
