@@ -27,6 +27,7 @@ export class ChatService {
       )
       .groupBy('userId')
       .addGroupBy('tourGuideId')
+      .orderBy('id', 'DESC')
       .getMany();
   }
 

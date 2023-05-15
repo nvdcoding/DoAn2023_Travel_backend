@@ -57,6 +57,7 @@ export class ChatGateWay {
         : `${ActorRole.USER}_${chatId}_${ActorRole.TOURGUIDE}_${userId}`;
 
     client.to(roomId).emit('receive-messages', [{ ...payload }]);
+    // client.to(`${role}_${userId}`).emit('receive-users', []);
   }
 
   @SubscribeMessage('get-messages')
