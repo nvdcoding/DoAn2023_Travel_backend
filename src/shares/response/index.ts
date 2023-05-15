@@ -255,4 +255,9 @@ export const httpResponse = {
     code: 'REPORT_004',
     statusCode: 200,
   },
+  CREATING_MEETING_REPORT: {
+    message: 'Created meeting',
+    code: 'REPORT_005',
+    statusCode: 200,
+  },
 };

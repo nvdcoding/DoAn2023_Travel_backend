@@ -113,9 +113,6 @@ export class TourGuide extends BaseEntity {
   @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallets: Wallet[];
 
-  @OneToMany(() => Report, (Report) => Report.tourGuide)
-  reports: Report[];
-
   @OneToMany(() => Order, (order) => order.tourGuide)
   orders: Order[];
 

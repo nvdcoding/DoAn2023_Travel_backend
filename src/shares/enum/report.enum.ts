@@ -1,6 +1,6 @@
 export enum ReportStatus {
   PENDING = '0',
-  PROSESSING = '2',
+  PROCESSING = '2',
   PROCESSED = '1',
 }
 

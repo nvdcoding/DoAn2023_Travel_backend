@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -14,7 +15,9 @@ import { AdminModAuthGuard } from '../auth/guards/admin-mod-auth.guard';
 import { UserAuthGuard } from '../auth/guards/user-auth.guard';
 import { GetReportDto } from './dtos/get-report.dto';
 import { HandleReportPostDto } from './dtos/handle-report-post.dto';
+import { CreateMeetingReportDto } from './dtos/meeting-report.dto';
 import { ReportPostDto } from './dtos/report-post.dto';
+import { ReportOrderDto } from './dtos/report-tourguide.dto';
 import { ReportService } from './report.service';
 
 @Controller('reports')
@@ -32,6 +35,15 @@ export class ReportController {
     return this.reportService.reportPost(body, userId);
   }
 
+  // @Post('/tourguide')
+  // @UseGuards(UserAuthGuard)
+  // async createTourguideReport(
+  //   @Body() body: ReportOrderDto,
+  //   @ActorID() userId: number,
+  // ): Promise<Response> {
+  //   return this.reportService.reportTourguide(body, userId);
+  // }
+
   @Get('/admin/post')
   @UseGuards(AdminModAuthGuard)
   async getReportPost(@Query() options: GetReportDto): Promise<Response> {
@@ -42,5 +54,17 @@ export class ReportController {
   @UseGuards(AdminModAuthGuard)
   async handleReportPost(@Body() body: HandleReportPostDto): Promise<Response> {
     return this.reportService.handleReportPost(body);
+  }
+
+  @Put('/admin/tourguide-meeting')
+  @UseGuards(AdminModAuthGuard)
+  async createMeeting(@Body() body: CreateMeetingReportDto): Promise<Response> {
+    return this.reportService.setupMeeting(body);
+  }
+
+  @Put('/admin/resolve-skip-report/:id')
+  @UseGuards(AdminModAuthGuard)
+  async acce(@Param('id') id: number): Promise<Response> {
+    return this.reportService.skipReport(id);
   }
 }

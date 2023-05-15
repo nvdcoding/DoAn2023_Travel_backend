@@ -13,6 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { OrderSchedule } from './order_schedule.entity';
+import { Report } from './report.entity';
 import { Tour } from './tour.entity';
 import { TourGuide } from './tourguide.entity';
 import { User } from './user.entity';
@@ -99,6 +100,9 @@ export class Order extends BaseEntity {
 
   @OneToMany(() => OrderSchedule, (orderSchedule) => orderSchedule.order)
   orderSchedule: OrderSchedule[];
+
+  @OneToMany(() => Report, (Report) => Report.order)
+  reports: Report[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

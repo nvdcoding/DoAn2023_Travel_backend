@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
+import { Order } from './orders.entity';
 import { Post } from './post.entity';
 import { TourGuide } from './tourguide.entity';
 import { User } from './user.entity';
@@ -23,9 +24,9 @@ export class Report {
   @JoinColumn({ name: 'post_id' })
   post: Post;
 
-  @ManyToOne(() => TourGuide, (tourGuide) => tourGuide.reports)
-  @JoinColumn({ name: 'tourguide_id' })
-  tourGuide: TourGuide;
+  @ManyToOne(() => Order, (order) => order.reports)
+  @JoinColumn({ name: 'order_id' })
+  order: Order;
 
   @Column({
     name: 'content',
@@ -45,6 +46,9 @@ export class Report {
     default: ReportStatus.PENDING,
   })
   status: ReportStatus;
+
+  @Column({ name: 'meeting_date', type: 'date', nullable: true })
+  meetingDate: Date;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -8,6 +8,7 @@ import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
 import { ApproveTourEmailDto } from './dto/approve-tour-email.dto';
 import { ApproveOrderEmailDto } from './dto/approve-order-email.dto';
 import { CreateAdminDto } from './dto/send-create-admin-email.dto';
+import { CreateMeetingDto } from './dto/create-meeting-email.dto';
 
 @Injectable()
 export class MailService {
@@ -58,5 +59,11 @@ export class MailService {
     });
   }
 
-  async sendAcceptTourguideMail() {}
+  async sendCreatMeetingMail(body: CreateMeetingDto): Promise<void> {
+    await this.emailQueue.add('sendCreatMeetingMail', {
+      ...body,
+    });
+  }
+
+  async sendAcceptTourguideMail(): Promise<void> {}
 }

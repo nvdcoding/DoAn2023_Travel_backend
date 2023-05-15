@@ -10,6 +10,7 @@ import { ReportService } from './report.service';
 
 @Module({
   imports: [
+    MailModule,
     UserModule,
     TourGuideModule,
     AdminModule,

@@ -8,6 +8,7 @@ import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
 import { ApproveOrderEmailDto } from './dto/approve-order-email.dto';
 import { ActionApproveOrder } from 'src/shares/enum/order.enum';
 import { CreateAdminDto } from './dto/send-create-admin-email.dto';
+import { CreateMeetingDto } from './dto/create-meeting-email.dto';
 //import * as moment from 'moment';
 
 @Processor('mail')
@@ -153,6 +154,35 @@ export class MailProcessor {
     }
     this.logger.log(
       `Done job: sendRejectOrderMail ${data.email} email ${data.username}`,
+    );
+    return 1;
+  }
+
+  @Process('sendCreatMeetingMail')
+  async sendCreatMeetingMail({ data }: Job<CreateMeetingDto>): Promise<number> {
+    this.logger.log(
+      `Start job: sendCreatMeetingMail user ${data.name} email ${data.email}`,
+    );
+    const context = {
+      email: data.email,
+      name: data.name,
+      date: data.date,
+      username: data.username,
+      content: data.content,
+    };
+    try {
+      await this.mailerService.sendMail({
+        from: emailConfig.from,
+        to: data.email,
+        subject: `Báo cáo người dùng về chuyến đi`,
+        template: `src/modules/mail/templates/create-meeting.template.hbs`,
+        context: context,
+      });
+    } catch (e) {
+      this.logger.debug(e);
+    }
+    this.logger.log(
+      `Done job: sendCreatMeetingMail ${data.email} email ${data.username}`,
     );
     return 1;
   }
