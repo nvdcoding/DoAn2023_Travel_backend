@@ -14,11 +14,11 @@ export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', { name: 'user_id' })
-  userId: number;
+  // @Column('int', { name: 'user_id' })
+  // userId: number;
 
-  @Column('int', { name: 'tour_guide_id' })
-  tourGuideId: number;
+  // @Column('int', { name: 'tour_guide_id' })
+  // tourGuideId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ referencedColumnName: 'id' })

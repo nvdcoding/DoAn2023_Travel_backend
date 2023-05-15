@@ -29,13 +29,13 @@ export class ChatService {
       )
       .where(
         `${
-          role === ActorRole.USER ? 'chat.userId' : 'chat.tourGuideId'
+          role === ActorRole.USER ? 'chat.user_id' : 'chat.tour_guide_id'
         } = :userId`,
         { userId },
       )
       .orderBy('id', 'DESC')
-      .groupBy('chat.userId')
-      .addGroupBy('chat.tourGuideId')
+      .groupBy('chat.user_id')
+      .addGroupBy('chat.tour_guide_id')
       .getMany();
   }
 
