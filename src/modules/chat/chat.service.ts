@@ -21,14 +21,13 @@ export class ChatService {
   getUserChatted({ userId, role }) {
     return this.chatRepository
       .createQueryBuilder('chat')
-      .where({
-        ...(role === ActorRole.USER ? { userId } : { tourGuideId: userId }),
-      })
-      .groupBy(`chat.userId`)
-      .addGroupBy(`chat.tourGuideId`);
-    // return this.chatRepository.find({
-    //   where: ,
-    // });
+      .where(
+        `${role === ActorRole.USER ? 'userId' : 'tourGuideId'} = :userId`,
+        { userId },
+      )
+      .groupBy('userId')
+      .addGroupBy('tourGuideId')
+      .getMany();
   }
 
   saveMessage(payload) {
