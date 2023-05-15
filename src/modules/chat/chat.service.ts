@@ -21,12 +21,16 @@ export class ChatService {
   getUserChatted({ userId, role }) {
     return this.chatRepository
       .createQueryBuilder('chat')
+      .leftJoinAndSelect('chat.user', 'user')
+      .leftJoinAndSelect('chat.tourGuide', 'tourGuide')
       .where(
-        `${role === ActorRole.USER ? 'userId' : 'tourGuideId'} = :userId`,
+        `${
+          role === ActorRole.USER ? 'chat.userId' : 'chat.tourGuideId'
+        } = :userId`,
         { userId },
       )
-      .groupBy('userId')
-      .addGroupBy('tourGuideId')
+      .groupBy('chat.userId')
+      .addGroupBy('chat.tourGuideId')
       .getMany();
   }
 
