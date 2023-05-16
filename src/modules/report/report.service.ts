@@ -265,7 +265,75 @@ export class ReportService {
         { id: report.order.tourGuide.id },
         { verifyStatus: TourguideStatus.REJECT },
       ),
-      this.userRepository.update({ id: report.order.user.id }, {}),
+      this.userRepository.update(
+        { id: report.order.user.id },
+        {
+          balance:
+            report.order.user.balance +
+            report.order.price * (system.returnUserPercent / 100),
+          availableBalance:
+            report.order.user.availableBalance +
+            report.order.price * (system.returnUserPercent / 100),
+        },
+      ),
+      this.systemRepository.update(
+        { id: system.id },
+        { balance: report.order.price * (system.returnUserPercent / 100) },
+      ),
+    ]);
+    return httpResponse.HANLED_REPORT;
+  }
+
+  async handleWarnTourguide(reportId: number): Promise<Response> {
+    const [report, system] = await Promise.all([
+      this.reportRepository.findOne({
+        where: {
+          id: reportId,
+          status: ReportStatus.PROCESSING,
+        },
+        relations: ['order', 'order.user', 'order.tourGuide'],
+      }),
+      this.systemRepository.findOne(),
+    ]);
+    if (!report) {
+      throw new HttpException(
+        httpErrors.REPORT_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (+report.order.tourGuide.warningTime + 1 === +system.warningTime) {
+      await this.tourGuideRepository.update(
+        { id: report.order.tourGuide.id },
+        {
+          verifyStatus: TourguideStatus.REJECT,
+          warningTime: +system.warningTime,
+        },
+      );
+    } else {
+      await this.tourGuideRepository.update(
+        { id: report.order.tourGuide.id },
+        {
+          warningTime: +system.warningTime,
+        },
+      );
+    }
+    // // hoafn tienfg
+    await Promise.all([
+      this.userRepository.update(
+        { id: report.order.user.id },
+        {
+          balance:
+            report.order.user.balance +
+            report.order.price * (system.returnUserPercent / 100),
+          availableBalance:
+            report.order.user.availableBalance +
+            report.order.price * (system.returnUserPercent / 100),
+        },
+      ),
+      this.systemRepository.update(
+        { id: system.id },
+        { balance: report.order.price * (system.returnUserPercent / 100) },
+      ),
     ]);
     return httpResponse.HANLED_REPORT;
   }

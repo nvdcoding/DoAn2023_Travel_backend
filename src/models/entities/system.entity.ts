@@ -44,6 +44,14 @@ export class SystemEntity {
   })
   tourGuidePrepaidOrder: number;
 
+  @Column({
+    type: 'int',
+    default: 3,
+    name: 'warning_time',
+    unsigned: true,
+  })
+  warningTime: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

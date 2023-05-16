@@ -100,6 +100,9 @@ export class TourGuide extends BaseEntity {
   @Column({ name: 'cancelled_orders', default: 0, type: 'integer' })
   cancelledOrders: number;
 
+  @Column({ name: 'warning_time', default: 0, type: 'integer' })
+  warningTime: number;
+
   @Column({ name: 'dob', type: 'date', nullable: false })
   dob: Date;
 

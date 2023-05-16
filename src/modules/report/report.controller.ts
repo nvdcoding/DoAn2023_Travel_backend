@@ -64,7 +64,19 @@ export class ReportController {
 
   @Put('/admin/resolve-skip-report/:id')
   @UseGuards(AdminModAuthGuard)
-  async acce(@Param('id') id: number): Promise<Response> {
+  async skipReport(@Param('id') id: number): Promise<Response> {
     return this.reportService.skipReport(id);
+  }
+
+  @Put('/admin/resolve-band-tourguide/:id')
+  @UseGuards(AdminModAuthGuard)
+  async banTourguide(@Param('id') id: number): Promise<Response> {
+    return this.reportService.handleBanReportTourguide(id);
+  }
+
+  @Put('/admin/resolve-warning-tourguide/:id')
+  @UseGuards(AdminModAuthGuard)
+  async warningTourguide(@Param('id') id: number): Promise<Response> {
+    return this.reportService.handleWarnTourguide(id);
   }
 }
