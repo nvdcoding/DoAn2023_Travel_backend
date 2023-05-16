@@ -135,7 +135,11 @@ export class TourService {
 
   async getTour(id: number): Promise<Response> {
     const tour = await this.tourRepository.findOne({
-      where: { id, status: TourStatus.ACTIVE },
+      where: {
+        id,
+        status: TourStatus.ACTIVE,
+        tourGuide: { verifyStatus: TourguideStatus.ACTIVE },
+      },
       relations: [
         'images',
         'rates',
