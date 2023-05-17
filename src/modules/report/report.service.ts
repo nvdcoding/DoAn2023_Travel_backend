@@ -255,7 +255,12 @@ export class ReportService {
       email: report.order.tourGuide.email,
       username: report.reportedBy.username,
       name: report.order.tourGuide.name,
-      date: meetingDate.toDateString(),
+      date: new Date('2023-04-24')
+        .toISOString()
+        .slice(0, 10)
+        .split('-')
+        .reverse()
+        .join('-'),
       content: report.content,
       tourName: report.order.tour.name,
     });
@@ -263,19 +268,34 @@ export class ReportService {
   }
 
   async skipReport(reportId: number): Promise<Response> {
+    const today = new Date(); // get today's date in ISO format
+
     const report = await this.reportRepository.findOne({
       where: {
         id: reportId,
-        status: ReportStatus.PROCESSING,
+        status: In([ReportStatus.PROCESSING, ReportStatus.PENDING]),
       },
     });
+    if (
+      report.status === ReportStatus.PROCESSING &&
+      today < new Date(report.meetingDate)
+    ) {
+      // Today's date is greater than the meeting date
+      throw new HttpException(
+        httpErrors.REPORT_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
     if (!report) {
       throw new HttpException(
         httpErrors.REPORT_NOT_FOUND,
         HttpStatus.NOT_FOUND,
       );
     }
-    await this.deleteReport(reportId);
+    await this.reportRepository.update(
+      { id: reportId },
+      { status: ReportStatus.PROCESSED },
+    );
     return httpResponse.HANLED_REPORT;
   }
 
