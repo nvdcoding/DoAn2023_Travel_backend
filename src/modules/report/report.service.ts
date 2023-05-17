@@ -96,6 +96,36 @@ export class ReportService {
     };
   }
 
+  async getReportOrder(options: GetReportDto): Promise<Response> {
+    const { status, limit, page } = options;
+    const where = {};
+    if (status && status === GetReportStatus.PROCESSED) {
+      where['status'] = ReportStatus.PROCESSED;
+    } else if (status && status === GetReportStatus.PROCESSING) {
+      where['status'] = In([ReportStatus.PENDING, ReportStatus.PROCESSING]);
+    } else {
+      where['status'] = Not(IsNull());
+    }
+    const reports = await this.reportRepository.findAndCount({
+      where: {
+        ...where,
+        post: Not(IsNull()),
+        tourGuide: IsNull(),
+      },
+      relations: ['post', 'reportedBy'],
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return {
+      ...httpResponse.GET_REPORT_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        reports,
+        page,
+        limit,
+      ),
+    };
+  }
+
   async deleteReport(reportId: number): Promise<Response> {
     const report = await this.reportRepository.findOne({
       id: reportId,
@@ -127,10 +157,17 @@ export class ReportService {
       );
     }
     if (action === HandleReportPostAction.SKIP) {
-      await this.deleteReport(reportId);
+      await this.reportRepository.update(
+        { id: reportId },
+        { status: ReportStatus.PROCESSED },
+      );
     } else {
+      const reportIds = report.post.reports.map((e) => e.id);
       await Promise.all([
-        this.reportRepository.softRemove([...report.post.reports]),
+        this.reportRepository.update(
+          { id: In([...reportIds]) },
+          { status: ReportStatus.PROCESSED },
+        ),
         this.postRepository.softDelete(report.post.id),
       ]);
     }
@@ -150,8 +187,8 @@ export class ReportService {
     const reports = await this.reportRepository.findAndCount({
       where: {
         ...where,
-        post: IsNull(),
-        order: Not(IsNull()),
+        order: IsNull(),
+        post: Not(IsNull()),
       },
       relations: ['tourGuide', 'reportedBy'],
       skip: (page - 1) * limit,

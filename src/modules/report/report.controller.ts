@@ -50,6 +50,12 @@ export class ReportController {
     return this.reportService.getReportPost(options);
   }
 
+  @Get('/admin/tourguide')
+  @UseGuards(AdminModAuthGuard)
+  async getReportTourguide(@Query() options: GetReportDto): Promise<Response> {
+    return this.reportService.getReportTourguide(options);
+  }
+
   @Put('/admin/post')
   @UseGuards(AdminModAuthGuard)
   async handleReportPost(@Body() body: HandleReportPostDto): Promise<Response> {
