@@ -337,6 +337,10 @@ export class ReportService {
         { id: system.id },
         { balance: report.order.price * (system.returnUserPercent / 100) },
       ),
+      this.reportRepository.update(
+        { id: report.id },
+        { status: ReportStatus.PROCESSED },
+      ),
     ]);
     return httpResponse.HANLED_REPORT;
   }
@@ -390,6 +394,10 @@ export class ReportService {
       this.systemRepository.update(
         { id: system.id },
         { balance: report.order.price * (system.returnUserPercent / 100) },
+      ),
+      this.reportRepository.update(
+        { id: report.id },
+        { status: ReportStatus.PROCESSED },
       ),
     ]);
     return httpResponse.HANLED_REPORT;
