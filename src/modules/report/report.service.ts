@@ -229,8 +229,8 @@ export class ReportService {
     const report = await this.reportRepository.findOne({
       where: {
         id: reportId,
-        post: Not(IsNull()),
-        tourGuide: IsNull(),
+        order: Not(IsNull()),
+        post: IsNull(),
         status: ReportStatus.PENDING,
       },
       relations: [
