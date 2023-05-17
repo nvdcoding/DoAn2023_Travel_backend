@@ -146,7 +146,7 @@ export class ReportService {
       where: {
         id: reportId,
         post: Not(IsNull()),
-        tourGuide: IsNull(),
+        order: IsNull(),
       },
       relations: ['post', 'post.reports'],
     });
