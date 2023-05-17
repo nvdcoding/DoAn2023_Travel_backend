@@ -187,8 +187,8 @@ export class ReportService {
     const reports = await this.reportRepository.findAndCount({
       where: {
         ...where,
-        order: IsNull(),
-        post: Not(IsNull()),
+        post: IsNull(),
+        order: Not(IsNull()),
       },
       relations: ['order', 'reportedBy', 'order.tourGuide'],
       skip: (page - 1) * limit,
