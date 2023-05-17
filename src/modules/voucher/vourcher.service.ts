@@ -59,27 +59,20 @@ export class VoucherService {
   }
 
   async getAllVoucher(options: GetVoucherDto) {
-    const { discountType } = options;
+    const { discountType, limit, page } = options;
     let data;
     if (discountType) {
-      data = await this.voucherRepository.findAndCount({
-        where: { discountType },
-        order: { id: 'DESC' },
-      });
+      data = await this.voucherRepository.getVouchers(
+        limit,
+        page,
+        discountType,
+      );
     } else {
-      data = await this.voucherRepository.findAndCount({
-        where: {
-          endDate: MoreThan(new Date()),
-        },
-        order: { id: 'DESC' },
-      });
+      data = await this.voucherRepository.getVouchers(page, limit);
     }
+
     return {
-      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
-        data,
-        options.page || 1,
-        options.limit || 10,
-      ),
+      returnValue: data,
       ...httpResponse.GET_VOUCHER_SUCCESS,
     };
   }
