@@ -80,7 +80,7 @@ export class ReportService {
       where: {
         ...where,
         post: Not(IsNull()),
-        tourGuide: IsNull(),
+        order: IsNull(),
       },
       relations: ['post', 'reportedBy'],
       skip: (page - 1) * limit,
@@ -110,7 +110,7 @@ export class ReportService {
       where: {
         ...where,
         post: Not(IsNull()),
-        tourGuide: IsNull(),
+        order: IsNull(),
       },
       relations: ['post', 'reportedBy'],
       skip: (page - 1) * limit,
