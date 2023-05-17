@@ -255,7 +255,7 @@ export class ReportService {
       email: report.order.tourGuide.email,
       username: report.reportedBy.username,
       name: report.order.tourGuide.name,
-      date: new Date('2023-04-24')
+      date: new Date(meetingDate)
         .toISOString()
         .slice(0, 10)
         .split('-')
