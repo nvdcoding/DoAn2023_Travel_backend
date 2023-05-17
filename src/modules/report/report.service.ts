@@ -190,7 +190,7 @@ export class ReportService {
         order: IsNull(),
         post: Not(IsNull()),
       },
-      relations: ['tourGuide', 'reportedBy'],
+      relations: ['orders', 'reportedBy', 'orders.tourGuide'],
       skip: (page - 1) * limit,
       take: limit,
     });
