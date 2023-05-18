@@ -12,8 +12,7 @@ import { UserRepository } from 'src/models/repositories/user.repository';
 import { UserVoucherRepository } from 'src/models/repositories/user-voucher.repository';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { UserVoucher } from 'src/models/entities/user_voucher.entity';
-import { UserVoucherStatus } from 'src/shares/enum/voucher.enum';
-import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import { UserVoucherStatus, VoucherStatus } from 'src/shares/enum/voucher.enum';
 
 @Injectable()
 export class VoucherService {
@@ -133,7 +132,12 @@ export class VoucherService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
+    if (voucher.quantity - 1 === 0) {
+      await this.voucherRepository.update(
+        { id: voucherId },
+        { status: VoucherStatus.INACTIVE },
+      );
+    }
     // Create a new user voucher
     const userVoucher = new UserVoucher();
     userVoucher.user = user;

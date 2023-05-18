@@ -1,4 +1,4 @@
-import { DiscountType } from 'src/shares/enum/voucher.enum';
+import { DiscountType, VoucherStatus } from 'src/shares/enum/voucher.enum';
 import {
   Entity,
   Column,
@@ -40,6 +40,15 @@ export class Voucher {
     nullable: false,
   })
   discountType: DiscountType;
+
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enum: VoucherStatus,
+    nullable: false,
+    default: VoucherStatus.ACTIVE,
+  })
+  status: VoucherStatus;
 
   @Column({
     name: 'value',

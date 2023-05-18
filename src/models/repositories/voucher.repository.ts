@@ -1,5 +1,5 @@
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
-import { DiscountType } from 'src/shares/enum/voucher.enum';
+import { DiscountType, VoucherStatus } from 'src/shares/enum/voucher.enum';
 import { EntityRepository, Repository } from 'typeorm';
 import { Voucher } from '../entities/voucher.entity';
 
@@ -31,8 +31,10 @@ export class VoucherRepository extends Repository<Voucher> {
       .where('voucher.endDate > :endDate', {
         endDate: new Date().toISOString().slice(0, 10),
       })
-      .having('COUNT(DISTINCT userVouchers.id) < voucher.quantity')
       .andWhere('voucher.deletedAt is null')
+      .andWhere('voucher.status = :voucherStatus', {
+        voucherStatus: VoucherStatus.ACTIVE,
+      })
       .groupBy('voucher.id')
       .orderBy('voucher.id', 'DESC')
       .skip((page - 1) * limit)
