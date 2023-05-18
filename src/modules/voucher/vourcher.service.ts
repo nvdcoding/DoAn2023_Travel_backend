@@ -66,9 +66,15 @@ export class VoucherService {
         limit,
         page,
         discountType,
+        userId,
       );
     } else {
-      data = await this.voucherRepository.getVouchers(page, limit);
+      data = await this.voucherRepository.getVouchers(
+        page,
+        limit,
+        null,
+        userId,
+      );
     }
 
     return {

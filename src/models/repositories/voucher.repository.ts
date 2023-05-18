@@ -5,7 +5,12 @@ import { Voucher } from '../entities/voucher.entity';
 
 @EntityRepository(Voucher)
 export class VoucherRepository extends Repository<Voucher> {
-  async getVouchers(page: number, limit: number, discountType?: DiscountType) {
+  async getVouchers(
+    page: number,
+    limit: number,
+    discountType?: DiscountType | null,
+    userId?: number,
+  ) {
     console.log(page, limit);
 
     const queryBuilder = this.createQueryBuilder('voucher');
@@ -37,7 +42,14 @@ export class VoucherRepository extends Repository<Voucher> {
         discountType,
       });
     }
-
+    if (userId) {
+      queryBuilder.andWhere(
+        '(userVouchers.user_id != :userId or userVouchers.user_id is null)',
+        {
+          userId,
+        },
+      );
+    }
     const [data, countData] = await Promise.all([
       queryBuilder.getRawMany(),
       queryBuilder.getCount(),
