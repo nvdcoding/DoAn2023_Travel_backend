@@ -31,7 +31,7 @@ export class VoucherRepository extends Repository<Voucher> {
       .where('voucher.endDate > :endDate', {
         endDate: new Date().toISOString().slice(0, 10),
       })
-      .andWhere('COUNT(DISTINCT userVouchers.id) < voucher.quantity')
+      .having('COUNT(DISTINCT userVouchers.id) < voucher.quantity')
       .andWhere('voucher.deletedAt is null')
       .groupBy('voucher.id')
       .orderBy('voucher.id', 'DESC')
