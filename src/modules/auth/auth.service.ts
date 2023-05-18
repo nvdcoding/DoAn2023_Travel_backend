@@ -465,6 +465,7 @@ export class AuthService {
             'userFavorites',
             'orders',
             'transactions',
+            'userVouchers.voucher',
           ],
         });
         break;
