@@ -58,7 +58,7 @@ export class VoucherService {
     return httpResponse.CREATE_VOUCHER_SUCCESS;
   }
 
-  async getAllVoucher(options: GetVoucherDto) {
+  async getAllVoucher(options: GetVoucherDto, userId: number | null) {
     const { discountType, limit, page } = options;
     let data;
     if (discountType) {

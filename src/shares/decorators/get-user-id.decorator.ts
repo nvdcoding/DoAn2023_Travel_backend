@@ -20,3 +20,16 @@ export const ActorID = createParamDecorator(
     }
   },
 );
+
+export const OptionalActorID = createParamDecorator(
+  (data: string, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    try {
+      const token = request.headers.authorization;
+      const payload: IJwtPayload = jwtDecode(token);
+      return payload.id;
+    } catch (e) {
+      return null;
+    }
+  },
+);
