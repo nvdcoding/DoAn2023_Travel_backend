@@ -116,7 +116,7 @@ export class VoucherService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (+voucher.quantity < 1) {
+    if (+voucher.quantity - voucher.userVouchers.length < 1) {
       throw new HttpException(
         httpErrors.VOUCHER_NOT_ENOUGH,
         HttpStatus.BAD_REQUEST,
@@ -132,7 +132,7 @@ export class VoucherService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (voucher.quantity - 1 === 0) {
+    if (+voucher.quantity - voucher.userVouchers.length - 1 === 0) {
       await this.voucherRepository.update(
         { id: voucherId },
         { status: VoucherStatus.INACTIVE },
