@@ -47,7 +47,8 @@ export class VoucherRepository extends Repository<Voucher> {
     }
     if (userId) {
       queryBuilder.andWhere(
-        '(userVouchers.user_id != :userId or userVouchers.user_id is null)',
+        `voucher.id NOT IN 
+    (SELECT user_voucher.voucher_id FROM user_voucher WHERE user_voucher.user_id = :userId)`,
         {
           userId,
         },
