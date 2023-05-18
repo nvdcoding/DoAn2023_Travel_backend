@@ -136,7 +136,7 @@ export const httpErrors = {
     code: 'ERR_VOUCHER_004',
   },
   NOT_ENOUGHT_VOUCHER_POINT: {
-    message: 'Not have enough point to claim',
+    message: 'Bạn không đủ KCoin để đổi voucher này',
     code: 'ERR_VOUCHER_005',
   },
   VOUCHER_NOT_ENOUGH: {
