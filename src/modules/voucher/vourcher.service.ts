@@ -117,7 +117,7 @@ export class VoucherService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (+voucher.userVouchers.length >= +voucher.quantity) {
+    if (+voucher.quantity < 1) {
       throw new HttpException(
         httpErrors.VOUCHER_NOT_ENOUGH,
         HttpStatus.BAD_REQUEST,
