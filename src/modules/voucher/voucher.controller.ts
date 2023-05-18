@@ -20,7 +20,7 @@ import { CreateVoucherDto } from './dtos/create-voucher.dto';
 import { GetVoucherDto } from './dtos/get-voucher.dto';
 import { VoucherService } from './vourcher.service';
 
-@Controller('vourchers')
+@Controller('vouchers')
 @ApiTags('Voucher')
 @ApiBearerAuth()
 export class VoucherController {
