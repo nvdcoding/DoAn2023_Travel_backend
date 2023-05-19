@@ -33,7 +33,10 @@ export class UserAuthGuard extends AuthGuard('jwt') {
     }
     try {
       const userJwt = await this.jtwSv.verify(token[1]);
-      const user = await this.userService.getUserById(userJwt.id);
+      const user = await this.userService.getUserByIdAndEmail(
+        userJwt.id,
+        userJwt.email,
+      );
       if (!user) {
         throw new HttpException(
           httpErrors.UNAUTHORIZED,

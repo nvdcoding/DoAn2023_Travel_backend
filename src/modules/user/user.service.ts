@@ -36,8 +36,9 @@ export class UserService {
     private readonly postRepository: PostRepository,
   ) {}
 
-  async getUserById(id: number) {
-    const user = await this.userRepository.findOne(id);
+  async getUserByIdAndEmail(id: number, email: string) {
+    const user = await this.userRepository.findOne({ where: { id, email } });
+
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
