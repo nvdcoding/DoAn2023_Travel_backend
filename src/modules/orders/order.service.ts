@@ -175,7 +175,10 @@ export class OrderService {
     return { ...httpResponse.GET_ORDER_SUCCESS, returnValue: orders };
   }
 
-  async tourGuideGetOrderByStatus(tourGuideId: number, options: GetOrdersDto) {
+  async tourGuideGetOrderByStatus(
+    tourGuideId: number,
+    options: GetOrdersDto,
+  ): Promise<Response> {
     const { type } = options;
     let orderStatus = [];
     switch (type) {

@@ -56,7 +56,7 @@ export class AuthService {
 
   async register(body: RegisterDto): Promise<Response> {
     const { email, username, password } = body;
-    const [token, user] = await Promise.all([
+    const [token, user, tourguide] = await Promise.all([
       this.cacheManager.get(`register-${email}`),
       this.userRepository.findOne({
         where: {
@@ -64,11 +64,17 @@ export class AuthService {
           username,
         },
       }),
+      this.tourGuideRepository.findOne({
+        where: email,
+      }),
     ]);
     if (
       user &&
       [UserStatus.ACTIVE, UserStatus.LOCKED].includes(user.verifyStatus)
     ) {
+      throw new HttpException(httpErrors.USER_EXIST, HttpStatus.BAD_REQUEST);
+    }
+    if (tourguide) {
       throw new HttpException(httpErrors.USER_EXIST, HttpStatus.BAD_REQUEST);
     }
     if (token) {
@@ -102,7 +108,7 @@ export class AuthService {
   async registerTourguide(body: RegisterTourguideDto): Promise<Response> {
     const { name, username, email, password, phone, dob, gender, provinces } =
       body;
-    const [provincesDb, tourguide] = await Promise.all([
+    const [provincesDb, tourguide, user] = await Promise.all([
       this.provinceRepository.find({
         where: {
           id: In(provinces),
@@ -114,9 +120,18 @@ export class AuthService {
           { email, verifyStatus: Not(TourguideStatus.REJECT) },
         ],
       }),
+      this.userRepository.findOne({
+        where: {
+          email,
+        },
+      }),
     ]);
 
     if (tourguide) {
+      throw new HttpException(httpErrors.TOUR_GUIDE_EXIST, HttpStatus.FOUND);
+    }
+
+    if (user) {
       throw new HttpException(httpErrors.TOUR_GUIDE_EXIST, HttpStatus.FOUND);
     }
     if (provincesDb.length < provinces.length) {
