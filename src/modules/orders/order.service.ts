@@ -301,19 +301,21 @@ export class OrderService {
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    await this.checkTourguideAvailable(
-      tourguideId,
-      `${order.startDate}`,
-      `${order.endDate}`,
-    );
-    if (
-      +order.tourGuide.availableBalance <
-      +(system.tourGuidePrepaidOrder / 100) * order.price
-    ) {
-      throw new HttpException(
-        httpErrors.ORDER_PREPAID_NOT_VALID,
-        HttpStatus.BAD_REQUEST,
+    if (body.action === ActionApproveOrder.ACCEPT) {
+      await this.checkTourguideAvailable(
+        tourguideId,
+        `${order.startDate}`,
+        `${order.endDate}`,
       );
+      if (
+        +order.tourGuide.availableBalance <
+        +(system.tourGuidePrepaidOrder / 100) * order.price
+      ) {
+        throw new HttpException(
+          httpErrors.ORDER_PREPAID_NOT_VALID,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
     const task =
       body.action === ActionApproveOrder.ACCEPT
@@ -398,7 +400,7 @@ export class OrderService {
       ) {
         throw new HttpException(
           {
-            message: `Tour guide is not available from ${startDateString} to ${endDateString}`,
+            message: `Bạn đã có tour trong khoảng thời gian từ ${startDateString} đến ${endDateString}`,
             code: `ERR_ORDER_003`,
           },
           HttpStatus.BAD_REQUEST,
