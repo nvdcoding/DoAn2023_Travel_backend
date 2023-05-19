@@ -139,10 +139,12 @@ export class OrderService {
           OrderStatus.REJECTED,
         ];
         break;
-      case GetTourOptions.WAITING:
+      case GetTourOptions.WAITING_CONFIRM:
+        orderStatus = [...OrderStatus.WAITING_TOUR_GUIDE];
+        break;
+      case GetTourOptions.WAITING_PURCHASE:
         orderStatus = [
           ...OrderStatus.WAITING_PURCHASE,
-          OrderStatus.WAITING_TOUR_GUIDE,
           OrderStatus.WAITING_PREPAID,
         ];
         break;

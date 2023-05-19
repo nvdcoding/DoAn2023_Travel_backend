@@ -10,7 +10,8 @@ export enum OrderStatus {
 
 export enum GetTourOptions {
   ALL = 'all',
-  WAITING = 'waiting',
+  WAITING_CONFIRM = 'waiting_confirm',
+  WAITING_PURCHASE = 'waiting_purchase',
   PROCESSING = 'processing',
   END = 'end',
 }
