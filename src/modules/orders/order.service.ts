@@ -97,7 +97,7 @@ export class OrderService {
         },
       });
       const userVoucher = await this.userVoucherRepository.findOne({
-        where: { user, voucher },
+        where: { user, voucher, status: UserVoucherStatus.USED },
       });
       if (!userVoucher) {
         throw new HttpException(
