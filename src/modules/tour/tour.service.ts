@@ -87,15 +87,15 @@ export class TourService {
       .filter((e) => (Object.values(TourTypes) as string[]).includes(e));
 
     const where = {};
-
+    let province, tourGuide;
     if (provinceId) {
-      const province = await this.provinceRepository.findOne({
+      province = await this.provinceRepository.findOne({
         where: { id: provinceId },
       });
       where[`province`] = province;
     }
     if (tourGuideId) {
-      const tourGuide = await this.tourGuideRepository.findOne({
+      tourGuide = await this.tourGuideRepository.findOne({
         where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
       });
       where[`tourGuide`] = tourGuide;
