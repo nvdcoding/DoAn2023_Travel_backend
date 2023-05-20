@@ -6,4 +6,9 @@ export class TransferDto {
   @IsPositive()
   @IsNotEmpty()
   amount: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  fromWeb: boolean;
 }
