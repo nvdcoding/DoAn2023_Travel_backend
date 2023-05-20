@@ -91,7 +91,7 @@ export class TourGuideController {
     @Body() body: UpdateTourguideInformationDto,
     @ActorID() tourGuideId: number,
   ): Promise<Response> {
-    return this.tourGuideService.updateInformation(body, tourGuideId);
+    return this.tourGuideService.updateInformation(tourGuideId, body);
   }
 
   @Get('/')
