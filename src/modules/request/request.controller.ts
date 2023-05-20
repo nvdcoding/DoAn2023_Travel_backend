@@ -64,6 +64,12 @@ export class RequestController {
     return this.requestService.getOneRequest(requestId, actorId, role);
   }
 
+  @Get('/test')
+  // @UseGuards(IsLoginGuard)
+  async test(): Promise<void> {
+    return this.requestService.test();
+  }
+
   @Delete('/user/:id')
   @UseGuards(UserAuthGuard)
   async deleteMyRequest(

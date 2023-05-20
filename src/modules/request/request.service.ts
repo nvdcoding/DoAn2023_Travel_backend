@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { of } from 'rxjs';
 import { ProvinceRepository } from 'src/models/repositories/province.repository';
 import { UserRequestRepository } from 'src/models/repositories/request.repository';
@@ -15,15 +15,24 @@ import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { In } from 'typeorm';
+import { ChatGateWay } from '../chat/chat.gateway';
 import { CreateRequestDto } from './dtos/create-request.dto';
 import { GetUserRequestDto } from './dtos/get-request.dto';
+import { createClient } from 'redis';
+import { Emitter } from '@socket.io/redis-emitter';
+import { redisConfig } from 'src/configs/redis.config';
+import { SocketEmitter } from 'src/shares/helper/socket-emitter';
+
 @Injectable()
 export class RequestService {
+  io: any;
+  logger: any;
   constructor(
     private readonly userRequestRepository: UserRequestRepository,
     private readonly provinceRepository: ProvinceRepository,
     private readonly userRepository: UserRepository,
     private readonly tourGuideRepository: TourGuideRepository,
+    private readonly socketGateway: ChatGateWay,
   ) {}
 
   async createRequest(
@@ -221,5 +230,11 @@ export class RequestService {
     }
     await this.userRequestRepository.delete(request.id);
     return httpResponse.DELETE_REQUEST_SUCCESS;
+  }
+
+  async test() {
+    const redisClient = createClient(redisConfig.port, redisConfig.host);
+    console.log(1);
+    SocketEmitter.getInstance().emitSuggest(10, '12312312', 3);
   }
 }
