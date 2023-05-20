@@ -32,6 +32,9 @@ import { CancelOrderDto } from './dtos/cancel-order.dto';
 import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import { PrepaidOrderDto } from './dtos/prepaid-order.dto';
 import { EndOrderDto } from './dtos/end-order.dto';
+import { VoucherRepository } from 'src/models/repositories/voucher.repository';
+import { UserVoucherRepository } from 'src/models/repositories/user-voucher.repository';
+import { DiscountType, UserVoucherStatus } from 'src/shares/enum/voucher.enum';
 
 @Injectable()
 export class OrderService {
@@ -45,10 +48,12 @@ export class OrderService {
     private readonly rateRepository: RateRepository,
     private readonly transactionRepository: TransactionRepository,
     private readonly systemRepository: SystemRepository,
+    private readonly voucherRepository: VoucherRepository,
+    private readonly userVoucherRepository: UserVoucherRepository,
   ) {}
 
   async orderTour(userId: number, body: OrderTourDto): Promise<Response> {
-    const { startDate, tourId, numberOfMember } = body;
+    const { startDate, tourId, numberOfMember, voucherId } = body;
     const [tour, user] = await Promise.all([
       this.tourRepository.findOne({
         where: {
@@ -84,11 +89,43 @@ export class OrderService {
       );
     }
     // TODO: add voucher
+    let discountPrice = 0;
+    if (voucherId) {
+      const voucher = await this.voucherRepository.findOne({
+        where: {
+          id: voucherId,
+        },
+      });
+      const userVoucher = await this.userVoucherRepository.findOne({
+        where: { user, voucher },
+      });
+      if (!userVoucher) {
+        throw new HttpException(
+          httpErrors.VOUCHER_NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      if (voucher.discountType === DiscountType.FIX) {
+        discountPrice = voucher.value;
+      } else {
+        const orderPrice =
+          numberOfMember - tour.numOfFreeMember > 0
+            ? tour.basePrice +
+              (numberOfMember - tour.numOfFreeMember) * tour.feePerMember
+            : tour.basePrice;
+        discountPrice = (voucher.value / 100) * orderPrice;
+      }
+      await this.userVoucherRepository.update(
+        { user, voucher },
+        { status: UserVoucherStatus.USED },
+      );
+    }
     const orderPrice =
       numberOfMember - tour.numOfFreeMember > 0
         ? tour.basePrice +
-          (numberOfMember - tour.numOfFreeMember) * tour.feePerMember
-        : tour.basePrice;
+          (numberOfMember - tour.numOfFreeMember) * tour.feePerMember -
+          discountPrice
+        : tour.basePrice - discountPrice;
     const scheduleContent = tour.tourSchedule.map((e) => {
       return { content: e.content };
     });
