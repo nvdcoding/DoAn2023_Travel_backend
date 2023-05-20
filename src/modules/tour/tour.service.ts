@@ -89,10 +89,16 @@ export class TourService {
     const where = {};
 
     if (provinceId) {
-      where[`province`] = provinceId;
+      const province = await this.provinceRepository.findOne({
+        where: { id: provinceId },
+      });
+      where[`province`] = province;
     }
     if (tourGuideId) {
-      where[`tourGuide`] = tourGuideId;
+      const tourGuide = await this.tourGuideRepository.findOne({
+        where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
+      });
+      where[`tourGuide`] = tourGuide;
     }
     if (minPrice && maxPrice) {
       where[`basePrice`] = Between(minPrice, maxPrice);
