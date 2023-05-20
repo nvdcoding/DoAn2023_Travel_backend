@@ -23,6 +23,7 @@ import {
 import { ResponseInterviewTourguideDto } from './dtos/response-interview.dto';
 import { ResponseRegisterTourguideDto } from './dtos/response-registation-tourguide.dto';
 import { TransferDto } from './dtos/transfer.dto';
+import { UpdateTourguideInformationDto } from './dtos/update-infor.dto';
 import { UpdateStatusTourGuideDto } from './dtos/update-status-tourguide.dto';
 import { TourGuideService } from './tour-guide.service';
 
@@ -82,6 +83,15 @@ export class TourGuideController {
     @Body() body: ResponseInterviewTourguideDto,
   ): Promise<Response> {
     return this.tourGuideService.responseInterview(body);
+  }
+
+  @Put('/infor')
+  @UseGuards(TourGuideAuthGuard)
+  async updateInfor(
+    @Body() body: UpdateTourguideInformationDto,
+    @ActorID() tourGuideId: number,
+  ): Promise<Response> {
+    return this.tourGuideService.updateInformation(body, tourGuideId);
   }
 
   @Get('/')

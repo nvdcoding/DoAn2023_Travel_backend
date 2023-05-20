@@ -34,6 +34,7 @@ import { TransferDto } from './dtos/transfer.dto';
 import { promisify } from 'util';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
+import { UpdateTourguideInformationDto } from './dtos/update-infor.dto';
 const getIP = promisify(require('external-ip')());
 
 @Injectable()
@@ -436,5 +437,25 @@ export class TourGuideService {
         limit,
       ),
     };
+  }
+
+  async updateInformation(
+    tourGuideId: number,
+    body: UpdateTourguideInformationDto,
+  ): Promise<Response> {
+    const tourGuide = await this.tourGuideRepository.findOne({
+      where: {
+        id: tourGuideId,
+        verifyStatus: TourguideStatus.ACTIVE,
+      },
+    });
+    if (!tourGuide) {
+      throw new HttpException(
+        httpErrors.TOUR_GUIDE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.tourGuideRepository.update({ id: tourGuide.id }, { ...body });
+    return httpResponse.UPDATE_STATUS_TOURGUIDE_SUCCESS;
   }
 }
