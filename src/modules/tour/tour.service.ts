@@ -117,7 +117,6 @@ export class TourService {
       where: {
         ...where,
         status: TourStatus.ACTIVE,
-        tourGuide: { verifyStatus: TourguideStatus.ACTIVE },
       },
       relations: [
         'images',
