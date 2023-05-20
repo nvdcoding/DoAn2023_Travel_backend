@@ -356,7 +356,7 @@ export class TourGuideService {
     const tmnCode = `${vnPayConfig.TMN_CODE}`;
     const secretKey = `${vnPayConfig.HASH_SECRET}`;
     let vnpUrl = vnPayConfig.URL;
-    const returnUrl = vnPayConfig.RETURN_URL;
+    const returnUrl = vnPayConfig.RETURN_URL_MODILE;
     const date = new Date();
     const createDate = moment(date).format('YYYYMMDDHHmmss');
     const orderId = moment(date).format('DDHHmmss');
