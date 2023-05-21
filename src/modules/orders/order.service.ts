@@ -470,7 +470,10 @@ export class OrderService {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const amount = +order.price - +order.paid;
+<<<<<<< HEAD
     console.log({ amount, orderPrice: +order.price, orderPaid: order.paid });
+=======
+>>>>>>> ece7baeea0dce995fbb476e307e50cbf91269b47
     if (+amount > +user.availableBalance || +amount > +user.balance) {
       throw new HttpException(
         httpErrors.USER_INSUFFICIENT_BALANCE,
