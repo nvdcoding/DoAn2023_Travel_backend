@@ -38,6 +38,7 @@ export class ProvinceService {
         status: TourStatus.ACTIVE,
       })
       .orderBy('province.numOfFavorites')
+      .addOrderBy(`COUNT('tour.id')`, 'DESC')
       .take(5);
     const provinces = await queryBuilder.getMany();
 
