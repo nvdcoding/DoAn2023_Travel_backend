@@ -32,16 +32,18 @@ export class ProvinceService {
   }
 
   async getTopProvinces(): Promise<Response> {
-    const queryBuilder = this.provinceRepository
-      .createQueryBuilder('province')
-      .leftJoinAndSelect('province.tours', 'tour', 'tour.status = :status', {
-        status: TourStatus.ACTIVE,
-      })
-      .orderBy('province.numOfFavorites')
-      .addOrderBy(`COUNT('tour.id')`, 'DESC')
-      .take(5);
+    const query = `
+  SELECT provinces.*, COUNT(tours.id) AS tourCount
+  FROM provinces
+  LEFT JOIN tours ON tours.province_id = provinces.id AND tours.status = ?
+  GROUP BY provinces.id
+  ORDER BY tourCount DESC, provinces.num_of_favorites
+  LIMIT 5
+`;
 
-    const provinces = await queryBuilder.getMany();
+    const provinces = await this.provinceRepository.query(query, [
+      TourStatus.ACTIVE,
+    ]);
 
     return {
       ...httpResponse.GET_PROVINCE_SUCCESS,
