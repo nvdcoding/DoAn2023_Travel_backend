@@ -30,8 +30,6 @@ export class ProvinceService {
       returnValue: provinces,
     };
   }
-<<<<<<< HEAD
-=======
 
   async getTopProvinces(): Promise<Response> {
     const queryBuilder = this.provinceRepository
@@ -50,5 +48,4 @@ export class ProvinceService {
       returnValue: provinces,
     };
   }
->>>>>>> ece7baeea0dce995fbb476e307e50cbf91269b47
 }

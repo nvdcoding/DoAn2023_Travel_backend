@@ -14,12 +14,9 @@ export class ProvinceController {
   async getProvinces(@Query() query: getProvinceDto): Promise<Response> {
     return this.provinceService.getProvinces(query);
   }
-<<<<<<< HEAD
-=======
 
   @Get('/top')
   async getTopProvinces(): Promise<Response> {
     return this.provinceService.getTopProvinces();
   }
->>>>>>> ece7baeea0dce995fbb476e307e50cbf91269b47
 }
