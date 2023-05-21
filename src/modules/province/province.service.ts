@@ -30,4 +30,20 @@ export class ProvinceService {
       returnValue: provinces,
     };
   }
+
+  async getTopProvinces(): Promise<Response> {
+    const queryBuilder = this.provinceRepository
+      .createQueryBuilder('province')
+      .leftJoinAndSelect('province.tours', 'tour', 'tour.status = :status', {
+        status: TourStatus.ACTIVE,
+      })
+      .orderBy('province.numOfFavorites')
+      .take(5);
+    const provinces = await queryBuilder.getMany();
+
+    return {
+      ...httpResponse.GET_PROVINCE_SUCCESS,
+      returnValue: provinces,
+    };
+  }
 }
