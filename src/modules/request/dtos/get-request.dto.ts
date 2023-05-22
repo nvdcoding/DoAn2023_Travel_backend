@@ -4,7 +4,7 @@ import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 
 export class GetUserRequestDto extends BasePaginationRequestDto {
   @ApiProperty({ required: false })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  provinceId: number;
+  provinceId: string;
 }
