@@ -423,7 +423,7 @@ export class TourGuideService {
     const transaction = await this.transactionRepository.findAndCount({
       where: {
         tourGuide: tourguide,
-        time: Between(
+        updatedAt: Between(
           new Date(startDate),
           new Date(moment(endDate).add(1, 'day').toString()),
         ),
