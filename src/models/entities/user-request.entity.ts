@@ -37,6 +37,9 @@ export class UserRequest {
   })
   content: string;
 
+  @Column({ name: 'start_date', type: 'date', nullable: false })
+  startDate: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

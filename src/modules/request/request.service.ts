@@ -61,6 +61,7 @@ export class RequestService {
       province,
       content,
       user,
+      startDate: body.startDate,
     });
     return httpResponse.CREATE_REQUEST_SUCCESS;
   }

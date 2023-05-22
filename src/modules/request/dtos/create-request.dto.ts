@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateRequestDto {
   @ApiProperty({ required: true })
@@ -11,4 +11,9 @@ export class CreateRequestDto {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: Date;
 }

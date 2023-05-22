@@ -50,10 +50,10 @@ export class CreateVoucherDto {
   @ApiProperty()
   @IsDateString()
   @IsNotEmpty()
-  startDate: number;
+  startDate: Date;
 
   @ApiProperty()
   @IsDateString()
   @IsNotEmpty()
-  endDate: number;
+  endDate: Date;
 }

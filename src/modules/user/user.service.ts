@@ -220,6 +220,9 @@ export class UserService {
           new Date(moment(endDate).add(1, 'day').toString()),
         ),
       },
+      order: {
+        id: 'DESC',
+      },
     });
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,
