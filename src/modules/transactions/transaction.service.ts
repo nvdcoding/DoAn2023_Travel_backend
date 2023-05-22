@@ -133,6 +133,34 @@ export class TransactionService {
     };
   }
 
+  async getTransactionsByDateRange(dto: GetTransactionDto): Promise<Response> {
+    const { startDate, endDate, limit, page } = dto;
+    const query = this.transactionRepository
+      .createQueryBuilder('transaction')
+      .where(
+        'transaction.updatedAt >= :startDate AND transaction.updatedAt <= :endDate',
+        {
+          startDate: new Date(startDate),
+          endDate: new Date(moment(endDate).add(1, 'day').toString()),
+        },
+      )
+      .orderBy('transaction.id', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+    const [data, countData] = await Promise.all([
+      query.getRawMany(),
+      query.getCount(),
+    ]);
+    return {
+      ...httpResponse.GET_TRANSACTION_SUCCESS,
+      returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        [data, countData],
+        page,
+        limit,
+      ),
+    };
+  }
+
   async getMyListWithdraw(
     actorId: number,
     role: ActorRole,

@@ -73,4 +73,12 @@ export class TransactionController {
       options,
     );
   }
+
+  @Get('/admin/')
+  @UseGuards(AdminModAuthGuard)
+  async adminGetTransctions(
+    @Query() options: GetTransactionDto,
+  ): Promise<Response> {
+    return this.transactionService.getTransactionsByDateRange(options);
+  }
 }
