@@ -124,7 +124,7 @@ export class RequestService {
     );
     const requests = await this.userRequestRepository.findAndCount({
       where: {
-        id: In([...tourGuideProvinces]),
+        province: { id: In([...tourGuideProvinces]) },
       },
       relations: ['province', 'user'],
       skip: (page - 1) * limit,
