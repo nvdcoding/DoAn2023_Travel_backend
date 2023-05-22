@@ -448,7 +448,7 @@ export class TourGuideService {
         .andWhere('transaction.type = :type', {
           type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
         })
-        .andWhere('transaction.tourGuideId = :tourGuideId', { tourGuideId })
+        .andWhere('transaction.tourGuide = :tourGuideId', { tourGuideId })
         .getRawOne(),
       this.transactionRepository
         .createQueryBuilder('transaction')
@@ -460,7 +460,7 @@ export class TourGuideService {
         .andWhere('transaction.type = :type', {
           type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
         })
-        .andWhere('transaction.tourguide_id = :tourGuideId', { tourGuideId })
+        .andWhere('transaction.tourGuide = :tourGuideId', { tourGuideId })
         .getRawOne(),
     ]);
     console.log(amountTimeRange);
