@@ -137,6 +137,8 @@ export class TransactionService {
     const { startDate, endDate, limit, page } = dto;
     const query = this.transactionRepository
       .createQueryBuilder('transaction')
+      .leftJoinAndSelect('transaction.user', 'user')
+      .leftJoinAndSelect('transaction.tourGuide', 'tourGuide')
       .where(
         'transaction.updatedAt >= :startDate AND transaction.updatedAt <= :endDate',
         {
