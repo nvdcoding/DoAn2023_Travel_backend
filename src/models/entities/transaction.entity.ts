@@ -62,6 +62,7 @@ export class TransactionEntity extends BaseEntity {
     type: 'datetime',
     name: 'time',
     nullable: true,
+    default: null,
   })
   time: Date;
 

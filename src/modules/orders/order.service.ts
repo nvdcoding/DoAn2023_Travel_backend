@@ -369,6 +369,12 @@ export class OrderService {
             action: body.action,
           });
     if (body.action === ActionApproveOrder.ACCEPT) {
+      const tourGuide = await this.tourGuideRepository.findOne({
+        where: {
+          id: tourguideId,
+          verifyStatus: TourguideStatus.ACTIVE,
+        },
+      });
       await Promise.all([
         this.tourGuideRepository.update(
           { id: order.tourGuide.id },
@@ -389,6 +395,15 @@ export class OrderService {
               order.price * (system.tourGuidePrepaidOrder / 100),
           },
         ),
+        this.transactionRepository.insert({
+          tourGuide: tourGuide,
+          amount: +order.price * (system.tourGuidePrepaidOrder / 100),
+          type: TransactionType.TOURGUIDE_APPROVE_ORDER,
+          status: TransactionStatus.SUCCESS,
+          wallet: null,
+          time: null,
+          user: null,
+        }),
       ]);
     }
     await Promise.all([
@@ -506,12 +521,9 @@ export class OrderService {
         user,
         status: TransactionStatus.SUCCESS,
         amount,
-      },
-      {
-        type: TransactionType.SYSTEM_USER_PAYORDER,
-        user: null,
-        amount,
-        status: TransactionStatus.SUCCESS,
+        wallet: null,
+        tourGuide: null,
+        time: null,
       },
     ]);
     return httpResponse.PAID_ORDER_SUCCESS;
@@ -571,10 +583,7 @@ export class OrderService {
     const now = moment();
     const endDatePlus7Days = moment(endDate).add(7, 'days');
     if (!now.isBetween(endDate, endDatePlus7Days)) {
-      throw new HttpException(
-        httpErrors.ORDER_DATE_NOT_VALID,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const tourGuideBalanceAdd = (system.commission / 100) * order.price;
     await Promise.all([
@@ -586,7 +595,10 @@ export class OrderService {
       ),
       this.systemRepository.update(
         { id: system.id },
-        { balance: system.balance - tourGuideBalanceAdd },
+        {
+          balance:
+            system.balance - tourGuideBalanceAdd - order.tourGuideDeposit,
+        },
       ),
       this.tourGuideRepository.update(
         { id: order.tourGuide.id },
@@ -595,9 +607,21 @@ export class OrderService {
             order.tourGuide.availableBalance +
             order.tourGuideDeposit +
             tourGuideBalanceAdd,
-          balance: order.tourGuide.balance + tourGuideBalanceAdd,
+          balance:
+            order.tourGuide.balance +
+            order.tourGuideDeposit +
+            tourGuideBalanceAdd,
         },
       ),
+      this.transactionRepository.insert({
+        tourGuide: order.tourGuide,
+        amount: +order.tourGuideDeposit + +tourGuideBalanceAdd,
+        type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
+        status: TransactionStatus.SUCCESS,
+        wallet: null,
+        time: null,
+        user: null,
+      }),
     ]);
     return httpResponse.END_ORDER_SUCCESS;
   }
@@ -668,7 +692,6 @@ export class OrderService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    console.log(0.1 * order.price);
     await Promise.all([
       this.orderRepository.update(
         { id: order.id },
@@ -686,6 +709,14 @@ export class OrderService {
       ),
       this.systemRepository.update(system.id, {
         balance: system.balance + 0.1 * order.price,
+      }),
+      this.transactionRepository.insert({
+        user: user,
+        amount: 0.1 * +order.price,
+        type: TransactionType.USER_PREPAID_ORDER,
+        status: TransactionStatus.SUCCESS,
+        wallet: null,
+        time: null,
       }),
     ]);
     return httpResponse.PREPAID_ORDER_SUCCESS;
@@ -746,6 +777,15 @@ export class OrderService {
             balance: order.tourGuide.balance + order.tourGuideDeposit,
           },
         ),
+        this.transactionRepository.insert({
+          tourGuide: order.tourGuide,
+          amount: +order.tourGuideDeposit,
+          type: TransactionType.BACK_PREPAID,
+          status: TransactionStatus.SUCCESS,
+          wallet: null,
+          time: null,
+          user: null,
+        }),
       ]);
     } else if (
       order.status === OrderStatus.WAITING_PURCHASE ||
@@ -776,6 +816,15 @@ export class OrderService {
               system.balance - order.tourGuideDeposit - 0.1 * order.price,
           },
         ),
+        this.transactionRepository.insert({
+          tourGuide: order.tourGuide,
+          amount: +order.tourGuideDeposit + 0.1 * +order.price,
+          type: TransactionType.BACK_ORDER,
+          status: TransactionStatus.SUCCESS,
+          wallet: null,
+          time: null,
+          user: null,
+        }),
       ]);
     }
     return httpResponse.CANCEL_ORDER_SUCCESS;
@@ -799,7 +848,7 @@ export class OrderService {
             ]),
           ),
         },
-        relations: ['tourGuide', 'user'],
+        relations: ['tourGuide', 'user', 'userVoucher'],
       }),
       this.tourGuideRepository.findOne({
         where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
@@ -864,6 +913,19 @@ export class OrderService {
           },
         ),
         // TODO: trả lại voucher
+        this.transactionRepository.insert({
+          user: order.user,
+          amount: 0.1 * +order.price,
+          type: TransactionType.BACK_ORDER,
+          status: TransactionStatus.SUCCESS,
+          wallet: null,
+          time: null,
+          tourGuide: null,
+        }),
+        this.userVoucherRepository.update(
+          { id: order.userVoucher.id },
+          { status: UserVoucherStatus.AVAILABLE },
+        ),
       ]);
     }
     return httpResponse.CANCEL_ORDER_SUCCESS;
