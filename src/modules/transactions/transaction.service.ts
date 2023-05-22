@@ -27,6 +27,9 @@ import { AdminStatus } from 'src/shares/enum/admin.enum';
 import { AdminAproveWithdrawRequest } from './dtos/admin-prove.dto';
 import { SystemRepository } from 'src/models/repositories/system.repository';
 import * as moment from 'moment';
+import { PostRepository } from 'src/models/repositories/post.repository';
+import { OrderRepository } from 'src/models/repositories/order.repository';
+import { RateRepository } from 'src/models/repositories/rate.repository';
 
 @Injectable()
 export class TransactionService {
@@ -36,6 +39,9 @@ export class TransactionService {
     private readonly tourGuideRepository: TourGuideRepository,
     private readonly adminRepository: AdminRepository,
     private readonly systemRepository: SystemRepository,
+    private readonly postRepository: PostRepository,
+    private readonly orderRepository: OrderRepository,
+    private readonly rateRepository: RateRepository,
   ) {}
 
   async userWithdraw(body: WithdrawDto, userId: number): Promise<Response> {
@@ -149,11 +155,15 @@ export class TransactionService {
       .orderBy('transaction.id', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
+
     const [data, countData] = await Promise.all([
       query.getRawMany(),
       query.getCount(),
     ]);
     // const;
+    // const [goodRates, badRates, profit, orders] = await Promise.all([
+    //   this.rateRepository.findOne(),
+    // ]);
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,
       returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(

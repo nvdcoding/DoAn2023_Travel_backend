@@ -89,6 +89,7 @@ export class OrderService {
       );
     }
     // TODO: add voucher
+    let userVoucher = null;
     let discountPrice = 0;
     if (voucherId) {
       const voucher = await this.voucherRepository.findOne({
@@ -96,7 +97,7 @@ export class OrderService {
           id: voucherId,
         },
       });
-      const userVoucher = await this.userVoucherRepository.findOne({
+      userVoucher = await this.userVoucherRepository.findOne({
         where: { user, voucher, status: UserVoucherStatus.AVAILABLE },
       });
       if (!userVoucher) {
@@ -153,6 +154,7 @@ export class OrderService {
         user,
         orderSchedule,
         status: OrderStatus.WAITING_TOUR_GUIDE,
+        userVoucher,
       }),
     ]);
     return httpResponse.GET_ORDER_SUCCESS;
@@ -206,6 +208,8 @@ export class OrderService {
         'tourGuide',
         'tour.images',
         'tour.rates',
+        'userVoucher',
+        'userVoucher.voucher',
       ],
     });
     if (!orders) {
@@ -312,6 +316,7 @@ export class OrderService {
       relations: [
         'tourGuide',
         'userVoucher',
+        'userVoucher.voucher',
         'tour',
         'tour.images',
         'user',
@@ -617,6 +622,15 @@ export class OrderService {
         tourGuide: order.tourGuide,
         amount: +order.tourGuideDeposit + +tourGuideBalanceAdd,
         type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
+        status: TransactionStatus.SUCCESS,
+        wallet: null,
+        time: null,
+        user: null,
+      }),
+      this.transactionRepository.insert({
+        tourGuide: null,
+        amount: (100 - system.commission / 100) * order.price,
+        type: TransactionType.PROFIT_SYSTEM,
         status: TransactionStatus.SUCCESS,
         wallet: null,
         time: null,

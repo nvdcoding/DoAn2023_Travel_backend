@@ -15,6 +15,7 @@ export enum TransactionType {
   CANCEL_ORDER = 'CANCEL_ORDER',
   BACK_PREPAID = 'BACK_PREPAID',
   BACK_ORDER = 'BACK_ORDER',
+  PROFIT_SYSTEM = 'PROFIT_SYSTEM',
 }
 
 export enum AproveActionWithdraw {
