@@ -411,6 +411,8 @@ export class TourGuideService {
     tourGuideId: number,
   ): Promise<Response> {
     const { limit, page, startDate, endDate } = options;
+    const startDateDb = new Date(startDate);
+    const endDateDb = new Date(moment(endDate).add(1, 'day').toString());
     const tourguide = await this.tourGuideRepository.findOne({
       where: { id: tourGuideId, verifyStatus: TourguideStatus.ACTIVE },
     });
@@ -432,6 +434,37 @@ export class TourGuideService {
         id: 'DESC',
       },
     });
+    const [amountTimeRange, amountAllTime] = await Promise.all([
+      this.transactionRepository
+        .createQueryBuilder('transaction')
+        .select('SUM(transaction.amount)', 'totalAmountRange')
+        .where('transaction.status = :status', {
+          status: TransactionStatus.SUCCESS,
+        })
+        .andWhere('transaction.updatedAt >= :startDate', {
+          startDate: startDateDb,
+        })
+        .andWhere('transaction.updatedAt <= :endDate', { endDate: endDateDb })
+        .andWhere('transaction.type = :type', {
+          type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
+        })
+        .andWhere('transaction.tourGuideId = :tourGuideId', { tourGuideId })
+        .getRawOne(),
+      this.transactionRepository
+        .createQueryBuilder('transaction')
+        .select('SUM(transaction.amount)', 'totalAmount')
+        .where('transaction.status = :status', {
+          status: TransactionStatus.SUCCESS,
+        })
+        .andWhere('transaction.updatedAt <= :endDate', { endDate: endDateDb })
+        .andWhere('transaction.type = :type', {
+          type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
+        })
+        .andWhere('transaction.tourGuideId = :tourGuideId', { tourGuideId })
+        .getRawOne(),
+    ]);
+    console.log(amountTimeRange);
+
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,
       returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
@@ -439,6 +472,14 @@ export class TourGuideService {
         page,
         limit,
       ),
+      options: {
+        totalProfitTimeRange: amountTimeRange.totalAmountRange
+          ? parseFloat(amountTimeRange.totalAmountRange)
+          : 0,
+        totalProfit: amountAllTime.totalAmount
+          ? parseFloat(amountAllTime.totalAmount)
+          : 0,
+      },
     };
   }
 
