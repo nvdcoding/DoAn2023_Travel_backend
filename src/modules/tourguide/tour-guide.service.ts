@@ -460,7 +460,7 @@ export class TourGuideService {
         .andWhere('transaction.type = :type', {
           type: TransactionType.TOURGUIDE_RECEIVE_ORDER,
         })
-        .andWhere('transaction.tourGuideId = :tourGuideId', { tourGuideId })
+        .andWhere('transaction.tourGuide = :tourGuideId', { tourGuideId })
         .getRawOne(),
     ]);
     console.log(amountTimeRange);
