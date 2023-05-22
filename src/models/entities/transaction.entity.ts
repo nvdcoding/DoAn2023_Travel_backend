@@ -30,7 +30,7 @@ export class TransactionEntity extends BaseEntity {
     enum: WALLET_TYPE,
     name: 'wallet',
     nullable: true,
-    default: WALLET_TYPE.VN_PAY,
+    default: null,
   })
   wallet: WALLET_TYPE;
 

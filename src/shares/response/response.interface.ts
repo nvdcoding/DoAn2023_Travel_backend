@@ -3,4 +3,5 @@ export interface Response {
   message: string;
   code: string;
   returnValue?: any;
+  options?: any;
 }

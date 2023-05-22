@@ -30,6 +30,7 @@ import * as moment from 'moment';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { OrderRepository } from 'src/models/repositories/order.repository';
 import { RateRepository } from 'src/models/repositories/rate.repository';
+import { OrderStatus } from 'src/shares/enum/order.enum';
 
 @Injectable()
 export class TransactionService {
@@ -141,6 +142,9 @@ export class TransactionService {
 
   async getTransactionsByDateRange(dto: GetTransactionDto): Promise<Response> {
     const { startDate, endDate, limit, page } = dto;
+    const startDateDb = new Date(startDate);
+    const endDateDb = new Date(moment(endDate).add(1, 'day').toString());
+
     const query = this.transactionRepository
       .createQueryBuilder('transaction')
       .leftJoinAndSelect('transaction.user', 'user')
@@ -148,8 +152,8 @@ export class TransactionService {
       .where(
         'transaction.updatedAt >= :startDate AND transaction.updatedAt <= :endDate',
         {
-          startDate: new Date(startDate),
-          endDate: new Date(moment(endDate).add(1, 'day').toString()),
+          startDate: startDateDb,
+          endDate: endDateDb,
         },
       )
       .orderBy('transaction.id', 'DESC')
@@ -161,9 +165,55 @@ export class TransactionService {
       query.getCount(),
     ]);
     // const;
-    // const [goodRates, badRates, profit, orders] = await Promise.all([
-    //   this.rateRepository.findOne(),
-    // ]);
+    const [goodRates, badRates, profit, orders] = await Promise.all([
+      this.rateRepository
+        .createQueryBuilder('rate')
+        .where('rate.star >= 4')
+        .andWhere(
+          'rate.createdAt >= :startDate AND  rate.created <= :endDate',
+          {
+            startDate: startDateDb,
+            endDate: endDateDb,
+          },
+        )
+        .getCount(),
+      this.rateRepository
+        .createQueryBuilder('rate')
+        .where('rate.star <= 4')
+        .andWhere(
+          'rate.createdAt >= :startDate AND  rate.createdAt <= :endDate',
+          {
+            startDate: startDateDb,
+            endDate: endDateDb,
+          },
+        )
+        .getCount(),
+      this.transactionRepository
+        .createQueryBuilder('transaction')
+        .select('SUM(transaction.amount)', 'totalAmount')
+        .where('transaction.status = :status', {
+          status: TransactionStatus.SUCCESS,
+        })
+        .andWhere('transaction.updatedAt >= :startDate', {
+          startDate: startDateDb,
+        })
+        .andWhere('transaction.updatedAt <= :endDate', { endDate: endDateDb })
+        .andWhere('transaction.type = :type', {
+          type: TransactionType.PROFIT_SYSTEM,
+        })
+        .getRawOne(),
+      this.orderRepository
+        .createQueryBuilder('order')
+        .where('order.status = :status', { status: OrderStatus.DONE })
+        .andWhere(
+          'order.updatedAt >= :startDate AND  rate.updatedAt <= :endDate',
+          {
+            startDate: startDateDb,
+            endDate: endDateDb,
+          },
+        )
+        .getCount(),
+    ]);
     return {
       ...httpResponse.GET_TRANSACTION_SUCCESS,
       returnValue: BasePaginationResponseDto.convertToPaginationWithTotalPages(
@@ -171,6 +221,12 @@ export class TransactionService {
         page,
         limit,
       ),
+      options: {
+        goodRates,
+        badRates,
+        totalProfit: profit.totalAmount ? parseFloat(profit.totalAmount) : 0,
+        numOfOrders: orders,
+      },
     };
   }
 
