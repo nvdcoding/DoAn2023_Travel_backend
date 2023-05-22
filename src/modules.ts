@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bull';
 import { CacheModule, Logger } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as redisStore from 'cache-manager-redis-store';
 import { ConsoleModule } from 'nestjs-console';
@@ -53,5 +54,6 @@ const Modules = [
   CommentModule,
   TransactionModule,
   ReportModule,
+  ScheduleModule.forRoot(),
 ];
 export default Modules;
