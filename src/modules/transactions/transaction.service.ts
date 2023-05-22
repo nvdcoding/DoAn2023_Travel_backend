@@ -148,7 +148,7 @@ export class TransactionService {
       .skip((page - 1) * limit)
       .take(limit);
     const [data, countData] = await Promise.all([
-      query.getRawMany(),
+      query.getMany(),
       query.getCount(),
     ]);
     return {
