@@ -97,7 +97,7 @@ export class OrderService {
         },
       });
       const userVoucher = await this.userVoucherRepository.findOne({
-        where: { user, voucher, status: UserVoucherStatus.USED },
+        where: { user, voucher, status: UserVoucherStatus.AVAILABLE },
       });
       if (!userVoucher) {
         throw new HttpException(
@@ -912,7 +912,6 @@ export class OrderService {
             availableBalance: order.user.availableBalance + 0.1 * order.price,
           },
         ),
-        // TODO: trả lại voucher
         this.transactionRepository.insert({
           user: order.user,
           amount: 0.1 * +order.price,
@@ -922,10 +921,6 @@ export class OrderService {
           time: null,
           tourGuide: null,
         }),
-        this.userVoucherRepository.update(
-          { id: order.userVoucher.id },
-          { status: UserVoucherStatus.AVAILABLE },
-        ),
       ]);
     }
     return httpResponse.CANCEL_ORDER_SUCCESS;
