@@ -45,7 +45,6 @@ export class PostRepository extends Repository<Post> {
       const keywordLike = `%${keyword}%`;
       queryBuilder
         .where('post.title LIKE :keyword')
-        .orWhere('post.name LIKE :keyword')
         .orWhere('post.id LIKE :keyword')
         .orWhere('user.username LIKE :keyword')
         .orWhere('tourGuide.username LIKE :keyword')
