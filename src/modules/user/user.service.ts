@@ -215,7 +215,7 @@ export class UserService {
     const transaction = await this.transactionRepository.findAndCount({
       where: {
         user,
-        time: Between(
+        updatedAt: Between(
           new Date(startDate),
           new Date(moment(endDate).add(1, 'day').toString()),
         ),
