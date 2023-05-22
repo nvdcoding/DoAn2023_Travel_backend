@@ -36,6 +36,12 @@ export class RequestController {
     return this.requestService.createRequest(body, userId);
   }
 
+  @Delete('/')
+  @UseGuards(TourGuideAuthGuard)
+  async deleteRequest(@Param('id') requestId): Promise<Response> {
+    return this.requestService.deleteRequest(requestId);
+  }
+
   @Get('/user')
   @UseGuards(UserAuthGuard)
   async getMyRequest(

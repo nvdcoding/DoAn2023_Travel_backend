@@ -233,9 +233,18 @@ export class RequestService {
     return httpResponse.DELETE_REQUEST_SUCCESS;
   }
 
-  async test() {
-    const redisClient = createClient(redisConfig.port, redisConfig.host);
-    console.log(1);
-    SocketEmitter.getInstance().emitSuggest(10, '12312312', 3);
+  async deleteRequest(requestId: number): Promise<Response> {
+    const request = await this.userRequestRepository.findOne({
+      where: { id: requestId },
+      relations: ['user', 'province'],
+    });
+    if (!request) {
+      throw new HttpException(
+        httpErrors.REQUEST_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.userRequestRepository.delete(request.id);
+    return httpResponse.DELETE_REQUEST_SUCCESS;
   }
 }
