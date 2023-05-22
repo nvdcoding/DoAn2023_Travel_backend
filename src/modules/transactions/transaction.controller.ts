@@ -75,7 +75,7 @@ export class TransactionController {
   }
 
   @Get('/admin/')
-  @UseGuards(AdminModAuthGuard)
+  // @UseGuards(AdminModAuthGuard)
   async adminGetTransctions(
     @Query() options: GetTransactionDto,
   ): Promise<Response> {

@@ -179,7 +179,7 @@ export class TransactionService {
         .getCount(),
       this.rateRepository
         .createQueryBuilder('rate')
-        .where('rate.star <= 4')
+        .where('rate.star <= 3')
         .andWhere(
           'rate.createdAt >= :startDate AND  rate.createdAt <= :endDate',
           {
@@ -206,7 +206,7 @@ export class TransactionService {
         .createQueryBuilder('order')
         .where('order.status = :status', { status: OrderStatus.DONE })
         .andWhere(
-          'order.updatedAt >= :startDate AND  rate.updatedAt <= :endDate',
+          'order.updatedAt >= :startDate AND order.updatedAt <= :endDate',
           {
             startDate: startDateDb,
             endDate: endDateDb,
