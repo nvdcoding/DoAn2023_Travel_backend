@@ -170,7 +170,7 @@ export class TransactionService {
         .createQueryBuilder('rate')
         .where('rate.star >= 4')
         .andWhere(
-          'rate.createdAt >= :startDate AND  rate.created <= :endDate',
+          'rate.createdAt >= :startDate AND  rate.createdAt <= :endDate',
           {
             startDate: startDateDb,
             endDate: endDateDb,
