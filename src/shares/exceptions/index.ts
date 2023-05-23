@@ -178,4 +178,10 @@ export const httpErrors = {
     message: 'Report not found',
     code: 'ERR_REPORT_001',
   },
+  //INVALID DATE
+  ORDER_INVALID_DATE_ORDER: {
+    message:
+      'Để hướng dẫn viên có sự chuẩn bị tốt nhất, bạn vui lòng đặt trước chuyến đi trước 7 ngày và không quá 3 tháng.',
+    code: 'ERR_DATE_0011',
+  },
 };

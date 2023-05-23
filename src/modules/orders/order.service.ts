@@ -35,6 +35,7 @@ import { EndOrderDto } from './dtos/end-order.dto';
 import { VoucherRepository } from 'src/models/repositories/voucher.repository';
 import { UserVoucherRepository } from 'src/models/repositories/user-voucher.repository';
 import { DiscountType, UserVoucherStatus } from 'src/shares/enum/voucher.enum';
+import { orderConfig } from 'src/configs/order.config';
 
 @Injectable()
 export class OrderService {
@@ -65,6 +66,17 @@ export class OrderService {
         where: { id: userId, verifyStatus: UserStatus.ACTIVE },
       }),
     ]);
+    const today = moment().startOf('day');
+    const startDateMoment = moment(startDate).startOf('day');
+    const minStartDate = today.clone().add(3, 'months');
+    const maxStartDate = today.clone().add(7, 'days');
+
+    if (!startDateMoment.isBetween(minStartDate, maxStartDate)) {
+      throw new HttpException(
+        httpErrors.ORDER_INVALID_DATE_ORDER,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (!tour) {
       throw new HttpException(httpErrors.TOUR_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
@@ -343,7 +355,21 @@ export class OrderService {
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    let deadlinePrepaid = null;
     if (body.action === ActionApproveOrder.ACCEPT) {
+      const diffInMonths = moment(order.updatedAt, 'YYYY-MM-DD').diff(
+        moment(order.startDate, 'YYYY-MM-DD'),
+        'months',
+      );
+      if (diffInMonths < 1) {
+        deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv1, 'days');
+      } else if (diffInMonths >= 1 && diffInMonths < 2) {
+        deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv2, 'days');
+      } else if (diffInMonths >= 2 && diffInMonths < 3) {
+        deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv3, 'days');
+      } else {
+      }
+
       await this.checkTourguideAvailable(
         tourguideId,
         `${order.startDate}`,
@@ -422,6 +448,7 @@ export class OrderService {
             ? order.price * (system.tourGuidePrepaidOrder / 100)
             : null,
         approveTime: moment(new Date()).toISOString().split('T')[0],
+        deadlinePrepaid,
       }),
       task,
     ]);
@@ -905,6 +932,15 @@ export class OrderService {
             cancelledOrders: order.tourGuide.cancelledOrders + 1,
           },
         ),
+        this.transactionRepository.insert({
+          user: null,
+          amount: 0.9 * order.tourGuideDeposit,
+          type: TransactionType.BACK_PREPAID,
+          status: TransactionStatus.SUCCESS,
+          wallet: null,
+          time: null,
+          tourGuide: tourguide,
+        }),
       ]);
     } else {
       await Promise.all([

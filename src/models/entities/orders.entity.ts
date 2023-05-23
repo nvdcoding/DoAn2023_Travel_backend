@@ -42,6 +42,14 @@ export class Order extends BaseEntity {
   @Column({ name: 'approve_date', type: 'date', nullable: true })
   approveTime: Date;
 
+  @Column({
+    name: 'deadline_prepaid',
+    type: 'date',
+    nullable: true,
+    default: null,
+  })
+  deadlinePrepaid: Date;
+
   @Column({ name: 'price', type: 'int', nullable: false })
   price: number;
 

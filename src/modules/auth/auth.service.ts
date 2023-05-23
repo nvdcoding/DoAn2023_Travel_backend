@@ -491,8 +491,11 @@ export class AuthService {
         break;
       case ActorRole.TOURGUIDE:
         me = await this.tourGuideRepository.findOne({
-          id,
-          verifyStatus: TourguideStatus.ACTIVE,
+          where: {
+            id,
+            verifyStatus: TourguideStatus.ACTIVE,
+          },
+          relations: ['provinces'],
         });
         break;
       default:
