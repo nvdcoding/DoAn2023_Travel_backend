@@ -41,6 +41,11 @@ export class PostController {
     return this.postService.getListPost(options);
   }
 
+  @Get('/top')
+  async getTopPost(o): Promise<Response> {
+    return this.postService.getTopPost();
+  }
+
   @Post('/user-tourguide')
   @UseGuards(IsLoginGuard)
   async createPost(

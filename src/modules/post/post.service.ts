@@ -65,6 +65,16 @@ export class PostService {
     return { ...httpResponse.GET_POST_SUCCESS, returnValue: post };
   }
 
+  async getTopPost(): Promise<Response> {
+    const topPosts = await this.postRepository.find({
+      take: 10,
+      order: {
+        like: 'DESC',
+      },
+    });
+    return { ...httpResponse.GET_POST_SUCCESS, returnValue: topPosts };
+  }
+
   async getListPost(options: GetPostDto): Promise<Response> {
     const { topics, limit, page, keyword } = options;
 
