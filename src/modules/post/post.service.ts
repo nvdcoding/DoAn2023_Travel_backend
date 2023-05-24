@@ -71,6 +71,7 @@ export class PostService {
       order: {
         like: 'DESC',
       },
+      relations: ['user', 'tourGuide'],
     });
     return { ...httpResponse.GET_POST_SUCCESS, returnValue: topPosts };
   }
