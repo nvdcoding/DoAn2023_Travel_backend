@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminRepository } from './repositories/admin.repository';
 import { ChatRepository } from './repositories/chat.repository';
+import { CommentRepository } from './repositories/comment.repository';
 import { OrderScheduleRepository } from './repositories/order-schedule.repository';
 import { OrderRepository } from './repositories/order.repository';
 import { PermissionRepository } from './repositories/permission.repository';
@@ -40,6 +41,7 @@ const commonRepositories = [
   ChatRepository,
   UserRequestRepository,
   ReportRepository,
+  CommentRepository,
 ];
 
 @Global()

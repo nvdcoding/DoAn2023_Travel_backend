@@ -223,6 +223,30 @@ export const httpResponse = {
     statusCode: 200,
   },
 
+  ///
+  CREATE_COMMENT_SUCCESS: {
+    message: 'Comment created',
+    code: 'COMMENT_001',
+    statusCode: 200,
+  },
+
+  GET_COMMENT_SUCCESS: {
+    message: 'Get success',
+    code: 'COMMENT_002',
+    statusCode: 200,
+  },
+
+  UPDATE_COMMENT_SUCCESS: {
+    message: 'update success',
+    code: 'COMMENT_003',
+    statusCode: 200,
+  },
+
+  DELETE_COMMENT_SUCCESS: {
+    message: 'Delete success',
+    code: 'COMMENT_004',
+    statusCode: 200,
+  },
   // GET TRansaction succes
   GET_TRANSACTION_SUCCESS: {
     message: 'Get transaction success',

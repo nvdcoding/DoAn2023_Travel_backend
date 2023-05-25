@@ -184,4 +184,9 @@ export const httpErrors = {
       'Để hướng dẫn viên có sự chuẩn bị tốt nhất, bạn vui lòng đặt trước chuyến đi trước 7 ngày và không quá 3 tháng.',
     code: 'ERR_DATE_0011',
   },
+
+  COMMENT_NOT_FOUND: {
+    message: 'Không thấy bình luận',
+    code: 'ERR_COMMENT_001',
+  },
 };
