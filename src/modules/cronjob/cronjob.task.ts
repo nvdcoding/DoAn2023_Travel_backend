@@ -29,8 +29,8 @@ export class CronTask {
     // Your task logic goes here
     // const user = await this.userRepository.findOne();
     // console.log(user);
-    await this.changePendingTransaction();
-    await this.changeOrderNotPrePaid();
+    // await this.changePendingTransaction();
+    // await this.changeOrderNotPrePaid();
   }
 
   private async changePendingTransaction() {
