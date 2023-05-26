@@ -356,20 +356,20 @@ export class OrderService {
     if (!order) {
       throw new HttpException(httpErrors.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    let deadlinePrepaid = null;
+    // let deadlinePrepaid = null;
     if (body.action === ActionApproveOrder.ACCEPT) {
-      const diffInMonths = moment(order.updatedAt, 'YYYY-MM-DD').diff(
-        moment(order.startDate, 'YYYY-MM-DD'),
-        'months',
-      );
-      if (diffInMonths < 1) {
-        deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv1, 'days');
-      } else if (diffInMonths >= 1 && diffInMonths < 2) {
-        deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv2, 'days');
-      } else if (diffInMonths >= 2 && diffInMonths < 3) {
-        deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv3, 'days');
-      } else {
-      }
+      // const diffInMonths = moment(order.updatedAt, 'YYYY-MM-DD').diff(
+      //   moment(order.startDate, 'YYYY-MM-DD'),
+      //   'months',
+      // );
+      // if (diffInMonths < 1) {
+      //   deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv1, 'days');
+      // } else if (diffInMonths >= 1 && diffInMonths < 2) {
+      //   deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv2, 'days');
+      // } else if (diffInMonths >= 2 && diffInMonths < 3) {
+      //   deadlinePrepaid = moment().add(orderConfig.deadlinePrepaid_lv3, 'days');
+      // } else {
+      // }
 
       await this.checkTourguideAvailable(
         tourguideId,
@@ -449,7 +449,7 @@ export class OrderService {
             ? order.price * (system.tourGuidePrepaidOrder / 100)
             : null,
         approveTime: moment(new Date()).toISOString().split('T')[0],
-        deadlinePrepaid,
+        // deadlinePrepaid,
       }),
       task,
     ]);
