@@ -68,16 +68,16 @@ export class OrderService {
     ]);
     const today = moment().startOf('day');
     const startDateMoment = moment(startDate).startOf('day');
-    const minStartDate = today.clone().add(3, 'months');
-    const maxStartDate = today.clone().add(7, 'days');
-    console.log({ minStartDate, maxStartDate, startDateMoment });
-    // console.log(startDateMoment.isBefore);
-    if (!startDateMoment.isBetween(minStartDate, maxStartDate)) {
-      throw new HttpException(
-        httpErrors.ORDER_INVALID_DATE_ORDER,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // const minStartDate = today.clone().add(3, 'months');
+    // const maxStartDate = today.clone().add(7, 'days');
+    // console.log({ minStartDate, maxStartDate, startDateMoment });
+    // // console.log(startDateMoment.isBefore);
+    // if (!startDateMoment.isBetween(minStartDate, maxStartDate)) {
+    //   throw new HttpException(
+    //     httpErrors.ORDER_INVALID_DATE_ORDER,
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     if (!tour) {
       throw new HttpException(httpErrors.TOUR_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
