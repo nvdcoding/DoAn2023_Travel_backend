@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { of } from 'rxjs';
 import { vnPayConfig } from 'src/configs/digital-wallet';
 import { PostRepository } from 'src/models/repositories/post.repository';
+import { TourGuideRepository } from 'src/models/repositories/tourguide.repository';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import {
@@ -12,6 +13,7 @@ import {
 } from 'src/shares/dtos/base-pagination.dto';
 import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
 import { PostStatus } from 'src/shares/enum/post.enum';
+import { TourguideStatus } from 'src/shares/enum/tourguide.enum';
 import {
   TransactionStatus,
   TransactionType,
@@ -34,6 +36,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly transactionRepository: TransactionRepository,
     private readonly postRepository: PostRepository,
+    private readonly tourGuideRepository: TourGuideRepository,
   ) {}
 
   async getUserByIdAndEmail(id: number, email: string) {
@@ -253,16 +256,46 @@ export class UserService {
       const orderId = query['vnp_TxnRef'];
       const rspCode = query['vnp_ResponseCode'];
       //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
+      let user, tourGuide;
       const transaction = await this.transactionRepository.findOne({
         where: { transactionCode: orderId },
         relations: ['user', 'tourGuide'],
       });
-      const user = await this.userRepository.findOne({
-        where: {
-          id: transaction.user ? transaction.user.id : transaction.tourGuide.id,
-          verifyStatus: UserStatus.ACTIVE,
-        },
-      });
+      const task;
+      if (transaction.user) {
+        user = await this.userRepository.findOne({
+          where: {
+            id: transaction.user.id,
+            verifyStatus: UserStatus.ACTIVE,
+          },
+        });
+        task.push(
+          this.userRepository.update(
+            { id: transaction.user.id },
+            {
+              balance: user.balance + +vnp_Amount / 100,
+              availableBalance: user.availableBalance + +vnp_Amount / 100,
+            },
+          ),
+        );
+      } else {
+        tourGuide = await this.tourGuideRepository.findOne({
+          where: {
+            id: transaction.tourGuide.id,
+            verifyStatus: TourguideStatus.ACTIVE,
+          },
+        });
+        task.push(
+          this.tourGuideRepository.update(
+            { id: transaction.tourGuide.id },
+            {
+              balance: tourGuide.balance + +vnp_Amount / 100,
+              availableBalance: tourGuide.availableBalance + +vnp_Amount / 100,
+            },
+          ),
+        );
+      }
+
       if (rspCode == '00') {
         await Promise.all([
           this.transactionRepository.update(
@@ -271,13 +304,7 @@ export class UserService {
               status: TransactionStatus.SUCCESS,
             },
           ),
-          this.userRepository.update(
-            { id: transaction.user.id },
-            {
-              balance: user.balance + +vnp_Amount / 100,
-              availableBalance: user.availableBalance + +vnp_Amount / 100,
-            },
-          ),
+          ...task,
         ]);
       } else {
         await this.transactionRepository.update(
