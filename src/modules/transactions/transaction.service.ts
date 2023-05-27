@@ -20,8 +20,11 @@ import {
 } from 'src/shares/dtos/base-pagination.dto';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { GetTransactionDto } from 'src/shares/dtos/get-transaction.dto';
-import { Between } from 'typeorm';
+import {
+  GetTransactionDto,
+  GetTransactionWithdrawDto,
+} from 'src/shares/dtos/get-transaction.dto';
+import { Between, Not } from 'typeorm';
 import { ActorRole } from 'src/shares/enum/auth.enum';
 import { AdminStatus } from 'src/shares/enum/admin.enum';
 import { AdminAproveWithdrawRequest } from './dtos/admin-prove.dto';
@@ -113,15 +116,20 @@ export class TransactionService {
     return httpResponse.CREATE_TRANSACTION_SUCCESS;
   }
 
-  async getListWithdrawRequest(options: GetTransactionDto): Promise<Response> {
-    const { limit, page, startDate, endDate } = options;
+  async getListWithdrawRequest(
+    options: GetTransactionWithdrawDto,
+  ): Promise<Response> {
+    const { limit, page, startDate, endDate, isHistory } = options;
     const transactions = await this.transactionRepository.findAndCount({
       where: {
         time: Between(
           new Date(startDate),
           new Date(moment(endDate).add(1, 'day').toString()),
         ),
-        status: TransactionStatus.WAITING,
+        status: isHistory
+          ? Not(TransactionStatus.WAITING)
+          : TransactionStatus.WAITING,
+        type: TransactionType.WITHDRAW,
       },
       relations: ['user', 'tourGuide'],
       order: {
@@ -233,9 +241,9 @@ export class TransactionService {
   async getMyListWithdraw(
     actorId: number,
     role: ActorRole,
-    options: GetTransactionDto,
+    options: GetTransactionWithdrawDto,
   ): Promise<Response> {
-    const { limit, page, startDate, endDate } = options;
+    const { limit, page, startDate, endDate, isHistory } = options;
     switch (role) {
       case ActorRole.TOURGUIDE:
         const tourGuide = await this.tourGuideRepository.findOne({
@@ -249,8 +257,11 @@ export class TransactionService {
                 new Date(startDate),
                 new Date(moment(endDate).add(1, 'day').toString()),
               ),
-              status: TransactionStatus.WAITING,
+              status: isHistory
+                ? Not(TransactionStatus.WAITING)
+                : TransactionStatus.WAITING,
               tourGuide,
+              type: TransactionType.WITHDRAW,
             },
             relations: ['user', 'tourGuide'],
             order: {
@@ -280,8 +291,11 @@ export class TransactionService {
               new Date(startDate),
               new Date(moment(endDate).add(1, 'day').toString()),
             ),
-            status: TransactionStatus.WAITING,
+            status: isHistory
+              ? Not(TransactionStatus.WAITING)
+              : TransactionStatus.WAITING,
             user,
+            type: TransactionType.WITHDRAW,
           },
           relations: ['user', 'tourGuide'],
           order: {

@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 import { BasePaginationRequestDto } from './base-pagination.dto';
 
 export class GetTransactionDto extends BasePaginationRequestDto {
@@ -12,4 +17,26 @@ export class GetTransactionDto extends BasePaginationRequestDto {
   @IsDateString()
   @IsNotEmpty()
   endDate: Date;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  isHistory: boolean;
+}
+
+export class GetTransactionWithdrawDto extends BasePaginationRequestDto {
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: Date;
+
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: Date;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  isHistory: boolean;
 }
