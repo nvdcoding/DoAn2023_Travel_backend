@@ -255,10 +255,13 @@ export class UserService {
       //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
       const transaction = await this.transactionRepository.findOne({
         where: { transactionCode: orderId },
-        relations: ['user'],
+        relations: ['user', 'tourGuide'],
       });
       const user = await this.userRepository.findOne({
-        where: { id: transaction.user.id, verifyStatus: UserStatus.ACTIVE },
+        where: {
+          id: transaction.user ? transaction.user.id : transaction.tourGuide.id,
+          verifyStatus: UserStatus.ACTIVE,
+        },
       });
       if (rspCode == '00') {
         await Promise.all([
