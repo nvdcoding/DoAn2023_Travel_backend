@@ -261,7 +261,7 @@ export class UserService {
         where: { transactionCode: orderId },
         relations: ['user', 'tourGuide'],
       });
-      const task;
+      const task = [];
       if (transaction.user) {
         user = await this.userRepository.findOne({
           where: {
