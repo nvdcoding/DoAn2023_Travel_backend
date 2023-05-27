@@ -4,6 +4,7 @@ import {
   IsDateString,
   IsNotEmpty,
   IsOptional,
+  IsString,
 } from 'class-validator';
 import { BasePaginationRequestDto } from './base-pagination.dto';
 
@@ -36,7 +37,7 @@ export class GetTransactionWithdrawDto extends BasePaginationRequestDto {
   endDate: Date;
 
   @ApiProperty()
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  isHistory: boolean;
+  isHistory: string;
 }
